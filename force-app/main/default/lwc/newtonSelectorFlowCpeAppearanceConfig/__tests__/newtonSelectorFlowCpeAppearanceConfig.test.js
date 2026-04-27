@@ -191,9 +191,7 @@ describe("c-newton-selector-flow-cpe-appearance-config events", () => {
     expect(selectedPadding.selected).toBe(true);
 
     element.shadowRoot
-      .querySelector(
-        'lightning-button-icon[title="Reset layout styling to SLDS defaults"]'
-      )
+      .querySelector('button[title="Reset layout styling to SLDS defaults"]')
       .click();
 
     expect(patches.at(-1).value.gridConfig).toMatchObject({

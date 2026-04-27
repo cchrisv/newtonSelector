@@ -18,8 +18,6 @@ export function sectionIssues(key, config, refs = {}) {
         errors.push("Bind a Flow record collection variable.");
       if (!c.collection?.fieldMap?.label)
         errors.push("Map at least the Label field for the collection.");
-    } else if (dataSource === "stringCollection") {
-      if (!refs.sourceStringsRef) errors.push("Bind a Flow String[] variable.");
     } else if (dataSource === "sobject") {
       if (!c.sobject?.sObjectApiName)
         errors.push("Select a Salesforce object.");

@@ -41,7 +41,7 @@ describe("c-newton-selector-data-selector", () => {
 
   it("uses standard field label styling instead of the fieldset legend variant", async () => {
     const el = mount({
-      label: "Picker",
+      label: "Selector",
       customConfig: {
         items: [{ label: "One", value: "1" }]
       }
@@ -49,7 +49,7 @@ describe("c-newton-selector-data-selector", () => {
     await Promise.resolve();
     await Promise.resolve();
 
-    const label = el.shadowRoot.querySelector(".newton-organism__label");
+    const label = el.shadowRoot.querySelector(".newton-data-selector__label");
     expect(label).not.toBeNull();
     expect(label.classList.contains("slds-form-element__label")).toBe(true);
     expect(label.classList.contains("slds-form-element__legend")).toBe(false);
@@ -73,6 +73,27 @@ describe("c-newton-selector-data-selector", () => {
 
     const group = el.shadowRoot.querySelector("c-newton-selector-group");
     expect(group.items.map((item) => item.value)).toEqual(["1"]);
+  });
+
+  it("does not apply per-item overrides to record collection items", async () => {
+    const el = mount({
+      sourceType: "collection",
+      collectionConfig: {
+        records: [
+          { Id: "001", Name: "Acme" },
+          { Id: "002", Name: "Beta" }
+        ],
+        fieldMap: { label: "Name", value: "Id" }
+      },
+      overrides: {
+        "001": { label: "Preferred", hidden: true }
+      }
+    });
+    await Promise.resolve();
+    await Promise.resolve();
+
+    const group = el.shadowRoot.querySelector("c-newton-selector-group");
+    expect(group.items.map((item) => item.label)).toEqual(["Acme", "Beta"]);
   });
 
   it("shows empty state when no items and not previewing", async () => {

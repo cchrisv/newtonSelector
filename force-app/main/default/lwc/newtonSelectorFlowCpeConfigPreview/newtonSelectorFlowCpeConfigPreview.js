@@ -7,7 +7,6 @@ export default class NewtonSelectorFlowCpeConfigPreview extends LightningElement
   @api config;
   @api forcedState = "";
   @api recordCollectionSampleRecords = [];
-  @api stringCollectionSampleStrings = [];
 
   handlePreviewStateChange(event) {
     this.dispatchEvent(
@@ -41,9 +40,6 @@ export default class NewtonSelectorFlowCpeConfigPreview extends LightningElement
   get isCustomMode() {
     return this.c.dataSource === "custom";
   }
-  get isStringCollectionMode() {
-    return this.c.dataSource === "stringCollection";
-  }
   get isCollectionMode() {
     return this.c.dataSource === "collection";
   }
@@ -70,10 +66,7 @@ export default class NewtonSelectorFlowCpeConfigPreview extends LightningElement
       return true;
     if (this.isCollectionMode && this.recordCollectionSampleRecords.length > 0)
       return true;
-    return (
-      this.isStringCollectionMode &&
-      this.stringCollectionSampleStrings.length > 0
-    );
+    return false;
   }
   get showLivePreview() {
     return this.hasPreviewableSource;
@@ -93,7 +86,7 @@ export default class NewtonSelectorFlowCpeConfigPreview extends LightningElement
 
   get previewCaption() {
     if (!this.hasDataSource)
-      return "Pick a data source to see your picker come to life.";
+      return "Pick a data source to see your selector come to life.";
     if (this.c.dataSource === "collection")
       return "Collection data resolves at runtime — showing sample rows.";
     if (this.isPicklistMode && !this.c.picklist?.fieldApiName) {
@@ -124,28 +117,25 @@ export default class NewtonSelectorFlowCpeConfigPreview extends LightningElement
   get previewSelectionLabel() {
     return this.c.selectionMode === "multi" ? "Multi" : "Single";
   }
-  get organismPicklistConfig() {
+  get dataSelectorPicklistConfig() {
     return this.c.picklist || {};
   }
-  get organismCustomConfig() {
+  get dataSelectorCustomConfig() {
     return this.c.custom || { items: [] };
   }
-  get organismStringCollectionConfig() {
-    return { values: this.stringCollectionSampleStrings };
-  }
-  get organismCollectionConfig() {
+  get dataSelectorCollectionConfig() {
     return {
       records: this.recordCollectionSampleRecords,
       fieldMap: this.c.collection?.fieldMap || {}
     };
   }
-  get organismSobjectConfig() {
+  get dataSelectorSobjectConfig() {
     return buildSobjectConfigForQuery(this.c);
   }
-  get organismOverrides() {
+  get dataSelectorOverrides() {
     return this.c.overrides || {};
   }
-  get organismDisplayConfig() {
+  get dataSelectorDisplayConfig() {
     return (
       this.c.display || { sortBy: "none", sortDirection: "asc", limit: null }
     );
@@ -176,161 +166,161 @@ export default class NewtonSelectorFlowCpeConfigPreview extends LightningElement
     const max = this.manualInputConfig.maxLength;
     return max === null || max === undefined || max === "" ? undefined : max;
   }
-  get orgGridMinWidth() {
+  get dataSelectorGridMinWidth() {
     return this.gridConfig.minWidth || this.gridDefaults.minWidth;
   }
-  get orgGapHorizontal() {
+  get dataSelectorGapHorizontal() {
     return this.gridConfig.gapH || this.gridDefaults.gapH;
   }
-  get orgGapVertical() {
+  get dataSelectorGapVertical() {
     return this.gridConfig.gapV || this.gridDefaults.gapV;
   }
-  get orgSize() {
+  get dataSelectorSize() {
     return this.gridConfig.size || this.gridDefaults.size;
   }
-  get orgAspectRatio() {
+  get dataSelectorAspectRatio() {
     return this.gridConfig.aspectRatio || this.gridDefaults.aspectRatio;
   }
-  get orgBadgePosition() {
+  get dataSelectorBadgePosition() {
     return this.badgeConfig.position || "bottom-inline";
   }
-  get orgBadgeVariant() {
+  get dataSelectorBadgeVariant() {
     return this.badgeConfig.variant || "neutral";
   }
-  get orgBadgeShape() {
+  get dataSelectorBadgeShape() {
     return this.badgeConfig.shape || "pill";
   }
-  get orgColumns() {
+  get dataSelectorColumns() {
     const n = Number(this.gridConfig.columns);
     return Number.isFinite(n) && n >= 1 && n <= 6 ? n : undefined;
   }
-  get orgSelectionIndicator() {
+  get dataSelectorSelectionIndicator() {
     return (
       this.gridConfig.selectionIndicator || this.gridDefaults.selectionIndicator
     );
   }
-  get orgElevation() {
+  get dataSelectorElevation() {
     return this.gridConfig.elevation || "outlined";
   }
-  get orgPattern() {
+  get dataSelectorPattern() {
     return this.gridConfig.pattern || "none";
   }
-  get orgPatternTone() {
+  get dataSelectorPatternTone() {
     return this.gridConfig.patternTone || "neutral";
   }
-  get orgPatternHoverTone() {
-    return this.gridConfig.patternHoverTone || this.orgPatternTone;
+  get dataSelectorPatternHoverTone() {
+    return this.gridConfig.patternHoverTone || this.dataSelectorPatternTone;
   }
-  get orgPatternSelectedTone() {
+  get dataSelectorPatternSelectedTone() {
     return this.gridConfig.patternSelectedTone || "brand";
   }
-  get orgPatternDisabledTone() {
+  get dataSelectorPatternDisabledTone() {
     return this.gridConfig.patternDisabledTone || "neutral";
   }
-  get orgCornerStyle() {
+  get dataSelectorCornerStyle() {
     return this.gridConfig.cornerStyle || "none";
   }
-  get orgCornerTone() {
+  get dataSelectorCornerTone() {
     return this.gridConfig.cornerTone || "neutral";
   }
-  get orgSurfaceStyle() {
+  get dataSelectorSurfaceStyle() {
     return this.gridConfig.surfaceStyle || "solid";
   }
-  get orgSurfaceTone() {
+  get dataSelectorSurfaceTone() {
     return this.gridConfig.surfaceTone || "neutral";
   }
-  get orgSurfaceHoverTone() {
-    return this.gridConfig.surfaceHoverTone || this.orgSurfaceTone;
+  get dataSelectorSurfaceHoverTone() {
+    return this.gridConfig.surfaceHoverTone || this.dataSelectorSurfaceTone;
   }
-  get orgSurfaceSelectedTone() {
+  get dataSelectorSurfaceSelectedTone() {
     return this.gridConfig.surfaceSelectedTone || "brand";
   }
-  get orgSurfaceDisabledTone() {
+  get dataSelectorSurfaceDisabledTone() {
     return this.gridConfig.surfaceDisabledTone || "neutral";
   }
-  get orgIconDecor() {
+  get dataSelectorIconDecor() {
     return this.gridConfig.iconDecor || this.gridDefaults.iconDecor;
   }
-  get orgIconStyle() {
+  get dataSelectorIconStyle() {
     return this.gridConfig.iconStyle || this.gridDefaults.iconStyle;
   }
-  get orgIconShading() {
+  get dataSelectorIconShading() {
     return this.gridConfig.iconShading || "flat";
   }
-  get orgIconTone() {
+  get dataSelectorIconTone() {
     return this.gridConfig.iconTone || this.gridDefaults.iconTone;
   }
-  get orgIconGlyphTone() {
+  get dataSelectorIconGlyphTone() {
     return this.gridConfig.iconGlyphTone || "auto";
   }
-  get orgIconGlyphToneHex() {
+  get dataSelectorIconGlyphToneHex() {
     return this.gridConfig.iconGlyphToneHex || "";
   }
-  get orgIconSize() {
+  get dataSelectorIconSize() {
     const raw = this.gridConfig.iconSize;
     return raw && raw !== "auto" ? raw : "large";
   }
-  get orgIconToneHex() {
+  get dataSelectorIconToneHex() {
     return this.gridConfig.iconToneHex || "";
   }
-  get orgPatternToneHex() {
+  get dataSelectorPatternToneHex() {
     return this.gridConfig.patternToneHex || "";
   }
-  get orgPatternHoverToneHex() {
+  get dataSelectorPatternHoverToneHex() {
     return this.gridConfig.patternHoverToneHex || "";
   }
-  get orgPatternSelectedToneHex() {
+  get dataSelectorPatternSelectedToneHex() {
     return this.gridConfig.patternSelectedToneHex || "";
   }
-  get orgPatternDisabledToneHex() {
+  get dataSelectorPatternDisabledToneHex() {
     return this.gridConfig.patternDisabledToneHex || "";
   }
-  get orgCornerToneHex() {
+  get dataSelectorCornerToneHex() {
     return this.gridConfig.cornerToneHex || "";
   }
-  get orgSurfaceToneHex() {
+  get dataSelectorSurfaceToneHex() {
     return this.gridConfig.surfaceToneHex || "";
   }
-  get orgSurfaceHoverToneHex() {
+  get dataSelectorSurfaceHoverToneHex() {
     return this.gridConfig.surfaceHoverToneHex || "";
   }
-  get orgSurfaceSelectedToneHex() {
+  get dataSelectorSurfaceSelectedToneHex() {
     return this.gridConfig.surfaceSelectedToneHex || "";
   }
-  get orgSurfaceDisabledToneHex() {
+  get dataSelectorSurfaceDisabledToneHex() {
     return this.gridConfig.surfaceDisabledToneHex || "";
   }
-  get orgBadgeVariantHex() {
+  get dataSelectorBadgeVariantHex() {
     return this.badgeConfig.variantHex || "";
   }
-  get orgShowIcons() {
+  get dataSelectorShowIcons() {
     return this.gridConfig.showIcons !== false;
   }
-  get orgShowBadges() {
+  get dataSelectorShowBadges() {
     return this.gridConfig.showBadges !== false;
   }
-  get orgMarginTop() {
+  get dataSelectorMarginTop() {
     return this.gridConfig.margin?.top ?? "";
   }
-  get orgMarginRight() {
+  get dataSelectorMarginRight() {
     return this.gridConfig.margin?.right ?? "";
   }
-  get orgMarginBottom() {
+  get dataSelectorMarginBottom() {
     return this.gridConfig.margin?.bottom ?? "";
   }
-  get orgMarginLeft() {
+  get dataSelectorMarginLeft() {
     return this.gridConfig.margin?.left ?? "";
   }
-  get orgPaddingTop() {
+  get dataSelectorPaddingTop() {
     return this.gridConfig.padding?.top || undefined;
   }
-  get orgPaddingRight() {
+  get dataSelectorPaddingRight() {
     return this.gridConfig.padding?.right || undefined;
   }
-  get orgPaddingBottom() {
+  get dataSelectorPaddingBottom() {
     return this.gridConfig.padding?.bottom || undefined;
   }
-  get orgPaddingLeft() {
+  get dataSelectorPaddingLeft() {
     return this.gridConfig.padding?.left || undefined;
   }
 }

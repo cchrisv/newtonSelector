@@ -5,12 +5,12 @@
   display: block;
 }
 
-.newton-selector-icon-picker {
+.newton-selector-icon-selector {
   position: relative;
   z-index: var(--newton-static-v-1, 1);
 }
 
-.newton-selector-icon-picker_open {
+.newton-selector-icon-selector_open {
   z-index: var(--newton-static-v-9000, 9000);
 }
 
@@ -199,14 +199,14 @@
   white-space: nowrap;
 }
 
-.newton-selector-icon-picker__empty {
+.newton-selector-icon-selector__empty {
   padding: var(--slds-g-spacing-5, 1.25rem);
   color: var(--slds-g-color-neutral-base-30, #444444);
   font-size: var(--slds-g-font-scale-base, 0.8125rem);
   text-align: center;
 }
 
-.newton-selector-icon-picker__more {
+.newton-selector-icon-selector__more {
   display: flex;
   align-items: center;
   justify-content: space-between;

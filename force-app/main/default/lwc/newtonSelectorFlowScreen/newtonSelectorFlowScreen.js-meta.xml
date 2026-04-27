@@ -20,21 +20,15 @@
         description="SObject type for record-backed data sources."
       />
             <property
-        name="pickerConfigJson"
+        name="selectorConfigJson"
         type="String"
-        label="Picker config (managed by CPE)"
+        label="Selector config (managed by CPE)"
         role="inputOnly"
       />
             <property
         name="sourceRecords"
         type="{T[]}"
         label="Record Collection (Collection mode only)"
-        role="inputOnly"
-      />
-            <property
-        name="sourceStrings"
-        type="String[]"
-        label="String Collection (String list mode only)"
         role="inputOnly"
       />
             <property
@@ -77,14 +71,14 @@
         name="allValues"
         type="String[]"
         label="All rendered values"
-        description="Every option value the picker rendered, in display order (post filter/sort/limit, including the None tile if enabled)."
+        description="Every option value the selector rendered, in display order (post filter/sort/limit, including the None tile if enabled)."
         role="outputOnly"
       />
             <property
         name="allLabels"
         type="String[]"
         label="All rendered labels"
-        description="Every option label the picker rendered, in display order."
+        description="Every option label the selector rendered, in display order."
         role="outputOnly"
       />
             <property

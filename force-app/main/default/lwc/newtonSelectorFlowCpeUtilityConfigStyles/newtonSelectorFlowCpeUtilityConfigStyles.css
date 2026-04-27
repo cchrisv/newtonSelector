@@ -438,8 +438,8 @@
   --newton-group-min-w: 7rem;
 }
 
-/* Fallback preview (collection mode) — renders the molecule directly so we
-   synthesize the label + help text manually above it. Matches the organism's
+/* Fallback preview (collection mode) — renders the data selector directly so we
+   synthesize the label + help text manually above it. Matches the data selector's
    baked-in heading styles. */
 .newton-studio__preview-label {
   font-size: var(--slds-g-font-scale-2, 1rem);
@@ -1033,7 +1033,7 @@
   gap: var(--slds-g-spacing-3, 0.75rem);
 }
 
-/* 2×2 spacing picker — used for unlinked margin/padding directional comboboxes */
+/* 2×2 spacing selector — used for unlinked margin/padding directional comboboxes */
 .newton-studio__spacing-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1041,7 +1041,7 @@
 }
 
 /* =============================================================================
-   VISUAL TILE PICKERS · host the newtonSelectorChoiceTile atom.
+   VISUAL TILE SELECTORS · host newtonSelectorChoiceTile.
    2-tile / 3-tile groups flex-wrap at 7.5rem each.
    4-tile groups use a grid that flips 4×1 ↔ 2×2 via container query.
    ============================================================================= */
@@ -1237,8 +1237,8 @@
   );
 }
 
-/* Icon picker + the help-text field span full width as visual bookends.
-   Icon is structurally different (a picker, not text), so it headlines.
+/* Icon selector + the help-text field span full width as visual bookends.
+   Icon is structurally different (a selector, not text), so it headlines.
    Help text is the longest content and benefits from full width. */
 .newton-studio__custom-grid > c-newton-selector-flow-cpe-icon-selector {
   position: relative;
@@ -1286,7 +1286,7 @@
 /* =============================================================================
    SPEC SHEET · reusable subsection inside a source-setup card.
    Used for the collection / sobject field-mapping groups: wraps the 6 field
-   pickers in a 2×2 (×3 rows) grid with an eyebrow label and left accent
+   selectors in a 2×2 (×3 rows) grid with an eyebrow label and left accent
    stripe. Visually echoes the override-row expansion and custom-item body.
    ============================================================================= */
 
@@ -1353,7 +1353,7 @@
   row-gap: var(--slds-g-spacing-3, 0.75rem);
 }
 
-/* Stagger reveal for spec-sheet field pickers too. */
+/* Stagger reveal for spec-sheet field selectors too. */
 .newton-studio__spec-grid > * {
   animation: newton-overrides-field 280ms var(--newton-studio-ease) both;
 }
@@ -1462,7 +1462,7 @@
 
 /* =============================================================================
    OVERRIDES ROW · printer's spec-sheet aesthetic.
-   Each row opens into a 2×2 grid of text fields with the icon picker featured
+   Each row opens into a 2×2 grid of text fields with the icon selector featured
    full-width on top. A left accent stripe lights up when the row is customized
    or selected, carrying the chapter's color language into the detail view.
    ============================================================================= */
@@ -1662,7 +1662,7 @@
   animation: newton-overrides-reveal 240ms var(--newton-studio-ease);
 }
 
-/* Icon picker spans full width — it's visually different from text fields
+/* Icon selector spans full width — it's visually different from text fields
    and deserves the hero slot. */
 .newton-studio__overrides-grid > c-newton-selector-flow-cpe-icon-selector {
   position: relative;
@@ -1828,8 +1828,8 @@
 
 /* =============================================================================
    BADGE CARD · editorial precision — the hero card of the Layout section.
-   Live atom preview on top, then three small control lanes. Chips are custom
-   (not atom-based) so the schematic position dots and real colored pills can
+   Live choice-tile preview on top, then three small control lanes. Chips are custom
+   (not choice-tile-based) so the schematic position dots and real colored pills can
    live side-by-side without subcomponent round-trips.
    ============================================================================= */
 
@@ -1987,7 +1987,7 @@
     0 4px 10px rgba(1, 94, 170, 0.2);
 }
 
-/* Chips reuse the atom's badge variant tokens — same source of truth. They're
+/* Chips reuse the choice tile's badge variant tokens — same source of truth. They're
    passed the same class names as the real badge element. */
 .newton-badge-variant-chip.newton-selector-choice-tile__badge_variant-neutral {
   --_badge-bg: var(--slds-g-color-neutral-base-95, #f3f3f3);
@@ -2105,7 +2105,7 @@
   color: var(--newton-studio-ink);
 }
 
-/* The sample badge inside the shape chip reuses atom variant/shape classes;
+/* The sample badge inside the shape chip reuses choice tile variant/shape classes;
    it's identical to the real element. */
 .newton-badge-shape-chip .newton-selector-choice-tile__badge {
   display: inline-flex;
@@ -2256,7 +2256,7 @@
 }
 
 /* =============================================================================
-   TONE CHIP ROW — appears under pattern/corner/surface/icon-decor pickers.
+   TONE CHIP ROW — appears under pattern/corner/surface/icon-decor selectors.
    Each chip has a color-dot glyph + label. Wraps gracefully on narrow panels.
    ============================================================================= */
 
@@ -2414,7 +2414,7 @@
 
 /* =============================================================================
    CUSTOM HEX ROW — appears below a tone row when "Custom" chip is active.
-   Compact input group: color-picker square + hex text input.
+   Compact input group: color-selector square + hex text input.
    ============================================================================= */
 
 .newton-hex-row {
@@ -2436,7 +2436,7 @@
   padding-right: var(--slds-g-spacing-1, 0.25rem);
 }
 
-.newton-hex-row__picker {
+.newton-hex-row__selector {
   appearance: none;
   -webkit-appearance: none;
   width: var(--slds-g-sizing-9, 2.25rem);
@@ -2452,19 +2452,19 @@
 }
 
 /* Strip default swatch chrome in all browsers. */
-.newton-hex-row__picker::-webkit-color-swatch-wrapper {
+.newton-hex-row__selector::-webkit-color-swatch-wrapper {
   padding: 0;
 }
-.newton-hex-row__picker::-webkit-color-swatch {
+.newton-hex-row__selector::-webkit-color-swatch {
   border: 0;
   border-radius: calc(var(--slds-g-radius-border-2, 0.25rem) - 1px);
 }
-.newton-hex-row__picker::-moz-color-swatch {
+.newton-hex-row__selector::-moz-color-swatch {
   border: 0;
   border-radius: calc(var(--slds-g-radius-border-2, 0.25rem) - 1px);
 }
 
-.newton-hex-row__picker:focus-visible {
+.newton-hex-row__selector:focus-visible {
   outline: var(--slds-g-sizing-border-2, 2px) solid
     var(--newton-studio-brand, #0176d3);
   outline-offset: var(--slds-g-sizing-border-2, 2px);
@@ -2739,6 +2739,51 @@
   overflow-x: auto;
   white-space: pre-wrap;
   word-break: break-word;
+}
+
+.newton-query-preview__token_keyword {
+  color: var(--slds-g-color-brand-base-40, #014486);
+  font-weight: var(--slds-g-font-weight-7, 700);
+}
+
+.newton-query-preview__token_object {
+  color: var(--slds-g-color-palette-teal-40, #056764);
+  font-weight: var(--slds-g-font-weight-6, 600);
+}
+
+.newton-query-preview__token_field,
+.newton-query-preview__token_identifier {
+  color: var(--slds-g-color-on-surface-1, #181818);
+}
+
+.newton-query-preview__token_function {
+  color: var(--slds-g-color-palette-purple-40, #7526e3);
+  font-weight: var(--slds-g-font-weight-6, 600);
+}
+
+.newton-query-preview__token_operator,
+.newton-query-preview__token_punctuation {
+  color: var(--slds-g-color-neutral-base-40, #5c5c5c);
+}
+
+.newton-query-preview__token_string {
+  color: var(--slds-g-color-success-base-30, #2e844a);
+}
+
+.newton-query-preview__token_number,
+.newton-query-preview__token_bind {
+  color: var(--slds-g-color-palette-purple-40, #7526e3);
+}
+
+.newton-query-preview__token_boolean,
+.newton-query-preview__token_null {
+  color: var(--slds-g-color-warning-base-40, #8c4b02);
+  font-weight: var(--slds-g-font-weight-6, 600);
+}
+
+.newton-query-preview__token_comment {
+  color: var(--slds-g-color-neutral-base-50, #747474);
+  font-style: italic;
 }
 
 .newton-query-preview__status {

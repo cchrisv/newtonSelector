@@ -3,11 +3,7 @@ import { getObjectInfo, getPicklistValues } from "lightning/uiObjectInfoApi";
 import { defaultSelectorConfig } from "c/newtonSelectorUtilityConfigDefaults";
 import {
   buildSobjectConfigForQuery,
-  recordCollectionSamples,
-  resolveRecordCollectionMetadataFromBuilderContext,
-  resolvedStringValuePreview as buildResolvedStringValuePreview,
-  resolveStringValuesFromBuilderContext,
-  stringCollectionSamples
+  resolveRecordCollectionMetadataFromBuilderContext
 } from "c/newtonSelectorFlowCpeUtilityConfigState";
 import {
   ORDER_DIRECTION_OPTIONS,
@@ -27,6 +23,49 @@ const DEFAULT_RECORD_TYPE_VALUE = "__NewtonDefaultRecordType__";
 const OVERRIDE_VISIBLE_INCREMENT = 25;
 const OVERRIDE_MODE_ADVANCED = "advanced";
 const OVERRIDE_MODE_DEFAULT = "default";
+const SOQL_KEYWORDS = new Set([
+  "ABOVE",
+  "ABOVE_OR_BELOW",
+  "AND",
+  "ASC",
+  "AT",
+  "BELOW",
+  "BY",
+  "DATA",
+  "DESC",
+  "EXCLUDES",
+  "FALSE",
+  "FOR",
+  "FROM",
+  "GROUP",
+  "HAVING",
+  "IN",
+  "INCLUDES",
+  "LAST_N_DAYS",
+  "LIKE",
+  "LIMIT",
+  "NOT",
+  "NULL",
+  "NULLS",
+  "OFFSET",
+  "OR",
+  "ORDER",
+  "SELECT",
+  "THIS_MONTH",
+  "THIS_WEEK",
+  "THIS_YEAR",
+  "TODAY",
+  "TOMORROW",
+  "TRUE",
+  "UPDATE",
+  "VIEW",
+  "WHERE",
+  "WITH",
+  "YESTERDAY"
+]);
+const SOQL_BOOLEAN_LITERALS = new Set(["TRUE", "FALSE"]);
+const SOQL_NULL_LITERALS = new Set(["NULL"]);
+const SOQL_OBJECT_CONTEXT_KEYWORDS = new Set(["FROM", "UPDATE"]);
 const EMPTY_COLLECTION_FIELD_MAP = {
   label: "",
   sublabel: "",
@@ -36,10 +75,159 @@ const EMPTY_COLLECTION_FIELD_MAP = {
   helpText: ""
 };
 
+function isIdentifierStart(char) {
+  return /[A-Za-z_$]/.test(char);
+}
+
+function isIdentifierPart(char) {
+  return /[A-Za-z0-9_$]/.test(char);
+}
+
+function classifySoqlWord(word, previousSignificantWord, nextChar) {
+  const upper = word.toUpperCase();
+  if (SOQL_BOOLEAN_LITERALS.has(upper)) return "boolean";
+  if (SOQL_NULL_LITERALS.has(upper)) return "null";
+  if (SOQL_KEYWORDS.has(upper)) return "keyword";
+  if (SOQL_OBJECT_CONTEXT_KEYWORDS.has(previousSignificantWord)) {
+    return "object";
+  }
+  if (nextChar === "(") return "function";
+  return word.includes(".") ? "field" : "identifier";
+}
+
+function createSoqlToken(text, type, index) {
+  return {
+    key: `soql-token-${index}`,
+    text,
+    className: `newton-query-preview__token newton-query-preview__token_${type}`
+  };
+}
+
+function readSoqlStringLiteral(soql, start) {
+  let index = start + 1;
+  while (index < soql.length) {
+    if (soql[index] === "\\") {
+      index += 2;
+    } else if (soql[index] === "'") {
+      if (soql[index + 1] === "'") {
+        index += 2;
+      } else {
+        index += 1;
+        break;
+      }
+    } else {
+      index += 1;
+    }
+  }
+  return index;
+}
+
+function readSoqlIdentifier(soql, start) {
+  let index = start;
+  while (index < soql.length) {
+    if (isIdentifierPart(soql[index])) {
+      index += 1;
+    } else if (soql[index] === "." && isIdentifierStart(soql[index + 1])) {
+      index += 1;
+    } else {
+      break;
+    }
+  }
+  return index;
+}
+
+function nextNonWhitespaceChar(soql, start) {
+  let index = start;
+  while (index < soql.length && /\s/.test(soql[index])) {
+    index += 1;
+  }
+  return soql[index] || "";
+}
+
+function highlightSoql(soql) {
+  const tokens = [];
+  let index = 0;
+  let previousSignificantWord = "";
+
+  while (index < soql.length) {
+    const char = soql[index];
+    const tokenIndex = tokens.length;
+
+    if (/\s/.test(char)) {
+      const start = index;
+      while (index < soql.length && /\s/.test(soql[index])) {
+        index += 1;
+      }
+      tokens.push(
+        createSoqlToken(soql.slice(start, index), "space", tokenIndex)
+      );
+    } else if (char === "'") {
+      const end = readSoqlStringLiteral(soql, index);
+      tokens.push(
+        createSoqlToken(soql.slice(index, end), "string", tokenIndex)
+      );
+      index = end;
+    } else if (char === "/" && soql[index + 1] === "*") {
+      const end = soql.indexOf("*/", index + 2);
+      const nextIndex = end === -1 ? soql.length : end + 2;
+      tokens.push(
+        createSoqlToken(soql.slice(index, nextIndex), "comment", tokenIndex)
+      );
+      index = nextIndex;
+    } else if (
+      (char === "-" && soql[index + 1] === "-") ||
+      (char === "/" && soql[index + 1] === "/")
+    ) {
+      const end = soql.indexOf("\n", index + 2);
+      const nextIndex = end === -1 ? soql.length : end;
+      tokens.push(
+        createSoqlToken(soql.slice(index, nextIndex), "comment", tokenIndex)
+      );
+      index = nextIndex;
+    } else if (char === ":" && isIdentifierStart(soql[index + 1])) {
+      const end = readSoqlIdentifier(soql, index + 1);
+      tokens.push(createSoqlToken(soql.slice(index, end), "bind", tokenIndex));
+      index = end;
+    } else if (/\d/.test(char)) {
+      const start = index;
+      while (index < soql.length && /[\d.]/.test(soql[index])) {
+        index += 1;
+      }
+      tokens.push(
+        createSoqlToken(soql.slice(start, index), "number", tokenIndex)
+      );
+    } else if (isIdentifierStart(char)) {
+      const end = readSoqlIdentifier(soql, index);
+      const word = soql.slice(index, end);
+      const type = classifySoqlWord(
+        word,
+        previousSignificantWord,
+        nextNonWhitespaceChar(soql, end)
+      );
+      tokens.push(createSoqlToken(word, type, tokenIndex));
+      previousSignificantWord = word.toUpperCase();
+      index = end;
+    } else if ("=<>!".includes(char)) {
+      const nextIndex = soql[index + 1] === "=" ? index + 2 : index + 1;
+      tokens.push(
+        createSoqlToken(soql.slice(index, nextIndex), "operator", tokenIndex)
+      );
+      index = nextIndex;
+    } else if (",()".includes(char)) {
+      tokens.push(createSoqlToken(char, "punctuation", tokenIndex));
+      index += 1;
+    } else {
+      tokens.push(createSoqlToken(char, "plain", tokenIndex));
+      index += 1;
+    }
+  }
+
+  return tokens;
+}
+
 export default class NewtonSelectorFlowCpeDataConfig extends LightningElement {
   @api config;
   @api sourceRecordsRef = "";
-  @api sourceStringsRef = "";
   @api builderContext;
   @api automaticOutputVariables;
 
@@ -73,12 +261,6 @@ export default class NewtonSelectorFlowCpeDataConfig extends LightningElement {
   set _sourceRecordsRef(value) {
     this.dispatchRefChange("sourceRecordsRef", value);
   }
-  get _sourceStringsRef() {
-    return this.sourceStringsRef || "";
-  }
-  set _sourceStringsRef(value) {
-    this.dispatchRefChange("sourceStringsRef", value);
-  }
 
   get isDataSection() {
     return true;
@@ -92,12 +274,6 @@ export default class NewtonSelectorFlowCpeDataConfig extends LightningElement {
   get isCollectionMode() {
     return this._config.dataSource === "collection";
   }
-  get isStringCollectionMode() {
-    return this._config.dataSource === "stringCollection";
-  }
-  get isCollectionOrStringCollectionMode() {
-    return this.isCollectionMode || this.isStringCollectionMode;
-  }
   get isSObjectMode() {
     return this._config.dataSource === "sobject";
   }
@@ -105,12 +281,7 @@ export default class NewtonSelectorFlowCpeDataConfig extends LightningElement {
     return this._config.dataSource === "custom";
   }
   get canCustomizeValues() {
-    return (
-      this.isPicklistMode ||
-      this.isSObjectMode ||
-      this.isStringCollectionMode ||
-      this.isCollectionMode
-    );
+    return this.isPicklistMode || this.isSObjectMode;
   }
 
   get sourceTiles() {
@@ -143,8 +314,6 @@ export default class NewtonSelectorFlowCpeDataConfig extends LightningElement {
       return "Point to an object and pick its picklist field.";
     if (this.isCollectionMode)
       return "Bind a Flow record collection and map fields to the tile slots.";
-    if (this.isStringCollectionMode)
-      return "Bind a Flow String[] variable — each string becomes a tile.";
     if (this.isSObjectMode)
       return "Query an object and map the result fields into the tile.";
     if (this.isCustomMode)
@@ -234,9 +403,6 @@ export default class NewtonSelectorFlowCpeDataConfig extends LightningElement {
       }
     };
   }
-  handleStringCollectionVariableChange(event) {
-    this._sourceStringsRef = event.detail.newValue || "";
-  }
   handleCollectionFieldMapChange(event) {
     const field = event.currentTarget.dataset.field;
     const value = event.detail.fieldApiName || event.detail.value || "";
@@ -245,15 +411,6 @@ export default class NewtonSelectorFlowCpeDataConfig extends LightningElement {
       collection: {
         ...this._config.collection,
         fieldMap: { ...this._config.collection.fieldMap, [field]: value }
-      }
-    };
-  }
-  handleCollectionSamplesChange(event) {
-    this._config = {
-      ...this._config,
-      collection: {
-        ...(this._config.collection || {}),
-        sampleValues: event.target?.value ?? ""
       }
     };
   }
@@ -470,31 +627,8 @@ export default class NewtonSelectorFlowCpeDataConfig extends LightningElement {
     );
   }
 
-  get hasCollectionObjectApiName() {
-    return Boolean(this.collectionObjectApiName);
-  }
-
-  get collectionSampleValuesRaw() {
-    return this._config.collection?.sampleValues || "";
-  }
-
-  get collectionSampleRecords() {
-    return recordCollectionSamples(
-      this._config,
-      this.builderContext,
-      this._sourceRecordsRef
-    );
-  }
-
-  get hasCollectionOverrideRows() {
-    return this._filteredOverrideRows.length > 0;
-  }
-
-  get overrideEmptyMessage() {
-    if (this.isCollectionMode) {
-      return "Enter known item values above after mapping the collection to manage per-item overrides.";
-    }
-    return "Enter sample values above (for example, Hot, Warm, Cold) to manage per-value overrides.";
+  get isValueBackedOverrideMode() {
+    return this.isPicklistMode;
   }
 
   get sobjectQueryPreview() {
@@ -516,6 +650,10 @@ export default class NewtonSelectorFlowCpeDataConfig extends LightningElement {
       : "";
     const limit = ` LIMIT ${config.queryLimit || 20}`;
     return `SELECT ${selectFields.join(", ")} FROM ${objectApiName}${where}${order}${limit}`;
+  }
+
+  get highlightedSobjectQueryPreview() {
+    return highlightSoql(this.sobjectQueryPreview);
   }
 
   get hasQueryValidation() {
@@ -599,45 +737,6 @@ export default class NewtonSelectorFlowCpeDataConfig extends LightningElement {
     this._picklistValues = data?.values || [];
   }
 
-  get stringCollectionSampleRaw() {
-    return this._config.stringCollection?.sampleValues || "";
-  }
-  get resolvedStringCollectionValues() {
-    return resolveStringValuesFromBuilderContext(
-      this.builderContext,
-      this._sourceStringsRef
-    );
-  }
-  get hasResolvedStringValues() {
-    return this.resolvedStringCollectionValues.length > 0;
-  }
-  get stringCollectionSampleStrings() {
-    return stringCollectionSamples(
-      this._config,
-      this.builderContext,
-      this._sourceStringsRef
-    );
-  }
-  get resolvedStringValuePreview() {
-    return buildResolvedStringValuePreview(
-      this.builderContext,
-      this._sourceStringsRef
-    );
-  }
-  get resolvedStringCountLabel() {
-    const count = this.resolvedStringCollectionValues.length;
-    return `${count} value${count === 1 ? "" : "s"} detected`;
-  }
-  handleStringSamplesChange(event) {
-    this._config = {
-      ...this._config,
-      stringCollection: {
-        ...(this._config.stringCollection || {}),
-        sampleValues: event.target?.value ?? ""
-      }
-    };
-  }
-
   get customItems() {
     return (this._config.custom?.items || []).map((item, index, items) => ({
       ...item,
@@ -719,26 +818,6 @@ export default class NewtonSelectorFlowCpeDataConfig extends LightningElement {
         value: dto.value || dto.id,
         originalLabel: dto.label || dto.id
       }));
-    } else if (this.isCollectionMode) {
-      const fieldMap = this._config.collection?.fieldMap || {};
-      source = this.collectionSampleRecords.map((record, index) => {
-        const value =
-          this.readRecordField(record, fieldMap.value) ||
-          this.readRecordField(record, "Id") ||
-          String(index);
-        return {
-          value,
-          originalLabel:
-            this.readRecordField(record, fieldMap.label) ||
-            this.readRecordField(record, "Name") ||
-            value
-        };
-      });
-    } else if (this.isStringCollectionMode) {
-      source = this.stringCollectionSampleStrings.map((value) => ({
-        value,
-        originalLabel: value
-      }));
     }
     return source.map((row) => {
       const override = overrides[row.value] || {};
@@ -758,11 +837,6 @@ export default class NewtonSelectorFlowCpeDataConfig extends LightningElement {
         })
       };
     });
-  }
-  readRecordField(record, fieldPath) {
-    if (!record || !fieldPath) return "";
-    const value = record[fieldPath];
-    return value === undefined || value === null ? "" : String(value);
   }
   get _filteredOverrideRows() {
     const term = this._overrideSearch.trim().toLowerCase();

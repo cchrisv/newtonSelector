@@ -1,28 +1,31 @@
 <template>
   <!-- SLDS 2 form-element pattern. The label uses the standard field label
-         class only so the picker aligns with lightning-input labels. -->
-  <fieldset class="slds-form-element newton-organism">
+         class only so the selector aligns with lightning-input labels. -->
+  <fieldset class="slds-form-element newton-data-selector">
     <template lwc:if={hasLabel}>
-      <legend class="slds-form-element__label newton-organism__label">
+      <legend class="slds-form-element__label newton-data-selector__label">
         <template lwc:if={required}>
           <abbr title="required" class="slds-required">*</abbr>
         </template>
-        <span class="newton-organism__label-text">{label}</span>
+        <span class="newton-data-selector__label-text">{label}</span>
         <template lwc:if={hasFieldHelp}>
           <lightning-helptext
-            class="newton-organism__field-help"
+            class="newton-data-selector__field-help"
             content={fieldLevelHelp}
           ></lightning-helptext>
         </template>
       </legend>
       <template lwc:if={hasHelp}>
-        <div class="slds-form-element__help newton-organism__help" role="note">
+        <div
+          class="slds-form-element__help newton-data-selector__help"
+          role="note"
+        >
           {helpText}
         </div>
       </template>
     </template>
 
-    <div class="slds-form-element__control newton-organism__control">
+    <div class="slds-form-element__control newton-data-selector__control">
       <template lwc:if={isLoading}>
         <div
           class="newton-state newton-state_loading"
@@ -107,7 +110,7 @@
           items={_items}
           variant={layout}
           selection-mode={selectionMode}
-          selected-values={selectedValuesForMolecule}
+          selected-values={selectedValuesForGroup}
           min-selections={minSelections}
           max-selections={maxSelections}
           show-select-all={showSelectAll}
@@ -166,7 +169,7 @@
           show-badges={showBadges}
           allow-manual-input={allowManualInput}
           manual-input-label={manualInputLabel}
-          manual-input-value={manualValueForMolecule}
+          manual-input-value={manualValueForGroup}
           manual-input-min-length={manualInputMinLength}
           manual-input-max-length={manualInputMaxLength}
           onselectionchange={handleSelectionChange}

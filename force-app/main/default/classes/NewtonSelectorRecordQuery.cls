@@ -1,6 +1,7 @@
 @SuppressWarnings(
   'PMD.CognitiveComplexity, PMD.CyclomaticComplexity, PMD.ExcessiveParameterList'
 )
+/** @description Safe SOQL builder and executor for Newton Selector runtime queries. */
 public with sharing class NewtonSelectorRecordQuery {
   private static final Integer MAX_LIMIT = 2000;
   private static final Set<String> ALLOWED_DIRECTIONS = new Set<String>{
@@ -22,6 +23,11 @@ public with sharing class NewtonSelectorRecordQuery {
     'EXCLUDES'
   };
 
+  /**
+   * @description Validates the config and executes the selector query in user mode.
+   * @param config Selector query configuration.
+   * @return Queried records.
+   */
   public static List<SObject> query(NewtonSelectorQueryDTO config) {
     validateObject(config.sObjectApiName);
     List<String> fields = collectFields(config);
@@ -35,6 +41,11 @@ public with sharing class NewtonSelectorRecordQuery {
     );
   }
 
+  /**
+   * @description Builds validated preview SOQL without executing the caller's full result query.
+   * @param config Selector query configuration.
+   * @return Preview SOQL text.
+   */
   public static String previewSoql(NewtonSelectorQueryDTO config) {
     validateObject(config.sObjectApiName);
     List<String> fields = collectFields(config);

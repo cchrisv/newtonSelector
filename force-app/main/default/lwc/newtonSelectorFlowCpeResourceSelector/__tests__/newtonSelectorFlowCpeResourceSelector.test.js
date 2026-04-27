@@ -433,4 +433,53 @@ describe("c-newton-selector-flow-cpe-resource-selector", () => {
       expect(li.autocomplete).toBe("on");
     });
   });
+
+  describe("builder context filtering", () => {
+    it("shows only SObject record collections for collection binding", async () => {
+      const el = mount({
+        builderContextFilterType: "SObject",
+        builderContextFilterCollectionBoolean: true,
+        builderContext: {
+          recordLookups: [
+            {
+              name: "Get_Leads",
+              label: "Get Leads",
+              object: "Lead",
+              getFirstRecordOnly: "false"
+            },
+            {
+              name: "Get_First_Account",
+              label: "Get First Account",
+              object: "Account",
+              getFirstRecordOnly: "true"
+            }
+          ],
+          screens: [
+            {
+              name: "Lead_Screen",
+              label: "Lead Screen",
+              fields: [
+                {
+                  name: "Lead_Component",
+                  label: "Lead Component",
+                  dataType: "String",
+                  storeOutputAutomatically: true
+                }
+              ]
+            }
+          ]
+        },
+        automaticOutputVariables: {}
+      });
+
+      await flush();
+
+      const text = el.shadowRoot.textContent;
+      expect(text).toContain("Get Leads");
+      expect(text).toContain("Lead");
+      expect(text).not.toContain("Get First Account");
+      expect(text).not.toContain("Lead Component");
+      expect(text).not.toContain("Screen Components");
+    });
+  });
 });

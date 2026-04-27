@@ -25,7 +25,7 @@ import getObjectFields from "@salesforce/apex/NewtonSelectorFlowCpeController.ge
 
 /** Shown when allowHardCodeReference is true (CPE / manual merge fields). */
 const MANUAL_REFERENCE_PLACEHOLDER =
-  "Enter a merge field ({!...}) or a literal. Invalid references show an error when you close the picker.";
+  "Enter a merge field ({!...}) or a literal. Invalid references show an error when you close the selector.";
 const MERGE_FIELD_CACHE = new WeakMap();
 const PROCESSED_OPTIONS_CACHE = new WeakMap();
 
@@ -41,6 +41,22 @@ const PROCESSED_OPTIONS_CACHE = new WeakMap();
 // Flow Builder metadata shape overlaps with output-producing screen components.
 
 const OUTPUTS_FROM_LABEL = "Outputs from ";
+
+function coerceFlowBoolean(value) {
+  if (value === true || value === "true" || value === "TRUE") {
+    return true;
+  }
+  if (
+    value === false ||
+    value === "false" ||
+    value === "FALSE" ||
+    value === "0"
+  ) {
+    return false;
+  }
+  return Boolean(value);
+}
+
 export default class NewtonSelectorFlowCpeResourceSelector extends LightningElement {
   @api name;
   @api label;
@@ -722,9 +738,28 @@ export default class NewtonSelectorFlowCpeResourceSelector extends LightningElem
 
   isCollection(curObject, isCollectionField) {
     if (Object.prototype.hasOwnProperty.call(curObject, isCollectionField)) {
-      return curObject[isCollectionField];
+      return coerceFlowBoolean(curObject[isCollectionField]);
     }
-    return curObject[flowComboboxDefaults.isCollectionField];
+    return coerceFlowBoolean(curObject[flowComboboxDefaults.isCollectionField]);
+  }
+
+  matchesBuilderContextFilter(option, filterType, hasCollectionFilter) {
+    if (!filterType) {
+      return true;
+    }
+
+    const optionType = String(option.type || "").toLowerCase();
+    const optionDisplayType = String(option.displayType || "").toLowerCase();
+
+    if (filterType === "sobject") {
+      return optionType === "sobject" || option.isObject === true;
+    }
+
+    return (
+      optionDisplayType === filterType ||
+      optionType === filterType ||
+      (option.storeOutputAutomatically === true && !hasCollectionFilter)
+    );
   }
 
   getTypeByDescriptor(curObjectFieldType, typeDescriptor) {
@@ -1307,22 +1342,19 @@ export default class NewtonSelectorFlowCpeResourceSelector extends LightningElem
           filterColRaw === true;
 
         if (this.builderContextFilterType) {
-          localOptions = localOptions.filter(
-            (opToFilter) =>
-              opToFilter.displayType?.toLowerCase() ===
-                this.builderContextFilterType.toLowerCase() ||
-              opToFilter.storeOutputAutomatically === true ||
-              (opToFilter.type.toLowerCase() === "SObject".toLowerCase() &&
-                !filterColBool)
+          const filterType = this.builderContextFilterType.toLowerCase();
+          localOptions = localOptions.filter((opToFilter) =>
+            this.matchesBuilderContextFilter(
+              opToFilter,
+              filterType,
+              filterColDefined
+            )
           );
         }
 
         if (filterColDefined) {
           localOptions = localOptions.filter((opToFilter) => {
-            return (
-              opToFilter.isCollection === filterColBool ||
-              opToFilter.storeOutputAutomatically === true
-            );
+            return opToFilter.isCollection === filterColBool;
           });
         }
 

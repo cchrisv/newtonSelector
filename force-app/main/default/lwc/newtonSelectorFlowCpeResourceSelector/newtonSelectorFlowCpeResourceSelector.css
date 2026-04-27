@@ -38,7 +38,7 @@
 }
 
 /* Standard SLDS pill (not bare): center in combobox row, allow wrapping for long merge field paths */
-.cpe-picker-pill-wrap {
+.cpe-selector-pill-wrap {
   flex: 1 1 auto;
   min-width: 0;
   padding: var(--newton-static-v-0-125rem, 0.125rem) 0;

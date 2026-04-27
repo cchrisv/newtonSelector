@@ -152,7 +152,7 @@
   background: transparent;
 }
 
-/* Radio layout: explicit radio affordance, same card atom for content. */
+/* Radio layout: explicit radio affordance, same choice tile for content. */
 .newton-group_radio {
   display: flex;
   flex-direction: column;
@@ -312,7 +312,7 @@
   text-align: center;
 }
 
-/* Transfer layouts: columns and Salesforce-style multi-select picker. */
+/* Transfer layouts: columns and Salesforce-style multi-select selector. */
 .newton-transfer {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

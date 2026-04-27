@@ -3,10 +3,10 @@
 }
 
 /* Fieldset reset — SLDS's own .slds-form-element already zeros most of these
-   but we do it defensively so the picker renders the same no matter where
+   but we do it defensively so the selector renders the same no matter where
    SLDS is loaded. The bottom margin preserves the same stacked field rhythm
    as adjacent Flow screen lightning-input fields. */
-.newton-organism {
+.newton-data-selector {
   border: 0;
   padding: 0;
   margin: 0 0 var(--slds-g-spacing-3, 0.75rem);
@@ -15,19 +15,19 @@
 
 /* SLDS's .slds-form-element__label styles the typography. We only add the
    flex row so the required asterisk, label text, and inline help align. */
-.newton-organism__label {
+.newton-data-selector__label {
   display: inline-flex;
   align-items: center;
   gap: 0.375rem;
   flex-wrap: wrap;
 }
 
-.newton-organism__label-text {
+.newton-data-selector__label-text {
   /* Wrap the label text itself so gap doesn't break it into chunks */
   display: inline;
 }
 
-.newton-organism__field-help {
+.newton-data-selector__field-help {
   display: inline-flex;
   align-items: center;
   /* lightning-helptext brings its own icon styling; no overrides needed. */
@@ -37,18 +37,18 @@
    .slds-form-element__help styles it as the muted secondary text used for
    inline field help — same weight/color as other form elements. Extra top
    margin gives it breathing room below the legend. */
-.newton-organism__help {
+.newton-data-selector__help {
   margin: var(--slds-g-spacing-1, 0.25rem) 0 0;
   padding: 0;
 }
 
-/* Control band — holds the picker body. Match the compact label-to-control
+/* Control band — holds the selector body. Match the compact label-to-control
    gap of standard stacked SLDS text fields. */
-.newton-organism__control {
+.newton-data-selector__control {
   margin-top: var(--slds-g-spacing-1, 0.25rem);
 }
 
-.newton-organism > .newton-organism__control:first-child {
+.newton-data-selector > .newton-data-selector__control:first-child {
   /* No legend rendered → no top margin needed */
   margin-top: 0;
 }

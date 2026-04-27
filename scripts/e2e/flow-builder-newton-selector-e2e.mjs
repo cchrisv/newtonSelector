@@ -204,7 +204,7 @@ function assertNoActionableBrowserDiagnostics() {
     actionable.requestFailures.length;
   if (!total) return;
   throw new Error(
-    `Browser diagnostics found ${total} picker-relevant issue(s). See ${diagnosticsPath}`
+    `Browser diagnostics found ${total} selector-relevant issue(s). See ${diagnosticsPath}`
   );
 }
 
@@ -291,7 +291,6 @@ function defaultConfig(overrides = {}) {
       helpField: ""
     },
     custom: { items: [] },
-    stringCollection: { sampleValues: "" },
     includeNoneOption: false,
     noneOptionLabel: "--None--",
     noneOptionPosition: "start",
@@ -391,21 +390,10 @@ function customConfig(label) {
   });
 }
 
-function stringConfig() {
-  return defaultConfig({
-    dataSource: "stringCollection",
-    label: "E2E String Picker",
-    helpText: "String collection mode.",
-    stringCollection: {
-      sampleValues: "E2E String Alpha\nE2E String Beta\nE2E String Gamma"
-    }
-  });
-}
-
 function picklistConfig() {
   return defaultConfig({
     dataSource: "picklist",
-    label: "E2E Rating Picker",
+    label: "E2E Rating Selector",
     helpText: "Picklist mode.",
     picklist: {
       objectApiName: "Lead",
@@ -419,7 +407,7 @@ function picklistConfig() {
 function sobjectConfig() {
   return defaultConfig({
     dataSource: "sobject",
-    label: "E2E SOQL Lead Picker",
+    label: "E2E SOQL Lead Selector",
     helpText: "SOQL-backed Lead mode.",
     sobject: {
       sObjectApiName: "Lead",
@@ -440,7 +428,7 @@ function sobjectConfig() {
 function collectionConfig() {
   return defaultConfig({
     dataSource: "collection",
-    label: "E2E Collection Lead Picker",
+    label: "E2E Collection Lead Selector",
     helpText: "Flow record collection mode.",
     collection: {
       fieldMap: {
@@ -466,7 +454,7 @@ function componentFieldXml(name, config, extraInputs = "") {
             <extensionName>c:newtonSelectorFlowScreen</extensionName>
             <fieldType>ComponentInstance</fieldType>
             <inputParameters>
-                <name>pickerConfigJson</name>
+                <name>selectorConfigJson</name>
                 <value>
                     <stringValue>${escapeXml(JSON.stringify(config))}</stringValue>
                 </value>
@@ -486,13 +474,6 @@ function componentFieldXml(name, config, extraInputs = "") {
 }
 
 function buildFlowXml() {
-  const stringInput = `
-            <inputParameters>
-                <name>sourceStrings</name>
-                <value>
-                    <elementReference>textCollection</elementReference>
-                </value>
-            </inputParameters>`;
   const collectionInput = `
             <inputParameters>
                 <name>sourceRecords</name>
@@ -505,36 +486,6 @@ function buildFlowXml() {
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>66.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
-    <assignments>
-        <name>Build_Text_Collection</name>
-        <label>Build Text Collection</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>textCollection</assignToReference>
-            <operator>Add</operator>
-            <value>
-                <stringValue>E2E String Alpha</stringValue>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>textCollection</assignToReference>
-            <operator>Add</operator>
-            <value>
-                <stringValue>E2E String Beta</stringValue>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>textCollection</assignToReference>
-            <operator>Add</operator>
-            <value>
-                <stringValue>E2E String Gamma</stringValue>
-            </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Visual_Picker_E2E_Screen</targetReference>
-        </connector>
-    </assignments>
     <customProperties>
         <name>ScreenProgressIndicator</name>
         <value>
@@ -570,7 +521,7 @@ function buildFlowXml() {
         <locationY>0</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
-            <targetReference>Build_Text_Collection</targetReference>
+            <targetReference>Newton_Selector_E2E_Screen</targetReference>
         </connector>
         <filterLogic>and</filterLogic>
         <filters>
@@ -590,7 +541,7 @@ function buildFlowXml() {
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
     <screens>
-        <name>Visual_Picker_E2E_Screen</name>
+        <name>Newton_Selector_E2E_Screen</name>
         <label>${SCREEN_LABEL}</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
@@ -600,13 +551,13 @@ function buildFlowXml() {
         <connector>
             <targetReference>Done_Screen</targetReference>
         </connector>${componentFieldXml(
-          "Custom_Picker",
-          customConfig("E2E Custom Picker")
-        )}${componentFieldXml("String_Picker", stringConfig(), stringInput)}${componentFieldXml(
-          "Picklist_Picker",
+          "Custom_Selector",
+          customConfig("E2E Custom Selector")
+        )}${componentFieldXml(
+          "Picklist_Selector",
           picklistConfig()
-        )}${componentFieldXml("SObject_Picker", sobjectConfig())}${componentFieldXml(
-          "Collection_Picker",
+        )}${componentFieldXml("SObject_Selector", sobjectConfig())}${componentFieldXml(
+          "Collection_Selector",
           collectionConfig(),
           collectionInput
         )}
@@ -623,7 +574,7 @@ function buildFlowXml() {
         <allowPause>false</allowPause>
         <fields>
             <name>Done_Text</name>
-            <fieldText>&lt;p&gt;E2E Flow completed.&lt;/p&gt;&lt;p&gt;Custom: {!Custom_Picker.selectedLabel}&lt;/p&gt;&lt;p&gt;String: {!String_Picker.selectedLabel}&lt;/p&gt;&lt;p&gt;Rating: {!Picklist_Picker.selectedLabel}&lt;/p&gt;&lt;p&gt;SOQL: {!SObject_Picker.selectedLabel}&lt;/p&gt;&lt;p&gt;Collection: {!Collection_Picker.selectedLabel}&lt;/p&gt;</fieldText>
+            <fieldText>&lt;p&gt;E2E Flow completed.&lt;/p&gt;&lt;p&gt;Custom: {!Custom_Selector.selectedLabel}&lt;/p&gt;&lt;p&gt;Rating: {!Picklist_Selector.selectedLabel}&lt;/p&gt;&lt;p&gt;SOQL: {!SObject_Selector.selectedLabel}&lt;/p&gt;&lt;p&gt;Collection: {!Collection_Selector.selectedLabel}&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
             <styleProperties>
                 <verticalAlignment>
@@ -645,13 +596,6 @@ function buildFlowXml() {
         </connector>
     </start>
     <status>Draft</status>
-    <variables>
-        <name>textCollection</name>
-        <dataType>String</dataType>
-        <isCollection>true</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-    </variables>
 </Flow>
 `;
 }
@@ -710,6 +654,45 @@ function deleteTemporaryLeads() {
     } catch (error) {
       console.warn(`Could not delete temporary Lead ${id}: ${error.message}`);
     }
+  }
+}
+
+function deleteFlowFixture() {
+  try {
+    const query = `SELECT Id,MasterLabel,VersionNumber,Status FROM Flow WHERE MasterLabel = '${FLOW_LABEL}'`;
+    const result = runSf([
+      "data",
+      "query",
+      "--target-org",
+      TARGET_ORG,
+      "--use-tooling-api",
+      "--query",
+      process.platform === "win32" ? `"${query}"` : query,
+      "--json"
+    ]);
+    if (result.status !== 0) {
+      console.warn(`Could not query temporary Flow: ${JSON.stringify(result)}`);
+      return;
+    }
+    for (const record of result.result.records || []) {
+      runSf([
+        "data",
+        "delete",
+        "record",
+        "--target-org",
+        TARGET_ORG,
+        "--use-tooling-api",
+        "--sobject",
+        "Flow",
+        "--record-id",
+        record.Id,
+        "--json"
+      ]);
+    }
+  } catch (error) {
+    console.warn(
+      `Could not delete temporary Flow ${FLOW_API_NAME}: ${error.message}`
+    );
   }
 }
 
@@ -772,14 +755,14 @@ function extractSelectorConfigFromFlowXml(xml, fieldName) {
   const inputBlocks =
     fieldBlock.match(/<inputParameters>[\s\S]*?<\/inputParameters>/g) || [];
   const configBlock = inputBlocks.find((block) =>
-    block.includes("<name>pickerConfigJson</name>")
+    block.includes("<name>selectorConfigJson</name>")
   );
-  assert(configBlock, `Could not find pickerConfigJson for ${fieldName}.`);
+  assert(configBlock, `Could not find selectorConfigJson for ${fieldName}.`);
 
   const valueMatch = configBlock.match(
     /<stringValue>([\s\S]*?)<\/stringValue>/
   );
-  assert(valueMatch, `pickerConfigJson has no stringValue for ${fieldName}.`);
+  assert(valueMatch, `selectorConfigJson has no stringValue for ${fieldName}.`);
   return JSON.parse(decodeXml(valueMatch[1].trim()));
 }
 
@@ -806,43 +789,43 @@ function retrieveAndAssertPersistedConfig() {
   const flowXmlPath = findFile(retrieveDir, `${FLOW_API_NAME}.flow-meta.xml`);
   assert(flowXmlPath, `Retrieved Flow XML was not found under ${retrieveDir}.`);
   const xml = readFileSync(flowXmlPath, "utf8");
-  const config = extractSelectorConfigFromFlowXml(xml, "Custom_Picker");
+  const config = extractSelectorConfigFromFlowXml(xml, "Custom_Selector");
 
   assert(
-    config.label === "E2E Custom Picker Edited",
-    `Saved picker label did not persist. Got ${config.label}`
+    config.label === "E2E Custom Selector Edited",
+    `Saved Selector label did not persist. Got ${config.label}`
   );
   assert(
     config.dataSource === "custom",
-    `Saved picker dataSource did not persist. Got ${config.dataSource}`
+    `Saved Selector dataSource did not persist. Got ${config.dataSource}`
   );
   assert(
     config.layout === "grid",
-    `Saved picker layout did not persist. Got ${config.layout}`
+    `Saved Selector layout did not persist. Got ${config.layout}`
   );
   assert(
     config.selectionMode === "single",
-    `Saved picker selectionMode did not persist. Got ${config.selectionMode}`
+    `Saved Selector selectionMode did not persist. Got ${config.selectionMode}`
   );
   assert(
     config.gridConfig?.size === "medium",
-    `Saved picker tile size did not persist. Got ${config.gridConfig?.size}`
+    `Saved Selector tile size did not persist. Got ${config.gridConfig?.size}`
   );
   assert(
     config.gridConfig?.aspectRatio === "1:1",
-    `Saved picker aspect ratio did not persist. Got ${config.gridConfig?.aspectRatio}`
+    `Saved Selector aspect ratio did not persist. Got ${config.gridConfig?.aspectRatio}`
   );
   assert(
     config.gridConfig?.iconDecor === "ring",
-    `Saved picker icon decoration did not persist. Got ${config.gridConfig?.iconDecor}`
+    `Saved Selector icon decoration did not persist. Got ${config.gridConfig?.iconDecor}`
   );
   assert(
     config.gridConfig?.patternSelectedTone === "brand",
-    `Saved picker selected pattern color did not persist. Got ${config.gridConfig?.patternSelectedTone}`
+    `Saved Selector selected pattern color did not persist. Got ${config.gridConfig?.patternSelectedTone}`
   );
   assert(
     config.gridConfig?.surfaceHoverTone === "teal",
-    `Saved picker hover surface color did not persist. Got ${config.gridConfig?.surfaceHoverTone}`
+    `Saved Selector hover surface color did not persist. Got ${config.gridConfig?.surfaceHoverTone}`
   );
 
   return { flowXmlPath, config };
@@ -881,7 +864,7 @@ async function dispatchCardSelect(page, ariaLabel, value) {
 
 async function activateStudioSection(page, key) {
   const studio = page.locator("c-newton-selector-flow-cpe-studio").first();
-  await assertVisible(studio, "template picker studio");
+  await assertVisible(studio, "Newton Selector studio");
   await dispatchCustomEvent(studio, "sectionclick", key);
   await page.waitForTimeout(250);
 }
@@ -907,7 +890,9 @@ async function dispatchToggle(locator, checked) {
 
 async function dispatchSelectionMode(page, mode) {
   const toggle = page
-    .locator("c-newton-selector-flow-cpe-behavior-config c-newton-selector-flow-cpe-toggle")
+    .locator(
+      "c-newton-selector-flow-cpe-behavior-config c-newton-selector-flow-cpe-toggle"
+    )
     .first();
   await dispatchToggle(toggle, mode === "multi");
 }
@@ -987,13 +972,6 @@ async function exerciseInvalidBuilderStates(page) {
     "collection mode missing label field mapping"
   );
 
-  await dispatchCardSelect(page, "Data source", "stringCollection");
-  await assertModalSaveDisabled(
-    page,
-    /Flow String/i,
-    "string list mode missing Flow String collection binding"
-  );
-
   await dispatchCardSelect(page, "Data source", "custom");
   await dispatchConfigPatch(dataConfig, ["custom", "items"], []);
   await assertModalSaveDisabled(
@@ -1007,14 +985,10 @@ async function exerciseInvalidBuilderStates(page) {
     name: "sourceRecordsRef",
     value: ""
   });
-  await dispatchCustomEvent(dataConfig, "refchange", {
-    name: "sourceStringsRef",
-    value: ""
-  });
   await dispatchConfigPatch(
     dataConfig,
     ["custom", "items"],
-    customConfig("E2E Custom Picker").custom.items
+    customConfig("E2E Custom Selector").custom.items
   );
   await assertModalSaveEnabled(page, "invalid-state recovery");
 }
@@ -1025,13 +999,7 @@ async function exerciseAllConfigChapters(page) {
 
   await exerciseInvalidBuilderStates(page);
 
-  const sourceModes = [
-    "picklist",
-    "collection",
-    "stringCollection",
-    "sobject",
-    "custom"
-  ];
+  const sourceModes = ["picklist", "collection", "sobject", "custom"];
   for (const value of sourceModes) {
     await dispatchCardSelect(page, "Data source", value);
   }
@@ -1040,7 +1008,10 @@ async function exerciseAllConfigChapters(page) {
   const contentFields = page.locator(
     "c-newton-selector-flow-cpe-content-config c-newton-selector-flow-cpe-resource-selector"
   );
-  await dispatchValueChanged(contentFields.nth(0), "E2E Custom Picker Edited");
+  await dispatchValueChanged(
+    contentFields.nth(0),
+    "E2E Custom Selector Edited"
+  );
   await dispatchValueChanged(
     contentFields.nth(1),
     "Edited help text from Playwright."
@@ -1244,7 +1215,7 @@ async function openBuilderAndConfigure(page, builderUrl) {
   await page.screenshot({ path: screenshots.screenEditor, fullPage: true });
 
   await page
-    .getByText("Custom_Picker", { exact: true })
+    .getByText("Custom_Selector", { exact: true })
     .last()
     .click({ force: true, timeout: 60000 });
   await assertPageText(
@@ -1269,7 +1240,7 @@ async function openBuilderAndConfigure(page, builderUrl) {
   await saveButton.click();
   await assertPageText(
     page,
-    /E2E Custom Picker Edited|Custom items|Current configuration/i,
+    /E2E Custom Selector Edited|Custom items|Current configuration/i,
     "CPE summary after modal save",
     60000
   );
@@ -1291,7 +1262,7 @@ async function openBuilderAndConfigure(page, builderUrl) {
     JSON.stringify({
       step: "metadata-verified",
       flowXmlPath: persisted.flowXmlPath,
-      customPickerLabel: persisted.config.label
+      customSelectorLabel: persisted.config.label
     })
   );
 }
@@ -1339,7 +1310,7 @@ async function runtimeContextAfterDebug(page, context) {
         .locator("body")
         .innerText({ timeout: 3000 })
         .catch(() => "");
-      if (/E2E Custom Picker Edited|E2E Custom Picker/i.test(text)) {
+      if (/E2E Custom Selector Edited|E2E Custom Selector/i.test(text)) {
         return { page: candidate, context: frameOrPage };
       }
     }
@@ -1365,31 +1336,25 @@ async function runDebugFlow(page, browserContext) {
 
   await assertPageText(
     runtimeScope,
-    /E2E Custom Picker Edited|E2E Custom Picker/i,
-    "debug runtime custom picker"
+    /E2E Custom Selector Edited|E2E Custom Selector/i,
+    "debug runtime custom Selector"
   );
   await assertPageText(
     runtimeScope,
-    /E2E String Picker/i,
-    "debug runtime string picker"
+    /E2E Rating Selector/i,
+    "debug runtime rating Selector"
   );
   await assertPageText(
     runtimeScope,
-    /E2E Rating Picker/i,
-    "debug runtime rating picker"
+    /E2E SOQL Lead Selector/i,
+    "debug runtime SOQL Selector"
   );
   await assertPageText(
     runtimeScope,
-    /E2E SOQL Lead Picker/i,
-    "debug runtime SOQL picker"
-  );
-  await assertPageText(
-    runtimeScope,
-    /E2E Collection Lead Picker/i,
-    "debug runtime collection picker"
+    /E2E Collection Lead Selector/i,
+    "debug runtime collection Selector"
   );
   await assertPageText(runtimeScope, /E2E Custom Alpha/i, "custom option");
-  await assertPageText(runtimeScope, /E2E String Alpha/i, "string option");
   await assertPageText(
     runtimeScope,
     /NewtonE2EAlpha/i,
@@ -1402,7 +1367,6 @@ async function runDebugFlow(page, browserContext) {
 
   for (const text of [
     "E2E Custom Alpha",
-    "E2E String Alpha",
     "Hot",
     `NewtonE2EAlpha${RUN_ID}`,
     `NewtonE2EBeta${RUN_ID}`
@@ -1492,5 +1456,6 @@ try {
     await browser.close().catch(() => {});
   }
   deleteTemporaryLeads();
+  deleteFlowFixture();
   restoreFlowFixture();
 }

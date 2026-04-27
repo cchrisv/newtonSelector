@@ -172,8 +172,8 @@
   --newton-group-min-w: 7rem;
 }
 
-/* Fallback preview (collection mode) — renders the molecule directly so we
-   synthesize the label + help text manually above it. Matches the organism's
+/* Fallback preview (collection mode) — renders the data selector directly so we
+   synthesize the label + help text manually above it. Matches the data selector's
    baked-in heading styles. */
 .newton-studio__preview-label {
   font-size: var(--slds-g-font-scale-2, 1rem);

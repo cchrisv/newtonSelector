@@ -17,12 +17,6 @@ export const SOURCE_TILES = [
     icon: "layers"
   },
   {
-    value: "stringCollection",
-    label: "String list",
-    sublabel: "Flow text collection",
-    icon: "quote"
-  },
-  {
     value: "sobject",
     label: "SOQL query",
     sublabel: "Custom WHERE + ordering",
@@ -76,7 +70,7 @@ export const LAYOUT_TILES = [
   {
     value: "dualListbox",
     label: "Multi-select",
-    sublabel: "Salesforce picker pattern",
+    sublabel: "Salesforce selector pattern",
     icon: "list-checks"
   }
 ];

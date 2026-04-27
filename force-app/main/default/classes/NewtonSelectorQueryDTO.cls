@@ -1,3 +1,4 @@
+/** @description Query configuration used by the Newton Selector runtime Apex service. */
 public class NewtonSelectorQueryDTO {
   @AuraEnabled
   public String sObjectApiName;
@@ -25,6 +26,7 @@ public class NewtonSelectorQueryDTO {
   @AuraEnabled
   public String helpField;
 
+  /** @description Structured WHERE-clause filter supplied by the Flow CPE. */
   public class Filter {
     @AuraEnabled
     public String fieldApiName;
@@ -36,6 +38,7 @@ public class NewtonSelectorQueryDTO {
     public List<String> values;
   }
 
+  /** @description Applies runtime defaults for order, limit, label, and value fields. */
   public NewtonSelectorQueryDTO() {
     this.orderByDirection = 'ASC';
     this.queryLimit = 50;

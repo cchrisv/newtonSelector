@@ -3,8 +3,7 @@ import LightningModal from "lightning/modal";
 import {
   mergeSelectorConfig,
   recordCollectionSamples,
-  setConfigPath,
-  stringCollectionSamples
+  setConfigPath
 } from "c/newtonSelectorFlowCpeUtilityConfigState";
 import {
   activeSectionIssueList,
@@ -17,13 +16,11 @@ import { SECTIONS } from "c/newtonSelectorFlowCpeUtilityConfigOptions";
 export default class NewtonSelectorFlowCpeConfigModal extends LightningModal {
   @api initialConfig;
   @api initialSourceRecordsRef;
-  @api initialSourceStringsRef;
   @api builderContext;
   @api automaticOutputVariables;
 
   @track _config;
   @track _sourceRecordsRef = "";
-  @track _sourceStringsRef = "";
   @track _activeSection = "data";
   @track _forcedPreviewState = "";
   @track _leftWidth = 320;
@@ -31,7 +28,6 @@ export default class NewtonSelectorFlowCpeConfigModal extends LightningModal {
   connectedCallback() {
     this._config = mergeSelectorConfig(this.initialConfig);
     this._sourceRecordsRef = this.initialSourceRecordsRef || "";
-    this._sourceStringsRef = this.initialSourceStringsRef || "";
   }
 
   handleConfigPatch(event) {
@@ -46,13 +42,11 @@ export default class NewtonSelectorFlowCpeConfigModal extends LightningModal {
   handleRefChange(event) {
     const { name, value } = event.detail || {};
     if (name === "sourceRecordsRef") this._sourceRecordsRef = value || "";
-    if (name === "sourceStringsRef") this._sourceStringsRef = value || "";
   }
 
   get sectionRefs() {
     return {
-      sourceRecordsRef: this._sourceRecordsRef,
-      sourceStringsRef: this._sourceStringsRef
+      sourceRecordsRef: this._sourceRecordsRef
     };
   }
 
@@ -112,14 +106,6 @@ export default class NewtonSelectorFlowCpeConfigModal extends LightningModal {
     return this.activeSectionIssues.length > 0;
   }
 
-  get stringCollectionSampleStrings() {
-    return stringCollectionSamples(
-      this._config,
-      this.builderContext,
-      this._sourceStringsRef
-    );
-  }
-
   get recordCollectionSampleRecords() {
     return recordCollectionSamples(
       this._config,
@@ -164,8 +150,7 @@ export default class NewtonSelectorFlowCpeConfigModal extends LightningModal {
     this.close({
       action: "save",
       config: this._config,
-      sourceRecordsRef: this._sourceRecordsRef,
-      sourceStringsRef: this._sourceStringsRef
+      sourceRecordsRef: this._sourceRecordsRef
     });
   }
 

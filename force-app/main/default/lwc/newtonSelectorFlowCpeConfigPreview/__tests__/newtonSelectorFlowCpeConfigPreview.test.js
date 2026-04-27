@@ -87,7 +87,7 @@ function mount(config = FULL_CONFIG, extra = {}) {
   return element;
 }
 
-function getPreviewPicker(element) {
+function getPreviewSelector(element) {
   return element.shadowRoot.querySelector("c-newton-selector-data-selector");
 }
 
@@ -102,70 +102,70 @@ describe("c-newton-selector-flow-cpe-config-preview", () => {
     const element = mount();
     await Promise.resolve();
 
-    const picker = getPreviewPicker(element);
-    expect(picker).not.toBeNull();
-    expect(picker.label).toBe("Choose records");
-    expect(picker.helpText).toBe("Use the best fit.");
-    expect(picker.fieldLevelHelp).toBe("Shown beside the label.");
-    expect(picker.sourceType).toBe("custom");
-    expect(picker.layout).toBe("grid");
-    expect(picker.selectionMode).toBe("multi");
-    expect(picker.required).toBe(true);
-    expect(picker.minSelections).toBe(1);
-    expect(picker.maxSelections).toBe(3);
-    expect(picker.enableSearch).toBe(true);
-    expect(picker.showSelectAll).toBe(true);
-    expect(picker.includeNoneOption).toBe(true);
-    expect(picker.noneOptionLabel).toBe("No pick");
-    expect(picker.noneOptionPosition).toBe("end");
-    expect(picker.emptyStateMessage).toBe("Nothing here.");
-    expect(picker.errorStateMessage).toBe("Load failed.");
-    expect(picker.customConfig).toEqual(FULL_CONFIG.custom);
-    expect(picker.overrides).toEqual(FULL_CONFIG.overrides);
-    expect(picker.displayConfig).toEqual(FULL_CONFIG.display);
+    const selector = getPreviewSelector(element);
+    expect(selector).not.toBeNull();
+    expect(selector.label).toBe("Choose records");
+    expect(selector.helpText).toBe("Use the best fit.");
+    expect(selector.fieldLevelHelp).toBe("Shown beside the label.");
+    expect(selector.sourceType).toBe("custom");
+    expect(selector.layout).toBe("grid");
+    expect(selector.selectionMode).toBe("multi");
+    expect(selector.required).toBe(true);
+    expect(selector.minSelections).toBe(1);
+    expect(selector.maxSelections).toBe(3);
+    expect(selector.enableSearch).toBe(true);
+    expect(selector.showSelectAll).toBe(true);
+    expect(selector.includeNoneOption).toBe(true);
+    expect(selector.noneOptionLabel).toBe("No pick");
+    expect(selector.noneOptionPosition).toBe("end");
+    expect(selector.emptyStateMessage).toBe("Nothing here.");
+    expect(selector.errorStateMessage).toBe("Load failed.");
+    expect(selector.customConfig).toEqual(FULL_CONFIG.custom);
+    expect(selector.overrides).toEqual(FULL_CONFIG.overrides);
+    expect(selector.displayConfig).toEqual(FULL_CONFIG.display);
 
-    expect(picker.gridMinWidth).toBe("18rem");
-    expect(picker.gapHorizontal).toBe("8");
-    expect(picker.gapVertical).toBe("6");
-    expect(picker.marginTop).toBe("1");
-    expect(picker.marginRight).toBe("2");
-    expect(picker.marginBottom).toBe("3");
-    expect(picker.marginLeft).toBe("4");
-    expect(picker.paddingTop).toBe("5");
-    expect(picker.paddingRight).toBe("6");
-    expect(picker.paddingBottom).toBe("7");
-    expect(picker.paddingLeft).toBe("8");
-    expect(picker.size).toBe("large");
-    expect(picker.aspectRatio).toBe("16:9");
-    expect(picker.badgePosition).toBe("top-left");
-    expect(picker.badgeVariant).toBe("custom");
-    expect(picker.badgeShape).toBe("square");
-    expect(picker.badgeVariantHex).toBe("#123456");
-    expect(picker.columns).toBe(3);
-    expect(picker.selectionIndicator).toBe("pulse");
-    expect(picker.elevation).toBe("elevated");
-    expect(picker.pattern).toBe("dots");
-    expect(picker.patternTone).toBe("brand");
-    expect(picker.patternToneHex).toBe("#234567");
-    expect(picker.cornerStyle).toBe("brackets");
-    expect(picker.cornerTone).toBe("success");
-    expect(picker.cornerToneHex).toBe("#345678");
-    expect(picker.surfaceStyle).toBe("gradient-radial");
-    expect(picker.surfaceTone).toBe("teal");
-    expect(picker.surfaceToneHex).toBe("#456789");
-    expect(picker.iconDecor).toBe("none");
-    expect(picker.iconStyle).toBe("outlined");
-    expect(picker.iconShading).toBe("gradient");
-    expect(picker.iconTone).toBe("warning");
-    expect(picker.iconToneHex).toBe("#56789a");
-    expect(picker.iconGlyphTone).toBe("pink");
-    expect(picker.iconGlyphToneHex).toBe("#6789ab");
-    expect(picker.iconSize).toBe("small");
-    expect(picker.showIcons).toBe(false);
-    expect(picker.showBadges).toBe(false);
+    expect(selector.gridMinWidth).toBe("18rem");
+    expect(selector.gapHorizontal).toBe("8");
+    expect(selector.gapVertical).toBe("6");
+    expect(selector.marginTop).toBe("1");
+    expect(selector.marginRight).toBe("2");
+    expect(selector.marginBottom).toBe("3");
+    expect(selector.marginLeft).toBe("4");
+    expect(selector.paddingTop).toBe("5");
+    expect(selector.paddingRight).toBe("6");
+    expect(selector.paddingBottom).toBe("7");
+    expect(selector.paddingLeft).toBe("8");
+    expect(selector.size).toBe("large");
+    expect(selector.aspectRatio).toBe("16:9");
+    expect(selector.badgePosition).toBe("top-left");
+    expect(selector.badgeVariant).toBe("custom");
+    expect(selector.badgeShape).toBe("square");
+    expect(selector.badgeVariantHex).toBe("#123456");
+    expect(selector.columns).toBe(3);
+    expect(selector.selectionIndicator).toBe("pulse");
+    expect(selector.elevation).toBe("elevated");
+    expect(selector.pattern).toBe("dots");
+    expect(selector.patternTone).toBe("brand");
+    expect(selector.patternToneHex).toBe("#234567");
+    expect(selector.cornerStyle).toBe("brackets");
+    expect(selector.cornerTone).toBe("success");
+    expect(selector.cornerToneHex).toBe("#345678");
+    expect(selector.surfaceStyle).toBe("gradient-radial");
+    expect(selector.surfaceTone).toBe("teal");
+    expect(selector.surfaceToneHex).toBe("#456789");
+    expect(selector.iconDecor).toBe("none");
+    expect(selector.iconStyle).toBe("outlined");
+    expect(selector.iconShading).toBe("gradient");
+    expect(selector.iconTone).toBe("warning");
+    expect(selector.iconToneHex).toBe("#56789a");
+    expect(selector.iconGlyphTone).toBe("pink");
+    expect(selector.iconGlyphToneHex).toBe("#6789ab");
+    expect(selector.iconSize).toBe("small");
+    expect(selector.showIcons).toBe(false);
+    expect(selector.showBadges).toBe(false);
   });
 
-  it("routes fallback preview through the data picker so config still applies", async () => {
+  it("routes fallback preview through the data selector so config still applies", async () => {
     const element = mount({
       ...FULL_CONFIG,
       dataSource: "collection",
@@ -173,13 +173,13 @@ describe("c-newton-selector-flow-cpe-config-preview", () => {
     });
     await Promise.resolve();
 
-    const picker = getPreviewPicker(element);
-    expect(picker.sourceType).toBe("custom");
-    expect(picker.layout).toBe("horizontal");
-    expect(picker.customConfig.items).toHaveLength(4);
-    expect(picker.includeNoneOption).toBe(true);
-    expect(picker.displayConfig).toEqual(FULL_CONFIG.display);
-    expect(picker.selectionIndicator).toBe("pulse");
+    const selector = getPreviewSelector(element);
+    expect(selector.sourceType).toBe("custom");
+    expect(selector.layout).toBe("horizontal");
+    expect(selector.customConfig.items).toHaveLength(4);
+    expect(selector.includeNoneOption).toBe(true);
+    expect(selector.displayConfig).toEqual(FULL_CONFIG.display);
+    expect(selector.selectionIndicator).toBe("pulse");
   });
 
   it("emits preview state changes from the preview tabs", () => {

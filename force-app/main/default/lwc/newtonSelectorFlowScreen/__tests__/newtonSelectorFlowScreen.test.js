@@ -14,7 +14,7 @@ function mount(configOverrides = {}) {
   const el = createElement("c-newton-selector-flow-screen", {
     is: NewtonSelectorFlowScreen
   });
-  el.pickerConfigJson = JSON.stringify(config);
+  el.selectorConfigJson = JSON.stringify(config);
   document.body.appendChild(el);
   return el;
 }
@@ -25,31 +25,31 @@ describe("c-newton-selector-flow-screen", () => {
       document.body.removeChild(document.body.firstChild);
   });
 
-  it("parses pickerConfigJson and passes to organism", async () => {
+  it("parses selectorConfigJson and passes to data selector", async () => {
     const el = mount();
     await Promise.resolve();
-    const organism = el.shadowRoot.querySelector(
+    const dataSelector = el.shadowRoot.querySelector(
       "c-newton-selector-data-selector"
     );
-    expect(organism).not.toBeNull();
-    expect(organism.label).toBe("Choose one");
-    expect(organism.sourceType).toBe("custom");
+    expect(dataSelector).not.toBeNull();
+    expect(dataSelector.label).toBe("Choose one");
+    expect(dataSelector.sourceType).toBe("custom");
   });
 
   it("falls back to defaults on malformed JSON", async () => {
     const el = createElement("c-newton-selector-flow-screen", {
       is: NewtonSelectorFlowScreen
     });
-    el.pickerConfigJson = "{ not valid";
+    el.selectorConfigJson = "{ not valid";
     document.body.appendChild(el);
     await Promise.resolve();
-    const organism = el.shadowRoot.querySelector(
+    const dataSelector = el.shadowRoot.querySelector(
       "c-newton-selector-data-selector"
     );
-    expect(organism.sourceType).toBe("custom");
+    expect(dataSelector.sourceType).toBe("custom");
   });
 
-  it("validate() delegates to the organism", async () => {
+  it("validate() delegates to the data selector", async () => {
     const el = mount();
     await Promise.resolve();
     const result = el.validate();
@@ -66,12 +66,12 @@ describe("c-newton-selector-flow-screen", () => {
   it("selectionCount is 1 after single-select value change", async () => {
     const el = mount({ selectionMode: "single" });
     await Promise.resolve();
-    const organism = el.shadowRoot.querySelector(
+    const dataSelector = el.shadowRoot.querySelector(
       "c-newton-selector-data-selector"
     );
     const events = [];
     el.addEventListener("flowattributechange", (e) => events.push(e));
-    organism.dispatchEvent(
+    dataSelector.dispatchEvent(
       new CustomEvent("valuechange", {
         detail: {
           value: "a",
@@ -94,10 +94,10 @@ describe("c-newton-selector-flow-screen", () => {
   it("selectionCount is 0 when single-select is cleared", async () => {
     const el = mount({ selectionMode: "single" });
     await Promise.resolve();
-    const organism = el.shadowRoot.querySelector(
+    const dataSelector = el.shadowRoot.querySelector(
       "c-newton-selector-data-selector"
     );
-    organism.dispatchEvent(
+    dataSelector.dispatchEvent(
       new CustomEvent("valuechange", {
         detail: {
           value: "",
@@ -116,12 +116,12 @@ describe("c-newton-selector-flow-screen", () => {
   it("selectionCount reflects multi-select count", async () => {
     const el = mount({ selectionMode: "multi" });
     await Promise.resolve();
-    const organism = el.shadowRoot.querySelector(
+    const dataSelector = el.shadowRoot.querySelector(
       "c-newton-selector-data-selector"
     );
     const events = [];
     el.addEventListener("flowattributechange", (e) => events.push(e));
-    organism.dispatchEvent(
+    dataSelector.dispatchEvent(
       new CustomEvent("valuechange", {
         detail: {
           value: "",

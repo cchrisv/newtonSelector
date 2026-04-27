@@ -54,26 +54,6 @@ export function normalizeSObjectDTO(dtos) {
   }));
 }
 
-// Normalize a Flow String[] collection — each string becomes a tile where the
-// label and value are both the string itself. Other slots (icon, sublabel,
-// badge, helpText) are empty and can be populated via item overrides.
-export function normalizeStringCollection(strings) {
-  if (!Array.isArray(strings)) return [];
-  return strings.map((raw, index) => {
-    const str = raw == null ? EMPTY : String(raw);
-    return {
-      id: `str-${index}-${str}`,
-      label: str,
-      sublabel: EMPTY,
-      icon: EMPTY,
-      badge: EMPTY,
-      helpText: EMPTY,
-      value: str,
-      disabled: false
-    };
-  });
-}
-
 export function normalizeCustom(customItems) {
   if (!Array.isArray(customItems)) return [];
   return customItems

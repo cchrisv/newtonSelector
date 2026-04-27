@@ -147,10 +147,10 @@ export default class NewtonSelectorFlowCpeIconSelector extends LightningElement 
   get hasSelection() {
     return Boolean(this._value);
   }
-  get pickerClass() {
+  get selectorClass() {
     return this._isOpen
-      ? "newton-selector-icon-picker newton-selector-icon-picker_open"
-      : "newton-selector-icon-picker";
+      ? "newton-selector-icon-selector newton-selector-icon-selector_open"
+      : "newton-selector-icon-selector";
   }
   get comboboxPanelClass() {
     return this._isOpen

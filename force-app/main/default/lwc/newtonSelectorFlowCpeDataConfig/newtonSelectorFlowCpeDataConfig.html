@@ -135,67 +135,6 @@
             ></c-newton-selector-flow-cpe-choice-control>
           </template>
 
-          <template lwc:if={isStringCollectionMode}>
-            <c-newton-selector-flow-cpe-resource-selector
-              name="sourceStrings"
-              label="Flow String[] variable"
-              required
-              builder-context-filter-type="String"
-              builder-context-filter-collection-boolean
-              value={_sourceStringsRef}
-              onvaluechanged={handleStringCollectionVariableChange}
-              builder-context={builderContext}
-              automatic-output-variables={automaticOutputVariables}
-            ></c-newton-selector-flow-cpe-resource-selector>
-            <p class="slds-text-body_small slds-text-color_weak">
-              Each string becomes a tile where the label and value are both the
-              string. Use <strong>Item overrides</strong> below to layer on
-              icons, sublabels, badges, or help text per value.
-            </p>
-
-            <!-- Resolved values detected at design time: read-only pill preview.
-                                 These power both the live preview AND the per-item overrides
-                                 list — the admin doesn't have to type anything. -->
-            <template lwc:if={hasResolvedStringValues}>
-              <section
-                class="newton-string-preview"
-                aria-label="Detected string values"
-              >
-                <header class="newton-string-preview__head">
-                  <span class="newton-string-preview__eyebrow"
-                    >From variable</span
-                  >
-                  <span class="newton-string-preview__count"
-                    >{resolvedStringCountLabel}</span
-                  >
-                </header>
-                <div class="newton-string-preview__list" role="list">
-                  <template for:each={resolvedStringValuePreview} for:item="v">
-                    <span
-                      key={v.key}
-                      role="listitem"
-                      class="newton-string-preview__pill"
-                      >{v.label}</span
-                    >
-                  </template>
-                </div>
-              </section>
-            </template>
-
-            <!-- Fallback: the bound variable has no design-time default values
-                                 (or nothing is bound yet). Let the admin seed the overrides list
-                                 manually so per-item config still works. -->
-            <template lwc:else>
-              <lightning-textarea
-                label="Known values (for per-item overrides)"
-                placeholder="Hot, Warm, Cold"
-                field-level-help="This variable has no design-time default values. Enter the values you expect at runtime (comma or newline separated) to enable per-item overrides and preview. Runtime still uses the bound Flow variable's actual values."
-                value={stringCollectionSampleRaw}
-                onchange={handleStringSamplesChange}
-              ></lightning-textarea>
-            </template>
-          </template>
-
           <template lwc:if={isCollectionMode}>
             <c-newton-selector-flow-cpe-resource-selector
               name="sourceRecords"
@@ -267,15 +206,6 @@
                 ></c-newton-selector-flow-cpe-field-selector>
               </div>
             </section>
-            <template lwc:if={hasCollectionObjectApiName}>
-              <lightning-textarea
-                label="Known item values (for per-item overrides)"
-                placeholder="001..., 003..."
-                field-level-help="Record collections resolve at runtime. Enter expected mapped values, one per line or comma separated, to configure per-item overrides that will apply when runtime records have those values."
-                value={collectionSampleValuesRaw}
-                onchange={handleCollectionSamplesChange}
-              ></lightning-textarea>
-            </template>
           </template>
 
           <template lwc:if={isSObjectMode}>
@@ -303,17 +233,23 @@
                   </h4>
                 </div>
                 <div class="newton-query-preview__actions">
-                  <lightning-button-icon
-                    icon-name="utility:copy"
-                    alternative-text="Copy query"
+                  <button
+                    type="button"
+                    class="slds-button slds-button_icon slds-button_icon-border-filled"
                     title="Copy query"
-                    variant="border-filled"
                     onclick={handleCopyQueryPreview}
-                  ></lightning-button-icon>
+                  >
+                    <c-newton-selector-icon
+                      name="copy"
+                      size="x-small"
+                      box="button"
+                      alternative-text=""
+                    ></c-newton-selector-icon>
+                    <span class="slds-assistive-text">Copy query</span>
+                  </button>
                   <lightning-button
                     variant="brand-outline"
                     label={validateQueryLabel}
-                    icon-name="utility:check"
                     onclick={handleValidateQuery}
                     disabled={_isValidatingQuery}
                   ></lightning-button>
@@ -321,7 +257,7 @@
               </header>
               <pre
                 class="newton-query-preview__code"
-              ><code>{sobjectQueryPreview}</code></pre>
+              ><code aria-label="Generated SOQL preview"><template for:each={highlightedSobjectQueryPreview} for:item="token"><span key={token.key} class={token.className}>{token.text}</span></template></code></pre>
               <p class={queryValidationClass} role="status">
                 {queryValidationMessage}
               </p>
@@ -774,8 +710,8 @@
               ></lightning-button>
             </div>
 
-            <template lwc:if={isPicklistMode}>
-              <template lwc:if={hasPicklistValues}>
+            <template lwc:if={isValueBackedOverrideMode}>
+              <template lwc:if={hasFilteredOverrideRows}>
                 <div class="newton-studio__overrides">
                   <template for:each={overrideRows} for:item="row">
                     <article key={row.value} class={row.rowClass}>
@@ -933,7 +869,7 @@
                             <div class="newton-studio__override-loading">
                               <lightning-spinner
                                 size="small"
-                                alternative-text="Loading Flow resource pickers"
+                                alternative-text="Loading Flow resource selectors"
                               ></lightning-spinner>
                             </div>
                           </template>
@@ -954,7 +890,7 @@
               </template>
               <template lwc:else>
                 <p class="slds-text-body_regular slds-text-color_weak">
-                  Pick an object and picklist field above to load values here.
+                  Configure source values above to load override rows here.
                 </p>
               </template>
             </template>
@@ -1118,7 +1054,7 @@
                             <div class="newton-studio__override-loading">
                               <lightning-spinner
                                 size="small"
-                                alternative-text="Loading Flow resource pickers"
+                                alternative-text="Loading Flow resource selectors"
                               ></lightning-spinner>
                             </div>
                           </template>
@@ -1159,191 +1095,6 @@
                     {_sampleLoadError}
                   </p>
                 </template>
-              </template>
-            </template>
-
-            <template lwc:if={isCollectionOrStringCollectionMode}>
-              <template lwc:if={hasFilteredOverrideRows}>
-                <div class="newton-studio__overrides">
-                  <template for:each={visibleOverrideRows} for:item="row">
-                    <article key={row.value} class={row.rowClass}>
-                      <header class="newton-studio__overrides-head">
-                        <label class="slds-checkbox">
-                          <input
-                            type="checkbox"
-                            checked={row.isSelected}
-                            data-value={row.value}
-                            onchange={handleToggleSelectRow}
-                          />
-                          <span class="slds-checkbox_faux"></span>
-                          <span class="slds-assistive-text">Select row</span>
-                        </label>
-                        <button
-                          type="button"
-                          class="newton-studio__overrides-trigger"
-                          data-value={row.value}
-                          onclick={handleToggleExpandRow}
-                          aria-expanded={row.ariaExpanded}
-                          aria-label={row.assistiveLabel}
-                        >
-                          <span
-                            class="newton-studio__overrides-preview"
-                            aria-hidden="true"
-                          >
-                            <c-newton-selector-icon
-                              name={row.previewIcon}
-                              size="small"
-                              box="option"
-                              alternative-text=""
-                            ></c-newton-selector-icon>
-                          </span>
-                          <span class="newton-studio__overrides-copy">
-                            <span class="newton-studio__overrides-name"
-                              >{row.previewLabel}</span
-                            >
-                            <span class="newton-studio__overrides-value"
-                              >{row.value}</span
-                            >
-                            <span
-                              class="newton-overrides-summary"
-                              aria-hidden="true"
-                            >
-                              <template
-                                for:each={row.summaryItems}
-                                for:item="item"
-                              >
-                                <span key={item.key} class={item.className}
-                                  >{item.label}</span
-                                >
-                              </template>
-                            </span>
-                          </span>
-                        </button>
-                        <div class="newton-studio__overrides-actions">
-                          <template lwc:if={row.hasCustom}>
-                            <lightning-button-icon
-                              icon-name="rotate-cw"
-                              size="x-small"
-                              variant="bare"
-                              alternative-text="Reset"
-                              data-value={row.value}
-                              onclick={handleClearOverride}
-                            ></lightning-button-icon>
-                          </template>
-                          <button
-                            type="button"
-                            class="newton-studio__overrides-chev"
-                            data-value={row.value}
-                            onclick={handleToggleExpandRow}
-                            aria-expanded={row.ariaExpanded}
-                            aria-label={row.expandLabel}
-                            title={row.expandLabel}
-                          >
-                            <c-newton-selector-icon
-                              name="chevron-down"
-                              size="x-small"
-                              box="button"
-                              alternative-text=""
-                            ></c-newton-selector-icon>
-                          </button>
-                        </div>
-                      </header>
-                      <template lwc:if={row.isExpanded}>
-                        <div class="newton-studio__overrides-grid">
-                          <c-newton-selector-flow-cpe-toggle
-                            label="Hide option"
-                            active-label="Hidden"
-                            inactive-label="Visible"
-                            checked={row.hidden}
-                            data-value={row.value}
-                            message-toggle-active="Hidden from preview and runtime"
-                            message-toggle-inactive="Visible in preview and runtime"
-                            ontoggle={handleOverrideHiddenToggle}
-                          ></c-newton-selector-flow-cpe-toggle>
-                          <c-newton-selector-flow-cpe-icon-selector
-                            label="Icon"
-                            mode="combobox"
-                            value={row.icon}
-                            data-value={row.value}
-                            oniconselect={handleOverrideIconChange}
-                          ></c-newton-selector-flow-cpe-icon-selector>
-                          <template lwc:if={row.areEditorsReady}>
-                            <c-newton-selector-flow-cpe-resource-selector
-                              name="label"
-                              label="Label override"
-                              value={row.label}
-                              data-value={row.value}
-                              data-field="label"
-                              builder-context={builderContext}
-                              automatic-output-variables={automaticOutputVariables}
-                              builder-context-filter-type="String"
-                              allow-hard-code-reference
-                              onvaluechanged={handleOverrideCellChange}
-                            ></c-newton-selector-flow-cpe-resource-selector>
-                            <c-newton-selector-flow-cpe-resource-selector
-                              name="sublabel"
-                              label="Subtitle"
-                              value={row.sublabel}
-                              data-value={row.value}
-                              data-field="sublabel"
-                              builder-context={builderContext}
-                              automatic-output-variables={automaticOutputVariables}
-                              builder-context-filter-type="String"
-                              allow-hard-code-reference
-                              onvaluechanged={handleOverrideCellChange}
-                            ></c-newton-selector-flow-cpe-resource-selector>
-                            <c-newton-selector-flow-cpe-resource-selector
-                              name="badge"
-                              label="Badge"
-                              value={row.badge}
-                              data-value={row.value}
-                              data-field="badge"
-                              builder-context={builderContext}
-                              automatic-output-variables={automaticOutputVariables}
-                              builder-context-filter-type="String"
-                              allow-hard-code-reference
-                              onvaluechanged={handleOverrideCellChange}
-                            ></c-newton-selector-flow-cpe-resource-selector>
-                            <c-newton-selector-flow-cpe-resource-selector
-                              name="helpText"
-                              label="Help text"
-                              value={row.helpText}
-                              data-value={row.value}
-                              data-field="helpText"
-                              builder-context={builderContext}
-                              automatic-output-variables={automaticOutputVariables}
-                              builder-context-filter-type="String"
-                              allow-hard-code-reference
-                              onvaluechanged={handleOverrideCellChange}
-                            ></c-newton-selector-flow-cpe-resource-selector>
-                          </template>
-                          <template lwc:else>
-                            <div class="newton-studio__override-loading">
-                              <lightning-spinner
-                                size="small"
-                                alternative-text="Loading Flow resource pickers"
-                              ></lightning-spinner>
-                            </div>
-                          </template>
-                        </div>
-                      </template>
-                    </article>
-                  </template>
-                </div>
-                <template lwc:if={hasMoreOverrideRows}>
-                  <div class="slds-m-top_small slds-align_absolute-center">
-                    <lightning-button
-                      variant="neutral"
-                      label={showMoreOverrideRowsLabel}
-                      onclick={handleShowMoreOverrideRows}
-                    ></lightning-button>
-                  </div>
-                </template>
-              </template>
-              <template lwc:else>
-                <p class="slds-text-body_regular slds-text-color_weak">
-                  {overrideEmptyMessage}
-                </p>
               </template>
             </template>
           </template>

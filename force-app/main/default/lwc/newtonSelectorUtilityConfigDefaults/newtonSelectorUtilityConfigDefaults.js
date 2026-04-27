@@ -217,7 +217,6 @@ export function defaultSelectorConfig() {
     },
     collection: {
       objectApiName: "",
-      sampleValues: "",
       fieldMap: {
         label: "",
         sublabel: "",
@@ -241,7 +240,6 @@ export function defaultSelectorConfig() {
       helpField: ""
     },
     custom: { items: [] },
-    stringCollection: { sampleValues: "" },
     includeNoneOption: false,
     noneOptionLabel: "--None--",
     noneOptionPosition: "start",

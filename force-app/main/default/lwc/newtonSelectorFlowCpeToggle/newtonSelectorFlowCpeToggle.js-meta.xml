@@ -2,7 +2,7 @@
 <LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>66.0</apiVersion>
     <isExposed>false</isExposed>
-    <masterLabel>Professor Flow | Toggle</masterLabel>
+    <masterLabel>Newton Selector Flow CPE | Toggle</masterLabel>
     <description
   >Reusable toggle switch. Emits a plain {name, checked} event by default; set wireFormat="cb-sentinel" for the legacy Flow CPE CB_TRUE/CB_FALSE shape.</description>
 </LightningComponentBundle>

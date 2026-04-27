@@ -46,17 +46,26 @@
           <p
             class="slds-card__header-subtitle slds-text-body_small slds-text-color_weak"
           >
-            Arrange the same customizable cards into different picker layouts.
+            Arrange the same customizable cards into different selector layouts.
           </p>
         </div>
         <span class="newton-card__action">
-          <lightning-button-icon
-            icon-name="utility:refresh"
-            variant="border-filled"
-            alternative-text="Reset layout styling to SLDS defaults"
+          <button
+            type="button"
+            class="slds-button slds-button_icon slds-button_icon-border-filled"
             title="Reset layout styling to SLDS defaults"
             onclick={handleResetLayoutDefaults}
-          ></lightning-button-icon>
+          >
+            <c-newton-selector-icon
+              name="rotate-ccw"
+              size="x-small"
+              box="button"
+              alternative-text=""
+            ></c-newton-selector-icon>
+            <span class="slds-assistive-text">
+              Reset layout styling to SLDS defaults
+            </span>
+          </button>
         </span>
         <lightning-helptext
           class="newton-card__help"
@@ -404,7 +413,7 @@
                   <input
                     id={row.hexId}
                     type="color"
-                    class="newton-hex-row__picker"
+                    class="newton-hex-row__selector"
                     data-hex-key={row.hexKey}
                     value={row.hexValue}
                     oninput={handleSurfaceStateToneHexChange}
@@ -569,7 +578,7 @@
                   <input
                     id={row.hexId}
                     type="color"
-                    class="newton-hex-row__picker"
+                    class="newton-hex-row__selector"
                     data-hex-key={row.hexKey}
                     value={row.hexValue}
                     oninput={handlePatternStateToneHexChange}
@@ -673,7 +682,7 @@
               <input
                 id="corner-tone-hex"
                 type="color"
-                class="newton-hex-row__picker"
+                class="newton-hex-row__selector"
                 value={cornerToneHexValue}
                 oninput={handleCornerToneHexChange}
                 onchange={handleCornerToneHexChange}
@@ -960,7 +969,7 @@
                   <input
                     id="icon-tone-hex"
                     type="color"
-                    class="newton-hex-row__picker"
+                    class="newton-hex-row__selector"
                     value={iconToneHexValue}
                     oninput={handleIconToneHexChange}
                     onchange={handleIconToneHexChange}
@@ -1007,7 +1016,7 @@
                   <input
                     id="icon-glyph-tone-hex"
                     type="color"
-                    class="newton-hex-row__picker"
+                    class="newton-hex-row__selector"
                     value={iconGlyphToneHexValue}
                     oninput={handleIconGlyphToneHexChange}
                     onchange={handleIconGlyphToneHexChange}
@@ -1161,7 +1170,7 @@
                   <input
                     id="badge-variant-hex"
                     type="color"
-                    class="newton-hex-row__picker"
+                    class="newton-hex-row__selector"
                     value={badgeVariantHexValue}
                     oninput={handleBadgeVariantHexChange}
                     onchange={handleBadgeVariantHexChange}
@@ -1421,7 +1430,7 @@
             <p
               class="slds-card__header-subtitle slds-text-body_small slds-text-color_weak"
             >
-              Space around the whole picker at runtime.
+              Space around the whole selector at runtime.
             </p>
           </div>
           <span class="newton-card__action">

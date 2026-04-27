@@ -1,11 +1,11 @@
-@isTest
+@IsTest
 private class NewtonSelectorRuntimeControllerTest {
-  @testSetup
+  @TestSetup
   static void setup() {
     NewtonSelectorTestDataFactory.createAccounts(3, 'Technology');
   }
 
-  @isTest
+  @IsTest
   static void queryItemsSuccess() {
     NewtonSelectorQueryDTO config = NewtonSelectorTestDataFactory.buildSimpleAccountConfig();
     String configJson = JSON.serialize(config);
@@ -19,7 +19,7 @@ private class NewtonSelectorRuntimeControllerTest {
     System.assertEquals(3, dtos.size());
   }
 
-  @isTest
+  @IsTest
   static void queryItemsRejectsBlankConfig() {
     Test.startTest();
     try {
@@ -31,7 +31,7 @@ private class NewtonSelectorRuntimeControllerTest {
     Test.stopTest();
   }
 
-  @isTest
+  @IsTest
   static void queryItemsRejectsMalformedJson() {
     Test.startTest();
     try {
@@ -43,7 +43,7 @@ private class NewtonSelectorRuntimeControllerTest {
     Test.stopTest();
   }
 
-  @isTest
+  @IsTest
   static void queryItemsAppliesWhereClause() {
     NewtonSelectorQueryDTO config = NewtonSelectorTestDataFactory.buildSimpleAccountConfig();
     config.whereClause = 'Industry = \'Technology\'';
@@ -64,7 +64,7 @@ private class NewtonSelectorRuntimeControllerTest {
     );
   }
 
-  @isTest
+  @IsTest
   static void queryItemsBulk() {
     NewtonSelectorTestDataFactory.createAccounts(200, 'Bulk');
     NewtonSelectorQueryDTO config = NewtonSelectorTestDataFactory.buildSimpleAccountConfig();
@@ -81,7 +81,7 @@ private class NewtonSelectorRuntimeControllerTest {
     System.assertEquals(200, dtos.size());
   }
 
-  @isTest
+  @IsTest
   static void validateQueryAcceptsValidConfig() {
     NewtonSelectorQueryDTO config = NewtonSelectorTestDataFactory.buildSimpleAccountConfig();
     config.whereClause = 'Industry = \'Technology\'';
@@ -97,7 +97,7 @@ private class NewtonSelectorRuntimeControllerTest {
     System.assert(result.soql.contains('LIMIT 1'));
   }
 
-  @isTest
+  @IsTest
   static void validateQueryRejectsBadWhereClause() {
     NewtonSelectorQueryDTO config = NewtonSelectorTestDataFactory.buildSimpleAccountConfig();
     config.whereClause = 'DefinitelyMissing__c = \'Nope\'';
@@ -112,7 +112,7 @@ private class NewtonSelectorRuntimeControllerTest {
     System.assert(String.isNotBlank(result.message));
   }
 
-  @isTest
+  @IsTest
   static void validateQueryRejectsBlankConfig() {
     Test.startTest();
     NewtonSelectorQueryValidationResultDTO result = NewtonSelectorRuntimeController.validateQuery(
@@ -124,7 +124,7 @@ private class NewtonSelectorRuntimeControllerTest {
     System.assert(result.message.contains('required'));
   }
 
-  @isTest
+  @IsTest
   static void validateQueryRejectsMalformedJson() {
     Test.startTest();
     NewtonSelectorQueryValidationResultDTO result = NewtonSelectorRuntimeController.validateQuery(
@@ -133,10 +133,10 @@ private class NewtonSelectorRuntimeControllerTest {
     Test.stopTest();
 
     System.assertEquals(false, result.valid);
-    System.assertEquals('Invalid picker configuration.', result.message);
+    System.assertEquals('Invalid selector configuration.', result.message);
   }
 
-  @isTest
+  @IsTest
   static void validateQueryHandlesUnexpectedErrors() {
     Test.startTest();
     NewtonSelectorQueryValidationResultDTO result = NewtonSelectorRuntimeController.validateQuery(

@@ -107,7 +107,6 @@ const DEFAULT_CONFIG = {
 
 export default class NewtonSelectorFlowScreen extends LightningElement {
   @api sourceRecords;
-  @api sourceStrings;
 
   _value = "";
   _values = [];
@@ -117,23 +116,23 @@ export default class NewtonSelectorFlowScreen extends LightningElement {
   _allValues = [];
   _allLabels = [];
   _autoAdvanceId;
-  _pickerConfigJson = "";
+  _selectorConfigJson = "";
   _lastParsedJson = null;
 
   @track _config = DEFAULT_CONFIG;
 
   // Flow can re-assign @api props after mount (debug runs, back/next,
   // conditional screens, resume). With a plain `@api field` the value
-  // would update but our _config wouldn't re-parse — the picker would
+  // would update but our _config wouldn't re-parse — the selector would
   // flash correct then revert to DEFAULT. Setter keeps them in sync, and
   // the `v !== this._lastParsedJson` guard prevents transient empty
   // pushes from wiping the last good config.
   @api
-  get pickerConfigJson() {
-    return this._pickerConfigJson;
+  get selectorConfigJson() {
+    return this._selectorConfigJson;
   }
-  set pickerConfigJson(v) {
-    this._pickerConfigJson = v || "";
+  set selectorConfigJson(v) {
+    this._selectorConfigJson = v || "";
     this.parseSelectorConfig(v);
   }
 
@@ -178,7 +177,7 @@ export default class NewtonSelectorFlowScreen extends LightningElement {
   // Read-through outputs — Flow can bind these to downstream screens /
   // flows / email templates. selectedLabel/Labels reflect the label text of
   // the current selection; allValues/allLabels reflect every option the
-  // picker rendered (post filter/sort/limit, including the None tile).
+  // selector rendered (post filter/sort/limit, including the None tile).
   @api
   get selectedLabel() {
     return this._selectedLabel;
@@ -216,11 +215,11 @@ export default class NewtonSelectorFlowScreen extends LightningElement {
   }
 
   connectedCallback() {
-    // Most of the time Flow has already set pickerConfigJson via the
+    // Most of the time Flow has already set selectorConfigJson via the
     // setter before mount. This is a safety net for bootstrap ordering
     // edge cases where the setter hasn't fired yet.
-    if (this._pickerConfigJson && !this._lastParsedJson) {
-      this.parseSelectorConfig(this._pickerConfigJson);
+    if (this._selectorConfigJson && !this._lastParsedJson) {
+      this.parseSelectorConfig(this._selectorConfigJson);
     }
   }
 
@@ -288,11 +287,6 @@ export default class NewtonSelectorFlowScreen extends LightningElement {
     return {
       records: Array.isArray(this.sourceRecords) ? this.sourceRecords : [],
       fieldMap: baseFieldMap
-    };
-  }
-  get stringCollectionConfig() {
-    return {
-      values: Array.isArray(this.sourceStrings) ? this.sourceStrings : []
     };
   }
   get overrides() {
@@ -408,8 +402,8 @@ export default class NewtonSelectorFlowScreen extends LightningElement {
   get iconGlyphToneHex() {
     return this.gridCfg.iconGlyphToneHex || "";
   }
-  // Picker-wide icon glyph size. 'auto' means "scale with tile size" —
-  // the atom's existing behavior. Explicit values (small/medium/large/etc.)
+  // Selector-wide icon glyph size. 'auto' means "scale with tile size" —
+  // the tile's existing behavior. Explicit values (small/medium/large/etc.)
   // pin the glyph regardless of tile size.
   get iconSize() {
     const raw = this.gridCfg.iconSize;
@@ -490,8 +484,8 @@ export default class NewtonSelectorFlowScreen extends LightningElement {
     return Number.isFinite(n) && n > 0 ? n : undefined;
   }
 
-  // Margin + padding — empty string means "no override"; the molecule
-  // resolves via tokenToCss, and the atom falls back to size-based padding.
+  // Margin + padding — empty string means "no override"; the group renderer
+  // resolves via tokenToCss, and the choice tile falls back to size-based padding.
   get marginTop() {
     return this.gridCfg.margin?.top ?? "";
   }
@@ -560,9 +554,9 @@ export default class NewtonSelectorFlowScreen extends LightningElement {
     }
   }
 
-  // Organism fires `itemschange` whenever the rendered set of options
-  // changes (picklist load, string collection refresh, filter by parent,
-  // etc.). We mirror that back out as FlowAttributeChangeEvents so admins
+  // Data selector fires `itemschange` whenever the rendered set of options
+  // changes (picklist load, record collection refresh, filter by parent, etc.).
+  // We mirror that back out as FlowAttributeChangeEvents so admins
   // can bind allValues/allLabels to downstream screens, email templates,
   // or Apex actions.
   handleItemsChange(event) {
@@ -587,11 +581,11 @@ export default class NewtonSelectorFlowScreen extends LightningElement {
 
   @api
   validate() {
-    const organism = this.template.querySelector(
+    const dataSelector = this.template.querySelector(
       "c-newton-selector-data-selector"
     );
-    if (!organism) return { isValid: true };
-    const result = organism.validate();
+    if (!dataSelector) return { isValid: true };
+    const result = dataSelector.validate();
     if (!result.isValid && this._config.customErrorMessage) {
       return { isValid: false, errorMessage: this._config.customErrorMessage };
     }

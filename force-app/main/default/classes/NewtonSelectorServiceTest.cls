@@ -1,11 +1,11 @@
-@isTest
+@IsTest
 private class NewtonSelectorServiceTest {
-  @testSetup
+  @TestSetup
   static void setup() {
     NewtonSelectorTestDataFactory.createAccounts(5, 'Technology');
   }
 
-  @isTest
+  @IsTest
   static void fetchItemsReturnsNormalizedDtos() {
     NewtonSelectorQueryDTO config = NewtonSelectorTestDataFactory.buildSimpleAccountConfig();
 
@@ -26,7 +26,7 @@ private class NewtonSelectorServiceTest {
     }
   }
 
-  @isTest
+  @IsTest
   static void fetchItemsRejectsNullConfig() {
     Test.startTest();
     try {
@@ -38,7 +38,7 @@ private class NewtonSelectorServiceTest {
     Test.stopTest();
   }
 
-  @isTest
+  @IsTest
   static void fetchItemsHandlesBulkMapping() {
     NewtonSelectorTestDataFactory.createAccounts(195, 'Retail');
     NewtonSelectorQueryDTO config = NewtonSelectorTestDataFactory.buildSimpleAccountConfig();

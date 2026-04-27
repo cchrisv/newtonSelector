@@ -6,7 +6,6 @@ import {
   normalizeCollection,
   normalizeSObjectDTO,
   normalizeCustom,
-  normalizeStringCollection,
   applyOverrides,
   applyDisplay,
   MANUAL_INPUT_VALUE
@@ -16,7 +15,6 @@ const SOURCE_PICKLIST = "picklist";
 const SOURCE_COLLECTION = "collection";
 const SOURCE_SOBJECT = "sobject";
 const SOURCE_CUSTOM = "custom";
-const SOURCE_STRING_COLLECTION = "stringCollection";
 
 export default class NewtonSelectorDataSelector extends LightningElement {
   @api label = "";
@@ -39,7 +37,6 @@ export default class NewtonSelectorDataSelector extends LightningElement {
   @track _collectionConfig;
   @track _sobjectConfig;
   @track _customConfig;
-  @track _stringCollectionConfig;
   @track _displayConfig;
   _selectionMode = "single";
   _includeNoneOption = false;
@@ -190,17 +187,6 @@ export default class NewtonSelectorDataSelector extends LightningElement {
   }
 
   @api
-  get stringCollectionConfig() {
-    return this._stringCollectionConfig;
-  }
-  set stringCollectionConfig(v) {
-    this._stringCollectionConfig = v;
-    if (this._connectedFlag && this._sourceType === SOURCE_STRING_COLLECTION) {
-      this.loadStringCollection();
-    }
-  }
-
-  @api
   get displayConfig() {
     return this._displayConfig;
   }
@@ -211,9 +197,9 @@ export default class NewtonSelectorDataSelector extends LightningElement {
     }
   }
 
-  // Grid layout knobs (passed through to molecule). Gaps / margin / padding
+  // Grid layout knobs (passed through to the group renderer). Gaps / margin / padding
   // accept SLDS 2 spacing token values ('none', '1'-'12') or passthrough CSS
-  // (e.g. '1rem'). The molecule converts via tokenToCss().
+  // (e.g. '1rem'). The group renderer converts via tokenToCss().
   @api gridMinWidth = "7.5rem";
   @api gapHorizontal = "2";
   @api gapVertical = "2";
@@ -226,7 +212,7 @@ export default class NewtonSelectorDataSelector extends LightningElement {
   @api paddingBottom;
   @api paddingLeft;
   @api size = "small";
-  // Picker-wide glyph size. 'large' (or unset) defers to atom's tile-size
+  // Selector-wide glyph size. 'large' (or unset) defers to the tile size
   // default; explicit small/xx-small/etc. pins the glyph regardless.
   @api iconSize = "large";
   @api aspectRatio = "1:1";
@@ -387,8 +373,7 @@ export default class NewtonSelectorDataSelector extends LightningElement {
       [SOURCE_PICKLIST]: this.loadPicklist,
       [SOURCE_COLLECTION]: this.loadCollection,
       [SOURCE_SOBJECT]: this.loadSObject,
-      [SOURCE_CUSTOM]: this.loadCustom,
-      [SOURCE_STRING_COLLECTION]: this.loadStringCollection
+      [SOURCE_CUSTOM]: this.loadCustom
     };
     const handler = handlers[this._sourceType];
     if (handler) {
@@ -424,7 +409,9 @@ export default class NewtonSelectorDataSelector extends LightningElement {
       ...item,
       record: records[idx]
     }));
-    this.commitItems(this.enrichItems(withRecords));
+    this.commitItems(
+      this.enrichItems(withRecords, { applyItemOverrides: false })
+    );
     this._isLoading = false;
     this._errorMessage = "";
   }
@@ -455,16 +442,11 @@ export default class NewtonSelectorDataSelector extends LightningElement {
     this._errorMessage = "";
   }
 
-  loadStringCollection() {
-    const strings = this._stringCollectionConfig?.values || [];
-    this._rawData = strings;
-    this.commitItems(this.enrichItems(normalizeStringCollection(strings)));
-    this._isLoading = false;
-    this._errorMessage = "";
-  }
-
-  enrichItems(items) {
-    const overridden = applyOverrides(items, this._overrides);
+  enrichItems(items, options = {}) {
+    const applyItemOverrides = options.applyItemOverrides !== false;
+    const overridden = applyItemOverrides
+      ? applyOverrides(items, this._overrides)
+      : items;
     const displayed = applyDisplay(overridden, this._displayConfig);
     // "None" option. Empty value means "no pick", which Flow treats as null
     // on output. Inserted after sort+limit so its position is deterministic
@@ -536,7 +518,9 @@ export default class NewtonSelectorDataSelector extends LightningElement {
         ...item,
         record: records[idx]
       }));
-      this.commitItems(this.enrichItems(withRecords));
+      this.commitItems(
+        this.enrichItems(withRecords, { applyItemOverrides: false })
+      );
     } else if (this._sourceType === SOURCE_SOBJECT) {
       const dtos = this._rawData || [];
       const normalized = normalizeSObjectDTO(dtos);
@@ -547,10 +531,6 @@ export default class NewtonSelectorDataSelector extends LightningElement {
       this.commitItems(this.enrichItems(withRecords));
     } else if (this._sourceType === SOURCE_CUSTOM) {
       this.commitItems(this.enrichItems(normalizeCustom(this._rawData)));
-    } else if (this._sourceType === SOURCE_STRING_COLLECTION) {
-      this.commitItems(
-        this.enrichItems(normalizeStringCollection(this._rawData))
-      );
     }
   }
 
@@ -630,7 +610,7 @@ export default class NewtonSelectorDataSelector extends LightningElement {
     );
   }
 
-  get selectedValuesForMolecule() {
+  get selectedValuesForGroup() {
     if (this.previewMode && !this._value && this._values.length === 0) {
       const previewValues = (this._items || [])
         .filter(
@@ -660,7 +640,7 @@ export default class NewtonSelectorDataSelector extends LightningElement {
       : values;
   }
 
-  get manualValueForMolecule() {
+  get manualValueForGroup() {
     if (this._manualInputValue) return this._manualInputValue;
     if (this.selectionMode === "single" && this.isManualValue(this._value)) {
       return this._value;
@@ -769,7 +749,7 @@ export default class NewtonSelectorDataSelector extends LightningElement {
     if (!this.hasActiveManualSelection && !this.isManualValue(this._value)) {
       return { isValid: true };
     }
-    const value = (this.manualValueForMolecule || "").trim();
+    const value = (this.manualValueForGroup || "").trim();
     if (!value) {
       return {
         isValid: false,

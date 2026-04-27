@@ -16,7 +16,6 @@ const BASE_CONFIG = {
     maxLength: null
   },
   collection: { fieldMap: { label: "Name" } },
-  stringCollection: { sampleValues: "" },
   picklist: { objectApiName: "Account", fieldApiName: "Type" },
   sobject: { sObjectApiName: "Account", labelField: "Name" }
 };
@@ -48,15 +47,6 @@ describe("c-newton-selector-flow-cpe-utility-config-validation", () => {
       "Map at least the Label field for the collection."
     );
     expect(totalIssueCount(config, refs, "errors")).toBe(1);
-  });
-
-  it("blocks string list mode without a Flow String collection binding", () => {
-    const issues = sectionIssues("data", {
-      ...BASE_CONFIG,
-      dataSource: "stringCollection"
-    });
-
-    expect(issues.errors).toContain("Bind a Flow String[] variable.");
   });
 
   it("blocks custom mode without items and still warns about incomplete rows", () => {

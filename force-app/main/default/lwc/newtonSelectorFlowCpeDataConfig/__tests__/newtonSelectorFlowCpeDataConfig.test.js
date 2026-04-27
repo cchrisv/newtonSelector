@@ -1,6 +1,6 @@
 import { createElement } from "lwc";
 import NewtonSelectorFlowCpeDataConfig from "c/newtonSelectorFlowCpeDataConfig";
-import { getObjectInfo } from "lightning/uiObjectInfoApi";
+import { getObjectInfo, getPicklistValues } from "lightning/uiObjectInfoApi";
 import searchLookupDatasetFieldsForObject from "@salesforce/apex/NewtonSelectorFlowCpeController.searchLookupDatasetFieldsForObject";
 import queryItems from "@salesforce/apex/NewtonSelectorRuntimeController.queryItems";
 
@@ -38,7 +38,6 @@ const BASE_CONFIG = {
   dataSource: "custom",
   picklist: {},
   collection: { fieldMap: {} },
-  stringCollection: { sampleValues: "Alpha\nBeta" },
   sobject: {
     sObjectApiName: "Account",
     labelField: "Name",
@@ -148,6 +147,10 @@ function byLabel(root, selector, label) {
   );
 }
 
+function overrideModeToggle(element) {
+  return element.shadowRoot.querySelector(".newton-studio__mode-control");
+}
+
 describe("c-newton-selector-flow-cpe-data-config events", () => {
   beforeEach(() => {
     searchLookupDatasetFieldsForObject.mockResolvedValue([]);
@@ -185,22 +188,8 @@ describe("c-newton-selector-flow-cpe-data-config events", () => {
       "{!records}"
     );
 
-    const stringElement = mount({
-      config: { ...BASE_CONFIG, dataSource: "stringCollection" }
-    });
-    const stringRefs = collect(stringElement, "refchange");
-    valueChanged(
-      stringElement.shadowRoot.querySelector(
-        "c-newton-selector-flow-cpe-resource-selector"
-      ),
-      "{!strings}"
-    );
-
     expect(collectionRefs).toEqual([
       { name: "sourceRecordsRef", value: "{!records}" }
-    ]);
-    expect(stringRefs).toEqual([
-      { name: "sourceStringsRef", value: "{!strings}" }
     ]);
   });
 
@@ -211,13 +200,13 @@ describe("c-newton-selector-flow-cpe-data-config events", () => {
     const patches = collect(element);
     const refs = collect(element, "refchange");
 
-    const collectionPicker = element.shadowRoot.querySelector(
+    const collectionselector = element.shadowRoot.querySelector(
       "c-newton-selector-flow-cpe-resource-selector"
     );
-    expect(collectionPicker.builderContextFilterType).toBe("SObject");
-    expect(collectionPicker.builderContextFilterCollectionBoolean).toBe(true);
+    expect(collectionselector.builderContextFilterType).toBe("SObject");
+    expect(collectionselector.builderContextFilterCollectionBoolean).toBe(true);
 
-    valueChanged(collectionPicker, "{!accounts}", {
+    valueChanged(collectionselector, "{!accounts}", {
       objectType: "Account",
       isCollection: true
     });
@@ -241,18 +230,17 @@ describe("c-newton-selector-flow-cpe-data-config events", () => {
         dataSource: "collection",
         collection: {
           objectApiName: "Contact",
-          fieldMap: { label: "Name", value: "Id" },
-          sampleValues: ""
+          fieldMap: { label: "Name", value: "Id" }
         }
       }
     });
 
-    const fieldPickers = element.shadowRoot.querySelectorAll(
+    const fieldselectors = element.shadowRoot.querySelectorAll(
       "c-newton-selector-flow-cpe-field-selector[data-field]"
     );
-    expect(fieldPickers).toHaveLength(6);
-    fieldPickers.forEach((picker) => {
-      expect(picker.objectApiName).toBe("Contact");
+    expect(fieldselectors).toHaveLength(6);
+    fieldselectors.forEach((selector) => {
+      expect(selector.objectApiName).toBe("Contact");
     });
   });
 
@@ -311,18 +299,22 @@ describe("c-newton-selector-flow-cpe-data-config events", () => {
 
   it("emits override and bulk override patches", async () => {
     const element = mount({
-      config: { ...BASE_CONFIG, dataSource: "stringCollection" }
+      config: {
+        ...BASE_CONFIG,
+        dataSource: "picklist",
+        picklist: { objectApiName: "Account", fieldApiName: "Rating" }
+      }
     });
     const patches = collect(element);
+    getPicklistValues.emit({
+      values: [
+        { label: "Alpha", value: "Alpha" },
+        { label: "Beta", value: "Beta" }
+      ]
+    });
+    await flushPromises();
 
-    toggle(
-      byLabel(
-        element.shadowRoot,
-        "c-newton-selector-flow-cpe-toggle",
-        "Per-item override mode"
-      ),
-      true
-    );
+    toggle(overrideModeToggle(element), true);
     await flushPromises();
 
     click(byLabel(element.shadowRoot, "lightning-button", "Select filtered"));
@@ -382,52 +374,26 @@ describe("c-newton-selector-flow-cpe-data-config events", () => {
     expect(patches.at(-1).value.overrides.Alpha).toBeUndefined();
   });
 
-  it("enables per-item overrides for mapped record collections using known values", async () => {
+  it("does not expose per-item overrides for record collections", async () => {
     const element = mount({
       config: {
         ...BASE_CONFIG,
         dataSource: "collection",
         collection: {
           objectApiName: "Account",
-          sampleValues: "001A\n001B",
           fieldMap: { label: "Name", value: "Id" }
         }
       }
     });
-    const patches = collect(element);
 
-    toggle(
+    expect(
       byLabel(
         element.shadowRoot,
         "c-newton-selector-flow-cpe-toggle",
         "Per-item override mode"
-      ),
-      true
-    );
-    await flushPromises();
-
-    expect(
-      element.shadowRoot.querySelector(
-        '.newton-studio__overrides-trigger[data-value="001A"]'
       )
-    ).not.toBeNull();
-
-    click(
-      element.shadowRoot.querySelector(
-        '.newton-studio__overrides-trigger[data-value="001A"]'
-      )
-    );
-    await flushPromises();
-    valueChanged(
-      element.shadowRoot.querySelector(
-        'c-newton-selector-flow-cpe-resource-selector[data-value="001A"][data-field="label"]'
-      ),
-      "Preferred Account"
-    );
-
-    expect(patches.at(-1).value.overrides["001A"].label).toBe(
-      "Preferred Account"
-    );
+    ).toBeUndefined();
+    expect(element.shadowRoot.textContent).not.toContain("Known item values");
   });
 
   it("keeps override rows lightweight and expands from the chevron", async () => {
@@ -435,9 +401,12 @@ describe("c-newton-selector-flow-cpe-data-config events", () => {
     const element = mount({
       config: {
         ...BASE_CONFIG,
-        dataSource: "stringCollection",
-        stringCollection: { sampleValues: values.join("\n") }
+        dataSource: "picklist",
+        picklist: { objectApiName: "Account", fieldApiName: "Rating" }
       }
+    });
+    getPicklistValues.emit({
+      values: values.map((value) => ({ label: value, value }))
     });
 
     await flushPromises();
@@ -445,14 +414,7 @@ describe("c-newton-selector-flow-cpe-data-config events", () => {
       element.shadowRoot.querySelector(".newton-studio__overrides-toolbar")
     ).toBeNull();
 
-    toggle(
-      byLabel(
-        element.shadowRoot,
-        "c-newton-selector-flow-cpe-toggle",
-        "Per-item override mode"
-      ),
-      true
-    );
+    toggle(overrideModeToggle(element), true);
     await flushPromises();
 
     expect(
@@ -494,17 +456,21 @@ describe("c-newton-selector-flow-cpe-data-config events", () => {
 
   it("shows bulk controls only when multiple override rows are selected", async () => {
     const element = mount({
-      config: { ...BASE_CONFIG, dataSource: "stringCollection" }
+      config: {
+        ...BASE_CONFIG,
+        dataSource: "picklist",
+        picklist: { objectApiName: "Account", fieldApiName: "Rating" }
+      }
     });
+    getPicklistValues.emit({
+      values: [
+        { label: "Alpha", value: "Alpha" },
+        { label: "Beta", value: "Beta" }
+      ]
+    });
+    await flushPromises();
 
-    toggle(
-      byLabel(
-        element.shadowRoot,
-        "c-newton-selector-flow-cpe-toggle",
-        "Per-item override mode"
-      ),
-      true
-    );
+    toggle(overrideModeToggle(element), true);
     await flushPromises();
 
     expect(element.shadowRoot.querySelector(".newton-studio__bulk")).toBeNull();
@@ -529,14 +495,7 @@ describe("c-newton-selector-flow-cpe-data-config events", () => {
       element.shadowRoot.querySelector(".newton-studio__bulk")
     ).not.toBeNull();
 
-    toggle(
-      byLabel(
-        element.shadowRoot,
-        "c-newton-selector-flow-cpe-toggle",
-        "Per-item override mode"
-      ),
-      false
-    );
+    toggle(overrideModeToggle(element), false);
     await flushPromises();
     expect(element.shadowRoot.querySelector(".newton-studio__bulk")).toBeNull();
   });
@@ -547,14 +506,7 @@ describe("c-newton-selector-flow-cpe-data-config events", () => {
       config: { ...BASE_CONFIG, dataSource: "sobject" }
     });
 
-    toggle(
-      byLabel(
-        element.shadowRoot,
-        "c-newton-selector-flow-cpe-toggle",
-        "Per-item override mode"
-      ),
-      true
-    );
+    toggle(overrideModeToggle(element), true);
     await flushPromises();
 
     click(byLabel(element.shadowRoot, "lightning-button", "Load sample rows"));
@@ -575,14 +527,7 @@ describe("c-newton-selector-flow-cpe-data-config events", () => {
       config: { ...BASE_CONFIG, dataSource: "sobject" }
     });
 
-    toggle(
-      byLabel(
-        element.shadowRoot,
-        "c-newton-selector-flow-cpe-toggle",
-        "Per-item override mode"
-      ),
-      true
-    );
+    toggle(overrideModeToggle(element), true);
     await flushPromises();
 
     click(byLabel(element.shadowRoot, "lightning-button", "Load sample rows"));
@@ -590,6 +535,45 @@ describe("c-newton-selector-flow-cpe-data-config events", () => {
     await flushPromises();
 
     expect(element.shadowRoot.textContent).toContain("No access");
+  });
+
+  it("renders SOQL preview with syntax-highlighted tokens", async () => {
+    const element = mount({
+      config: {
+        ...BASE_CONFIG,
+        dataSource: "sobject",
+        sobject: {
+          ...BASE_CONFIG.sobject,
+          whereClause: "Name LIKE 'Acme%' AND IsActive__c = TRUE",
+          orderByField: "Name",
+          orderByDirection: "ASC"
+        }
+      }
+    });
+    await flushPromises();
+
+    const code = element.shadowRoot.querySelector(
+      ".newton-query-preview__code code"
+    );
+    expect(code.textContent).toContain(
+      "SELECT Id, Name FROM Account WHERE Name LIKE 'Acme%' AND IsActive__c = TRUE ORDER BY Name ASC LIMIT 25"
+    );
+
+    const keywordTokens = [
+      ...code.querySelectorAll(".newton-query-preview__token_keyword")
+    ].map((node) => node.textContent);
+    expect(keywordTokens).toEqual(
+      expect.arrayContaining(["SELECT", "FROM", "WHERE", "LIKE", "AND"])
+    );
+    expect(
+      code.querySelector(".newton-query-preview__token_object").textContent
+    ).toBe("Account");
+    expect(
+      code.querySelector(".newton-query-preview__token_string").textContent
+    ).toBe("'Acme%'");
+    expect(
+      code.querySelector(".newton-query-preview__token_boolean").textContent
+    ).toBe("TRUE");
   });
 
   it("emits display sorting patches", () => {
@@ -624,7 +608,7 @@ describe("c-newton-selector-flow-cpe-data-config events", () => {
     expect(patches.at(-1).value.display.limit).toBe(3);
   });
 
-  it("hides the record type picker when the selected object has no record types", async () => {
+  it("hides the record type selector when the selected object has no record types", async () => {
     const element = mount({
       config: {
         ...BASE_CONFIG,
@@ -694,13 +678,13 @@ describe("c-newton-selector-flow-cpe-data-config events", () => {
     });
     await flushPromises();
 
-    const recordTypePicker = byLabel(
+    const recordTypeselector = byLabel(
       element.shadowRoot,
       "c-newton-selector-flow-cpe-choice-control",
       "Record Type"
     );
-    expect(recordTypePicker).not.toBeUndefined();
-    expect(recordTypePicker.items).toEqual(
+    expect(recordTypeselector).not.toBeUndefined();
+    expect(recordTypeselector.items).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
           label: "Default (Business)",
@@ -714,12 +698,12 @@ describe("c-newton-selector-flow-cpe-data-config events", () => {
         expect.objectContaining({ label: "Partner", value: "012Partner" })
       ])
     );
-    expect(recordTypePicker.value).not.toBe("");
+    expect(recordTypeselector.value).not.toBe("");
 
-    valueChange(recordTypePicker, recordTypePicker.value);
+    valueChange(recordTypeselector, recordTypeselector.value);
     expect(patches.at(-1).value.picklist.recordTypeId).toBe("");
 
-    valueChange(recordTypePicker, "012Partner");
+    valueChange(recordTypeselector, "012Partner");
     expect(patches.at(-1).value.picklist.recordTypeId).toBe("012Partner");
   });
 });

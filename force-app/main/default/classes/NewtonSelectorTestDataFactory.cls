@@ -1,9 +1,21 @@
-@isTest
+@IsTest
+/** @description Test data helpers for Newton Selector Apex tests. */
 public class NewtonSelectorTestDataFactory {
+  /**
+   * @description Creates Account test records in the Technology industry.
+   * @param count Number of Accounts to create.
+   * @return Inserted Account records.
+   */
   public static List<Account> createAccounts(Integer count) {
     return createAccounts(count, 'Technology');
   }
 
+  /**
+   * @description Creates Account test records with the supplied industry.
+   * @param count Number of Accounts to create.
+   * @param industry Account Industry value.
+   * @return Inserted Account records.
+   */
   public static List<Account> createAccounts(Integer count, String industry) {
     List<Account> accounts = new List<Account>();
     for (Integer i = 0; i < count; i++) {
@@ -20,6 +32,10 @@ public class NewtonSelectorTestDataFactory {
     return accounts;
   }
 
+  /**
+   * @description Creates a standard user for sharing and user-mode tests.
+   * @return Inserted standard User.
+   */
   public static User createStandardUser() {
     Profile p = [SELECT Id FROM Profile WHERE Name = 'Standard User' LIMIT 1];
     String uniq = String.valueOf(System.currentTimeMillis());
@@ -39,6 +55,10 @@ public class NewtonSelectorTestDataFactory {
     return u;
   }
 
+  /**
+   * @description Builds the standard Account query config used by runtime Apex tests.
+   * @return Account selector query config.
+   */
   public static NewtonSelectorQueryDTO buildSimpleAccountConfig() {
     NewtonSelectorQueryDTO config = new NewtonSelectorQueryDTO();
     config.sObjectApiName = 'Account';

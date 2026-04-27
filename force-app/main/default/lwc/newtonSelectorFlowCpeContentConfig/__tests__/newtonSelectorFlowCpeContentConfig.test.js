@@ -39,21 +39,21 @@ describe("c-newton-selector-flow-cpe-content-config events", () => {
     }
   });
 
-  it("emits content resource picker patches from rendered controls", () => {
+  it("emits content resource selector patches from rendered controls", () => {
     const element = mount();
     const patches = collect(element);
-    const pickers = [
+    const controls = [
       ...element.shadowRoot.querySelectorAll(
         "c-newton-selector-flow-cpe-resource-selector"
       )
     ];
 
-    expect(pickers).toHaveLength(5);
-    valueChanged(pickers[0], "New label");
-    valueChanged(pickers[1], "New help");
-    valueChanged(pickers[2], "Tooltip");
-    valueChanged(pickers[3], "Nothing here");
-    valueChanged(pickers[4], "Load failed");
+    expect(controls).toHaveLength(5);
+    valueChanged(controls[0], "New label");
+    valueChanged(controls[1], "New help");
+    valueChanged(controls[2], "Tooltip");
+    valueChanged(controls[3], "Nothing here");
+    valueChanged(controls[4], "Load failed");
 
     expect(patches).toEqual([
       { path: ["label"], value: "New label" },

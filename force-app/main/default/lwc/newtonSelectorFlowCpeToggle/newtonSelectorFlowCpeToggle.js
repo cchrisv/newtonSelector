@@ -13,7 +13,7 @@ const WIRE_BOOLEAN = "boolean";
 const WIRE_CB_SENTINEL = "cb-sentinel";
 
 /**
- * Reusable two-state setting atom.
+ * Reusable two-state setting control.
  *
  * Default emits a plain `{ name, checked }` detail on a `toggle` event. Set
  * `wireFormat="cb-sentinel"` to emit the legacy Flow Builder CPE protocol shape

@@ -56,20 +56,10 @@ const VALID_CONFIG = {
   selectionMode: "single",
   layout: "grid",
   helpText: "Pick carefully",
-  custom: { items: [{ label: "One", value: "one" }] },
-  stringCollection: { sampleValues: "Alpha\nBeta" }
+  custom: { items: [{ label: "One", value: "one" }] }
 };
 
-const BUILDER_CONTEXT = {
-  variables: [
-    {
-      name: "availableStrings",
-      dataType: "String",
-      isCollection: true,
-      value: ["Builder A", "Builder B"]
-    }
-  ]
-};
+const BUILDER_CONTEXT = { variables: [] };
 
 const AUTOMATIC_OUTPUTS = [{ name: "selectedLabel", dataType: "String" }];
 
@@ -112,7 +102,6 @@ describe("c-newton-selector-flow-cpe-config-modal", () => {
     const element = mount({
       initialConfig: VALID_CONFIG,
       initialSourceRecordsRef: "{!records}",
-      initialSourceStringsRef: "{!strings}",
       builderContext: BUILDER_CONTEXT,
       automaticOutputVariables: AUTOMATIC_OUTPUTS
     });
@@ -130,7 +119,6 @@ describe("c-newton-selector-flow-cpe-config-modal", () => {
 
     expect(data.config.dataSource).toBe("custom");
     expect(data.sourceRecordsRef).toBe("{!records}");
-    expect(data.sourceStringsRef).toBe("{!strings}");
     expect(content.config.label).toBe("Choose one");
     expect(behavior.config.selectionMode).toBe("single");
     expect(appearance.config.layout).toBe("grid");
@@ -189,18 +177,10 @@ describe("c-newton-selector-flow-cpe-config-modal", () => {
     expect(appearance.config.selectionMode).toBe("multi");
   });
 
-  it("handles string ref changes and ignores unknown refs", async () => {
-    const element = mount({
-      initialConfig: VALID_CONFIG,
-      initialSourceStringsRef: "{!oldStrings}"
-    });
+  it("ignores unknown ref changes", async () => {
+    const element = mount({ initialConfig: VALID_CONFIG });
     const data = child(element, "c-newton-selector-flow-cpe-data-config");
 
-    data.dispatchEvent(
-      new CustomEvent("refchange", {
-        detail: { name: "sourceStringsRef", value: "{!newStrings}" }
-      })
-    );
     data.dispatchEvent(
       new CustomEvent("refchange", {
         detail: { name: "otherRef", value: "{!ignored}" }
@@ -209,7 +189,6 @@ describe("c-newton-selector-flow-cpe-config-modal", () => {
     await flush();
 
     const nextData = child(element, "c-newton-selector-flow-cpe-data-config");
-    expect(nextData.sourceStringsRef).toBe("{!newStrings}");
     expect(nextData.sourceRecordsRef).toBe("");
   });
 
@@ -252,10 +231,6 @@ describe("c-newton-selector-flow-cpe-config-modal", () => {
       nextStudio.sections.find((section) => section.key === "content").active
     ).toBe(true);
     expect(nextPreview.forcedState).toBe("empty");
-    expect(nextPreview.stringCollectionSampleStrings).toEqual([
-      "Alpha",
-      "Beta"
-    ]);
 
     nextPreview.dispatchEvent(
       new CustomEvent("previewstatechange", { detail: "empty" })
@@ -300,12 +275,6 @@ describe("c-newton-selector-flow-cpe-config-modal", () => {
       "Label field"
     ],
     [
-      "string list mode has no Flow String collection binding",
-      { ...VALID_CONFIG, dataSource: "stringCollection" },
-      {},
-      "Flow String"
-    ],
-    [
       "custom mode has no options",
       { ...VALID_CONFIG, dataSource: "custom", custom: { items: [] } },
       {},
@@ -348,16 +317,14 @@ describe("c-newton-selector-flow-cpe-config-modal", () => {
   it("preserves save and cancel payloads", () => {
     const element = mount({
       initialConfig: VALID_CONFIG,
-      initialSourceRecordsRef: "{!records}",
-      initialSourceStringsRef: "{!strings}"
+      initialSourceRecordsRef: "{!records}"
     });
     const buttons = element.shadowRoot.querySelectorAll("lightning-button");
     buttons[1].click();
     expect(mockClose).toHaveBeenCalledWith({
       action: "save",
       config: expect.objectContaining({ dataSource: "custom" }),
-      sourceRecordsRef: "{!records}",
-      sourceStringsRef: "{!strings}"
+      sourceRecordsRef: "{!records}"
     });
 
     buttons[0].click();

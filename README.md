@@ -32,7 +32,7 @@
 
 Drop the `Professor Flow | Newton Selector` component onto any Flow Screen and the CPE walks you through:
 
-1. Where to get the options (picklist, record collection, SOQL query, static list, or a text collection)
+1. Where to get the options (picklist, record collection, SOQL query, or static list)
 2. How to display them (grid, list, horizontal ribbon, picklist/dropdown, radio cards, card columns, or dual-listbox-style transfer)
 3. How they should look (size, aspect ratio, icons, badges, patterns, elevation, spacing, surfaces, and selected states)
 4. Whether to allow a manual "Other" value alongside sourced options
@@ -44,7 +44,7 @@ Drop the `Professor Flow | Newton Selector` component onto any Flow Screen and t
 
 | Capability              | Detail                                                                                                                                         |
 | ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| **5 data sources**      | Picklist field, Record collection, String collection, SOQL query, Custom static list                                                           |
+| **4 data sources**      | Picklist field, Record collection, SOQL query, Custom static list                                                                              |
 | **7 layouts**           | Grid, List, Horizontal ribbon, Picklist/dropdown, Radio cards, Columns, Dual-listbox-style transfer                                            |
 | **Selection modes**     | Single and Multi (with configurable min/max)                                                                                                   |
 | **Auto-advance**        | Automatically navigates to the next screen after a single selection                                                                            |
@@ -53,7 +53,7 @@ Drop the `Professor Flow | Newton Selector` component onto any Flow Screen and t
 | **None option**         | Configurable --None-- tile that clears the selection (position: start or end)                                                                  |
 | **Manual input**        | Optional "Other" choice with configurable label and min/max character rules                                                                    |
 | **9 output variables**  | value, values, selectedRecord, selectedRecords, selectedLabel, selectedLabels, allValues, allLabels, selectionCount                            |
-| **Item overrides**      | Per-item label, icon, badge, and help text overrides layered on top of any data source                                                         |
+| **Item overrides**      | Per-item label, icon, badge, and help text overrides for picklist and SOQL-backed options                                                      |
 | **Sort and limit**      | Sort by label, value, or source order; optional result cap                                                                                     |
 | **Required validation** | Block flow navigation with a configurable error message                                                                                        |
 | **SLDS 2-oriented UI**  | Uses SLDS utilities, design tokens, accessibility patterns, and the SLDS linter. Warning-level SLDS cleanup remains tracked as hardening debt. |
@@ -72,15 +72,11 @@ Reads values from any SObject picklist or multi-select picklist field. Supports 
 
 Accepts a Flow record collection variable (`{T[]}`) as input. A field-mapping section in the CPE lets you point Label, Sublabel, Icon, Badge, Help Text, and Value at any field on the collection's SObject -- no Apex required.
 
-### String Collection
-
-Accepts a Flow `String[]` variable. Each string becomes a tile where both the label and the value equal the string. Item overrides can enrich the tiles with icons or sublabels.
-
 ### SOQL Query
 
 Issues a server-side SOQL query at runtime via `NewtonSelectorRuntimeController.queryItems`. The CPE exposes:
 
-- **Object picker** -- searchable dropdown of all accessible SObjects
+- **Object selector** -- searchable dropdown of all accessible SObjects
 - **WHERE builder** -- visual clause builder with field selector, type-aware operator sets, and AND/OR logic
 - **Field mapping** -- map any field to label, sublabel, value, icon, badge, and help text
 - **ORDER BY** -- field + direction selector
@@ -179,8 +175,8 @@ Every output is available as a Flow resource once the component is placed on a s
 | `selectedRecords` | SObject[] | All selected records (record-backed sources, multi mode)                     |
 | `selectedLabel`   | String    | Display label of the selected option (single mode)                           |
 | `selectedLabels`  | String[]  | Display labels of all selected options (multi mode)                          |
-| `allValues`       | String[]  | Every value rendered by the picker, in display order                         |
-| `allLabels`       | String[]  | Every label rendered by the picker, in display order                         |
+| `allValues`       | String[]  | Every value rendered by the selector, in display order                       |
+| `allLabels`       | String[]  | Every label rendered by the selector, in display order                       |
 | `selectionCount`  | Integer   | Number of currently selected options                                         |
 
 ---
@@ -209,10 +205,10 @@ Configuration helpers
   newtonSelectorFlowCpeResourceSelector          <- Flow Builder resource/merge-field combobox
   newtonSelectorFlowCpeWhereBuilder              <- Visual SOQL WHERE clause builder
 
-Input and picker controls
+Input and selector controls
   newtonSelectorFlowCpeCustomLookup              <- Searchable lookup with server typeahead
   newtonSelectorFlowCpeFieldSelector             <- Object-scoped field selector
-  newtonSelectorFlowCpeIconSelector              <- SLDS icon name picker
+  newtonSelectorFlowCpeIconSelector              <- SLDS icon name selector
   newtonSelectorFlowCpeChoiceControl             <- Option-tile control used in CPE sections
   newtonSelectorFlowCpeLookupChoiceOption        <- Lookup option renderer
 
@@ -222,8 +218,8 @@ Reusable primitives
   newtonSelectorChoiceTile                       <- Choice tile (label / sublabel / badge / icon)
 
 Utilities
-  newtonSelectorUtilityDataSources               <- Normalizers for all 5 data sources; filter/sort/limit
-  newtonSelectorUtilityConfigDefaults            <- Shared default picker configuration
+newtonSelectorUtilityDataSources               <- Normalizers for all 4 data sources; filter/sort/limit
+  newtonSelectorUtilityConfigDefaults            <- Shared default selector configuration
   newtonSelectorFlowCpeUtilityHelpers            <- Flow Builder context helpers (merge fields, types)
   newtonSelectorFlowCpeUtilityConfigOptions      <- Shared option metadata for CPE and modal controls
   newtonSelectorFlowCpeUtilityConfigState        <- Immutable config merge/patch helpers and preview/query mapping

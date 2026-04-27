@@ -1,5 +1,5 @@
 /* =============================================================================
-   newtonSelectorChoiceTile — first-class visual tile atom (SLDS 2)
+   newtonSelectorChoiceTile — first-class visual choice tile (SLDS 2)
    Self-contained, no slds-newton-selector inheritance. Uses SLDS 2 styling
    hooks (--slds-g-*) end-to-end so it's theme- and dark-mode-aware.
    ============================================================================= */
@@ -230,7 +230,7 @@
 
 /* =============================================================================
    ELEMENT · Badge — configurable position + variant + shape
-   Text is `item.badge`. Presentation axes are @api props on the atom, emitted
+   Text is `item.badge`. Presentation axes are @api props on the choice tile, emitted
    as BEM modifier classes so themes/variants remain swappable at the CSS edge.
    ============================================================================= */
 
@@ -342,7 +342,7 @@
   --_badge-ring: var(--slds-g-color-palette-teal-50, #0f7b82);
 }
 
-/* Custom — derived from --_bdg-color-custom (set inline by the atom when
+/* Custom — derived from --_bdg-color-custom (set inline by the choice tile when
    badgeVariant='custom' + badgeVariantHex is valid). bg is a 10% tint of
    the hex; ink is the hex itself; ring is the hex. */
 .newton-selector-choice-tile__badge_variant-custom {
@@ -638,7 +638,7 @@
    ============================================================================= */
 
 /* Fill variant — tile surface fills with brand-weak, check badge hidden.
-   Higher-contrast pick state, suits rating-style pickers. */
+   Higher-contrast pick state, suits rating-style selectors. */
 .newton-selector-choice-tile_sel-fill.newton-selector-choice-tile_selected
   .newton-selector-choice-tile__figure {
   background: var(--_srf-color-selected);

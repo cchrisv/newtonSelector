@@ -9,7 +9,7 @@ const VALID_SIZES = new Set(["small", "medium", "large"]);
 const VALID_ASPECTS = new Set(["1:1", "4:3", "3:2", "16:9", "3:4", "2:3"]);
 const DEFAULT_ASPECT = "1:1";
 
-// Badge presentation axes — configurable globally on the picker. The actual
+// Badge presentation axes — configurable globally on the selector. The actual
 // badge text still comes from `item.badge`; these props decide how it looks.
 const VALID_BADGE_POSITIONS = new Set([
   "top-left",
@@ -19,7 +19,7 @@ const VALID_BADGE_POSITIONS = new Set([
   "bottom-inline"
 ]);
 const DEFAULT_BADGE_POSITION = "bottom-inline";
-// Badge variant doubles as a tone — the picker's badge color axis follows
+// Badge variant doubles as a tone — the selector's badge color axis follows
 // the same palette as every other tone axis (pattern/corner/surface/icon):
 // the 8 SLDS presets + 'custom' (hex) + 'inverse' for dark-theme contrast.
 const VALID_BADGE_VARIANTS = new Set([
@@ -277,7 +277,7 @@ export default class NewtonSelectorChoiceTile extends LightningElement {
       : DEFAULT_BADGE_POSITION;
   }
   get resolvedBadgeVariant() {
-    // Per-item override wins over the picker-wide variant.
+    // Per-item override wins over the selector-wide variant.
     const itemVariant = this.item?.badgeVariant;
     if (itemVariant && VALID_BADGE_VARIANTS.has(itemVariant))
       return itemVariant;
@@ -623,7 +623,7 @@ export default class NewtonSelectorChoiceTile extends LightningElement {
     return Boolean(this.item?.helpText);
   }
   // Per-item badge text AND the global showBadges switch must both be true.
-  // Admin can flip showBadges=false at the picker level to blanket-hide
+  // Admin can flip showBadges=false at the selector level to blanket-hide
   // all badges even when items carry badge values.
   get hasBadge() {
     return Boolean(this.item?.badge) && !isExplicitFalse(this.showBadges);

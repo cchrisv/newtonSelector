@@ -2,7 +2,7 @@
 <LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>66.0</apiVersion>
     <isExposed>false</isExposed>
-    <masterLabel>Professor Flow | CPE Resource Picker</masterLabel>
+    <masterLabel>Newton Selector Flow CPE | Resource Selector</masterLabel>
     <description
   >Merge-field and Flow variable combobox for Custom Property Editors. Used inside a CPE LWC, not a standalone screen field.</description>
 </LightningComponentBundle>

@@ -47,7 +47,7 @@ export default class NewtonSelectorGroup extends LightningElement {
   @api enableSearch = false;
   @api previewMode = false;
 
-  // Layout knobs. Card styling lives in newtonSelectorChoiceTile; this molecule
+  // Layout knobs. Card styling lives in newtonSelectorChoiceTile; this group renderer
   // only composes cards into layout patterns and normalizes spacing tokens.
   @api gridMinWidth = "7.5rem";
   @api gapHorizontal = "2";
@@ -424,7 +424,7 @@ export default class NewtonSelectorGroup extends LightningElement {
     );
   }
 
-  get atomVariant() {
+  get choiceTileVariant() {
     return this.isList ||
       this.isTransferLayout ||
       this.isRadio ||

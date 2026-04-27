@@ -33,8 +33,6 @@ export function mergeSelectorConfig(initialConfig) {
       ...(incoming.collection || {}),
       objectApiName:
         incoming.collection?.objectApiName || base.collection.objectApiName,
-      sampleValues:
-        incoming.collection?.sampleValues || base.collection.sampleValues,
       fieldMap: {
         ...base.collection.fieldMap,
         ...(incoming.collection?.fieldMap || {})
@@ -42,9 +40,6 @@ export function mergeSelectorConfig(initialConfig) {
     },
     sobject: { ...base.sobject, ...(incoming.sobject || {}) },
     custom: { items: incoming.custom?.items || [] },
-    stringCollection: {
-      sampleValues: incoming.stringCollection?.sampleValues || ""
-    },
     manualInput: {
       ...base.manualInput,
       ...(incoming.manualInput || {})
@@ -123,88 +118,7 @@ export function recordCollectionSamples(
     builderContext,
     sourceRecordsRef
   );
-  if (metadata.records.length > 0) return metadata.records;
-  const raw = config?.collection?.sampleValues || "";
-  if (!raw) return [];
-  return raw
-    .split(/[\n,]/)
-    .map((value) => value.trim())
-    .filter((value) => value.length > 0)
-    .map((value) => ({ Id: value, Name: value }));
-}
-
-export function resolveStringValuesFromBuilderContext(builderContext, rawRef) {
-  if (!rawRef || !builderContext) return [];
-  const ref = normalizeFlowReference(rawRef);
-  if (!ref) return [];
-
-  for (const bucket of BUILDER_CONTEXT_RESOURCE_BUCKETS) {
-    const list = builderContext[bucket];
-    if (!Array.isArray(list)) continue;
-    const match = list.find((resource) => resource?.name === ref);
-    if (!match) continue;
-
-    const candidates = [
-      match.value,
-      match.defaultValue,
-      match.values,
-      match.defaultValues,
-      match.options,
-      match.items
-    ];
-    for (const candidate of candidates) {
-      if (Array.isArray(candidate)) {
-        return candidate
-          .map((entry) => coerceStringFromResourceValue(entry))
-          .filter((value) => value.length > 0);
-      }
-      if (
-        typeof candidate === "string" &&
-        candidate.length > 0 &&
-        match.isCollection !== true
-      ) {
-        return [candidate];
-      }
-    }
-  }
-  return [];
-}
-
-export function stringCollectionSamples(
-  config,
-  builderContext,
-  sourceStringsRef
-) {
-  const fromContext = resolveStringValuesFromBuilderContext(
-    builderContext,
-    sourceStringsRef
-  );
-  if (fromContext.length > 0) return fromContext;
-  const raw = config?.stringCollection?.sampleValues || "";
-  if (!raw) return [];
-  return raw
-    .split(/[\n,]/)
-    .map((value) => value.trim())
-    .filter((value) => value.length > 0);
-}
-
-export function resolvedStringValuePreview(
-  builderContext,
-  sourceStringsRef,
-  cap = 24
-) {
-  const values = resolveStringValuesFromBuilderContext(
-    builderContext,
-    sourceStringsRef
-  );
-  const pills = values.slice(0, cap).map((label, index) => ({
-    key: `rsv-${index}`,
-    label
-  }));
-  if (values.length > cap) {
-    pills.push({ key: "rsv-more", label: `+${values.length - cap} more` });
-  }
-  return pills;
+  return metadata.records;
 }
 
 function normalizeFlowReference(rawRef) {
@@ -213,14 +127,6 @@ function normalizeFlowReference(rawRef) {
     .replace(/^\{!\s*/, "")
     .replace(/\s*\}$/, "")
     .trim();
-}
-
-function coerceStringFromResourceValue(value) {
-  if (typeof value === "string") return value;
-  if (value && typeof value === "object") {
-    return String(value.value ?? value.stringValue ?? value.label ?? "");
-  }
-  return String(value ?? "");
 }
 
 function resolveRecordArrayFromResource(resource) {

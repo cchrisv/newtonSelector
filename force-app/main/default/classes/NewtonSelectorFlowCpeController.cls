@@ -1,6 +1,6 @@
 /**
- * @description Apex building blocks for Professor Flow's CPE Toolkit. Exposes three AuraEnabled
- * methods consumed by the LWCs in the pack: SObject search, field search, and object-fields describe.
+ * @description Apex building blocks for the Newton Selector Flow CPE. Exposes three AuraEnabled
+ * methods consumed by the CPE LWCs: SObject search, field search, and object-fields describe.
  */
 @SuppressWarnings('PMD.CognitiveComplexity, PMD.CyclomaticComplexity')
 public with sharing class NewtonSelectorFlowCpeController {
@@ -43,7 +43,7 @@ public with sharing class NewtonSelectorFlowCpeController {
     'SOBJECT' => 'utility:sobject'
   };
 
-  /** @description Shared row for pickers and lookup results (LWC normalizes to label/value). */
+  /** @description Shared row for selectors and lookup results (LWC normalizes to label/value). */
   public class ChoiceOption implements Comparable {
     @AuraEnabled
     public String value;
@@ -56,6 +56,14 @@ public with sharing class NewtonSelectorFlowCpeController {
     @AuraEnabled
     public String sObjectType;
 
+    /**
+     * @description Creates a Flow CPE choice option row.
+     * @param value API value emitted by the selector.
+     * @param label Human-readable label.
+     * @param subtitle Secondary display text.
+     * @param icon SLDS utility icon name.
+     * @param sObjectType Source object API name when applicable.
+     */
     @SuppressWarnings('PMD.ExcessiveParameterList')
     public ChoiceOption(
       String value,
@@ -71,6 +79,11 @@ public with sharing class NewtonSelectorFlowCpeController {
       this.sObjectType = sObjectType;
     }
 
+    /**
+     * @description Sorts choice rows by label.
+     * @param other ChoiceOption to compare.
+     * @return Integer comparison result.
+     */
     public Integer compareTo(Object other) {
       ChoiceOption o = (ChoiceOption) other;
       String a = this.label == null ? '' : this.label;
@@ -79,7 +92,7 @@ public with sharing class NewtonSelectorFlowCpeController {
     }
   }
 
-  /** @description Serializable field row for LWC resource picker / field picker. */
+  /** @description Serializable field row for LWC resource selector / field selector. */
   public class Field {
     @AuraEnabled
     public String name;
@@ -92,6 +105,12 @@ public with sharing class NewtonSelectorFlowCpeController {
     @AuraEnabled
     public String relationshipName;
 
+    /**
+     * @description Creates a field describe row.
+     * @param n Field API name.
+     * @param l Field label.
+     * @param t Field display type.
+     */
     public Field(String n, String l, String t) {
       name = n;
       label = l;
@@ -99,8 +118,13 @@ public with sharing class NewtonSelectorFlowCpeController {
     }
   }
 
-  // ── Design-time: SObject / field pickers ─────────────────
+  // ── Design-time: SObject / field selectors ────────────────
 
+  /**
+   * @description Finds accessible, queryable sObject types for Flow Builder search.
+   * @param searchKey Optional API name or label search text.
+   * @return Matching sObject choices capped for the CPE lookup.
+   */
   @AuraEnabled(cacheable=true)
   public static List<ChoiceOption> searchSObjectTypes(String searchKey) {
     try {
@@ -133,6 +157,12 @@ public with sharing class NewtonSelectorFlowCpeController {
     return capChoiceList(rows, MAX_LOOKUP_ROWS);
   }
 
+  /**
+   * @description Finds accessible fields for the selected lookup dataset object.
+   * @param objectApiName Source object API name.
+   * @param searchKey Optional field API name or label search text.
+   * @return Matching field choices capped for the CPE lookup.
+   */
   @AuraEnabled(cacheable=true)
   public static List<ChoiceOption> searchLookupDatasetFieldsForObject(
     String objectApiName,
@@ -194,6 +224,11 @@ public with sharing class NewtonSelectorFlowCpeController {
     return capChoiceList(out, MAX_FIELD_LOOKUP_ROWS);
   }
 
+  /**
+   * @description Describes accessible fields for a selected object.
+   * @param objectName Source object API name.
+   * @return Accessible field rows, including lookup relationship metadata when available.
+   */
   @AuraEnabled(cacheable=true)
   public static List<Field> getObjectFields(String objectName) {
     try {

@@ -2,8 +2,8 @@
 <LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
   <apiVersion>63.0</apiVersion>
   <isExposed>false</isExposed>
-  <masterLabel>Professor Flow | Studio Choice Control</masterLabel>
+  <masterLabel>Newton Selector Flow CPE | Choice Control</masterLabel>
   <description>
-    CPE studio choice molecule that renders finite options through the Newton selector base.
+    CPE studio choice control that renders finite options through the Newton selector base.
   </description>
 </LightningComponentBundle>

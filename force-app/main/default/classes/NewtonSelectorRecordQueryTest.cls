@@ -1,12 +1,12 @@
-@isTest
+@IsTest
 private class NewtonSelectorRecordQueryTest {
-  @testSetup
+  @TestSetup
   static void setup() {
     NewtonSelectorTestDataFactory.createAccounts(10, 'Technology');
     NewtonSelectorTestDataFactory.createAccounts(5, 'Finance');
   }
 
-  @isTest
+  @IsTest
   static void queryReturnsRecordsInOrder() {
     NewtonSelectorQueryDTO config = NewtonSelectorTestDataFactory.buildSimpleAccountConfig();
 
@@ -23,7 +23,7 @@ private class NewtonSelectorRecordQueryTest {
     );
   }
 
-  @isTest
+  @IsTest
   static void queryFiltersByWhereClause() {
     NewtonSelectorQueryDTO config = NewtonSelectorTestDataFactory.buildSimpleAccountConfig();
     config.whereClause = 'Industry = \'Technology\'';
@@ -38,7 +38,7 @@ private class NewtonSelectorRecordQueryTest {
     }
   }
 
-  @isTest
+  @IsTest
   static void queryFiltersByWhereClauseInList() {
     NewtonSelectorQueryDTO config = NewtonSelectorTestDataFactory.buildSimpleAccountConfig();
     config.whereClause = 'Industry IN (\'Technology\', \'Finance\')';
@@ -54,7 +54,7 @@ private class NewtonSelectorRecordQueryTest {
     );
   }
 
-  @isTest
+  @IsTest
   static void queryFiltersByStructuredFilters() {
     NewtonSelectorQueryDTO config = NewtonSelectorTestDataFactory.buildSimpleAccountConfig();
     NewtonSelectorQueryDTO.Filter filter = new NewtonSelectorQueryDTO.Filter();
@@ -77,7 +77,7 @@ private class NewtonSelectorRecordQueryTest {
     }
   }
 
-  @isTest
+  @IsTest
   static void queryFiltersByStructuredInValuesAndSkipsNullFilters() {
     NewtonSelectorQueryDTO config = NewtonSelectorTestDataFactory.buildSimpleAccountConfig();
     NewtonSelectorQueryDTO.Filter filter = new NewtonSelectorQueryDTO.Filter();
@@ -97,7 +97,7 @@ private class NewtonSelectorRecordQueryTest {
     );
   }
 
-  @isTest
+  @IsTest
   static void queryDefaultsBlankStructuredOperator() {
     NewtonSelectorQueryDTO config = NewtonSelectorTestDataFactory.buildSimpleAccountConfig();
     NewtonSelectorQueryDTO.Filter filter = new NewtonSelectorQueryDTO.Filter();
@@ -117,7 +117,7 @@ private class NewtonSelectorRecordQueryTest {
     );
   }
 
-  @isTest
+  @IsTest
   static void queryRejectsMultipicklistOperatorOnSinglePicklistStructuredFilter() {
     NewtonSelectorQueryDTO config = NewtonSelectorTestDataFactory.buildSimpleAccountConfig();
     NewtonSelectorQueryDTO.Filter filter = new NewtonSelectorQueryDTO.Filter();
@@ -139,7 +139,7 @@ private class NewtonSelectorRecordQueryTest {
     Test.stopTest();
   }
 
-  @isTest
+  @IsTest
   static void queryRejectsMultipicklistOperatorOnSinglePicklistWhereClause() {
     NewtonSelectorQueryDTO config = NewtonSelectorTestDataFactory.buildSimpleAccountConfig();
     config.whereClause = 'Industry INCLUDES (\'Technology\')';
@@ -157,7 +157,7 @@ private class NewtonSelectorRecordQueryTest {
     Test.stopTest();
   }
 
-  @isTest
+  @IsTest
   static void queryRejectsUnsafeWhereClause() {
     NewtonSelectorQueryDTO config = NewtonSelectorTestDataFactory.buildSimpleAccountConfig();
     config.whereClause = 'Industry = \'Technology\' ORDER BY CreatedDate';
@@ -175,7 +175,7 @@ private class NewtonSelectorRecordQueryTest {
     Test.stopTest();
   }
 
-  @isTest
+  @IsTest
   static void queryAppliesLimit() {
     NewtonSelectorQueryDTO config = NewtonSelectorTestDataFactory.buildSimpleAccountConfig();
     config.queryLimit = 3;
@@ -187,7 +187,7 @@ private class NewtonSelectorRecordQueryTest {
     System.assertEquals(3, results.size(), 'Limit should cap results');
   }
 
-  @isTest
+  @IsTest
   static void previewSoqlBuildsRuntimeQuery() {
     NewtonSelectorQueryDTO config = NewtonSelectorTestDataFactory.buildSimpleAccountConfig();
     config.whereClause = 'Industry = \'Technology\'';
@@ -203,7 +203,7 @@ private class NewtonSelectorRecordQueryTest {
     System.assert(soql.contains('LIMIT 1'));
   }
 
-  @isTest
+  @IsTest
   static void queryRejectsBlankObject() {
     NewtonSelectorQueryDTO config = new NewtonSelectorQueryDTO();
     config.sObjectApiName = '';
@@ -218,7 +218,7 @@ private class NewtonSelectorRecordQueryTest {
     Test.stopTest();
   }
 
-  @isTest
+  @IsTest
   static void queryRejectsUnknownObject() {
     NewtonSelectorQueryDTO config = new NewtonSelectorQueryDTO();
     config.sObjectApiName = 'DoesNotExist__c';
@@ -233,7 +233,7 @@ private class NewtonSelectorRecordQueryTest {
     Test.stopTest();
   }
 
-  @isTest
+  @IsTest
   static void queryRejectsUnknownField() {
     NewtonSelectorQueryDTO config = NewtonSelectorTestDataFactory.buildSimpleAccountConfig();
     config.labelField = 'NotARealField__c';
@@ -248,7 +248,7 @@ private class NewtonSelectorRecordQueryTest {
     Test.stopTest();
   }
 
-  @isTest
+  @IsTest
   static void queryHandlesBulkVolume() {
     NewtonSelectorTestDataFactory.createAccounts(200, 'Healthcare');
     NewtonSelectorQueryDTO config = NewtonSelectorTestDataFactory.buildSimpleAccountConfig();
@@ -266,7 +266,7 @@ private class NewtonSelectorRecordQueryTest {
     );
   }
 
-  @isTest
+  @IsTest
   static void queryRespectsSharing() {
     NewtonSelectorQueryDTO config = NewtonSelectorTestDataFactory.buildSimpleAccountConfig();
 

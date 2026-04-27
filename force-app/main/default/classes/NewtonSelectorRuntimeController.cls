@@ -1,4 +1,10 @@
+/** @description AuraEnabled runtime and query-validation controller for the Flow screen LWC. */
 public with sharing class NewtonSelectorRuntimeController {
+  /**
+   * @description Queries runtime selector items from a serialized NewtonSelectorQueryDTO.
+   * @param configJson Serialized NewtonSelectorQueryDTO.
+   * @return Runtime selector item DTOs.
+   */
   @AuraEnabled(cacheable=true)
   public static List<NewtonSelectorItemDTO> queryItems(String configJson) {
     try {
@@ -15,12 +21,17 @@ public with sharing class NewtonSelectorRuntimeController {
     } catch (NewtonSelectorException e) {
       throw new AuraHandledException(e.getMessage());
     } catch (System.JSONException e) {
-      throw new AuraHandledException('Invalid picker configuration.');
+      throw new AuraHandledException('Invalid selector configuration.');
     } catch (Exception e) {
-      throw new AuraHandledException('Unable to load picker options.');
+      throw new AuraHandledException('Unable to load selector options.');
     }
   }
 
+  /**
+   * @description Validates a serialized query configuration and returns preview SOQL.
+   * @param configJson Serialized NewtonSelectorQueryDTO.
+   * @return Validation result with status, message, and optional preview SOQL.
+   */
   @AuraEnabled(cacheable=false)
   public static NewtonSelectorQueryValidationResultDTO validateQuery(
     String configJson
@@ -46,7 +57,7 @@ public with sharing class NewtonSelectorRuntimeController {
       return NewtonSelectorQueryValidationResultDTO.failure(e.getMessage());
     } catch (System.JSONException e) {
       return NewtonSelectorQueryValidationResultDTO.failure(
-        'Invalid picker configuration.'
+        'Invalid selector configuration.'
       );
     } catch (Exception e) {
       return NewtonSelectorQueryValidationResultDTO.failure(

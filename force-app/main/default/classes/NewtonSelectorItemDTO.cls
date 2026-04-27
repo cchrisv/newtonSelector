@@ -1,3 +1,4 @@
+/** @description Runtime option DTO returned to the Newton Selector Flow screen component. */
 public class NewtonSelectorItemDTO {
   @AuraEnabled
   public String id;
@@ -16,6 +17,7 @@ public class NewtonSelectorItemDTO {
   @AuraEnabled
   public Boolean disabled;
 
+  /** @description Creates a selectable item with disabled defaulting to false. */
   public NewtonSelectorItemDTO() {
     this.disabled = false;
   }

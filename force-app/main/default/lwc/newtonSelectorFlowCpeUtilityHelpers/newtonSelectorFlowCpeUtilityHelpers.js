@@ -1,5 +1,5 @@
 /**
- * Professor Flow | CPE Helpers
+ * Newton Selector Flow CPE | Helpers
  *
  * Merged utility module for the CPE Toolkit. Three logical sections:
  *   1. Field metadata cache  — stateful LRU cache around getObjectFields

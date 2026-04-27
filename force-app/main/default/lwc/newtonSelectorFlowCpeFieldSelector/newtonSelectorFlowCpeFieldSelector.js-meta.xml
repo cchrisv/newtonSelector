@@ -3,5 +3,5 @@
     <apiVersion>66.0</apiVersion>
     <isExposed>false</isExposed>
     <description
-  >Enhanced single field picker with label, API name, type, and icon.</description>
+  >Enhanced single field selector with label, API name, type, and icon.</description>
 </LightningComponentBundle>

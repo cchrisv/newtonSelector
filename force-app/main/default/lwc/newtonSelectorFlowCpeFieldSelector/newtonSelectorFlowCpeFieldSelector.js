@@ -6,14 +6,14 @@ import {
 } from "c/newtonSelectorFlowCpeUtilityHelpers";
 
 /**
- * Professor Flow | CPE Field Picker (single or multi).
+ * Newton Selector Flow CPE | Field Selector (single or multi).
  *
  * Renders a searchable list of a given SObject's fields with type icons. Operates in two modes:
  *  - `isMultiEntry = false` (default) — single select. Emits `fieldchange` with { fieldApiName, fieldLabel, fieldType }.
  *  - `isMultiEntry = true`            — multi select with pills; value is a comma-separated list of field API names.
  *    Emits `change` with { value: csv }.
  *
- * Field metadata is fetched through the shared LRU cache in `c/newtonSelectorFlowCpeUtilityHelpers` so pickers on the same
+ * Field metadata is fetched through the shared LRU cache in `c/newtonSelectorFlowCpeUtilityHelpers` so selectors on the same
  * page for the same object all share one Apex describe call.
  *
  * @slot none

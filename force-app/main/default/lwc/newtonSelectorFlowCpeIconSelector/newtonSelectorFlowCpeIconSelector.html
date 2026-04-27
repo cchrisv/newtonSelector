@@ -1,5 +1,5 @@
 <template>
-  <div class={pickerClass}>
+  <div class={selectorClass}>
     <template lwc:if={isCombobox}>
       <label class="slds-form-element__label" for="combobox-trigger">
         <template lwc:if={required}>
@@ -58,7 +58,7 @@
             <div
               class={comboboxPanelClass}
               role="dialog"
-              aria-label="Icon picker"
+              aria-label="Icon selector"
             >
               <ul
                 class="slds-tabs_default__nav newton-tabs"
@@ -126,7 +126,7 @@
                     </button>
                   </template>
                 </div>
-                <div class="newton-selector-icon-picker__more" role="status">
+                <div class="newton-selector-icon-selector__more" role="status">
                   <span>{resultCountLabel}</span>
                   <template lwc:if={hasMoreIcons}>
                     <lightning-button
@@ -138,7 +138,7 @@
                 </div>
               </template>
               <template lwc:if={hasNoVisibleIcons}>
-                <div class="newton-selector-icon-picker__empty" role="status">
+                <div class="newton-selector-icon-selector__empty" role="status">
                   No icons match this search.
                 </div>
               </template>
@@ -225,7 +225,7 @@
             </button>
           </template>
         </div>
-        <div class="newton-selector-icon-picker__more" role="status">
+        <div class="newton-selector-icon-selector__more" role="status">
           <span>{resultCountLabel}</span>
           <template lwc:if={hasMoreIcons}>
             <lightning-button

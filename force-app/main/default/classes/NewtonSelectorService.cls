@@ -1,4 +1,10 @@
+/** @description Runtime service that maps queried records into selector item DTOs. */
 public with sharing class NewtonSelectorService {
+  /**
+   * @description Fetches records using the supplied query config and normalizes them for LWC.
+   * @param config Selector query configuration.
+   * @return Runtime selector item DTOs.
+   */
   public static List<NewtonSelectorItemDTO> fetchItems(
     NewtonSelectorQueryDTO config
   ) {

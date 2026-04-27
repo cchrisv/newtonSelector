@@ -59,8 +59,8 @@ for (const file of walk(lwcRoot)) {
     );
   }
 
-  const atomIconRegex = /<c-newton-selector-icon\b[\s\S]*?<\/c-newton-selector-icon>/g;
-  for (const match of source.matchAll(atomIconRegex)) {
+  const iconRegex = /<c-newton-selector-icon\b[\s\S]*?<\/c-newton-selector-icon>/g;
+  for (const match of source.matchAll(iconRegex)) {
     const tag = match[0].replace(/\s+/g, " ");
     const nameMatch = tag.match(/\bname="([^"]+)"/);
     if (nameMatch && !lucideNames.has(nameMatch[1])) {

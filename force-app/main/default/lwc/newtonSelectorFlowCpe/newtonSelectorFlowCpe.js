@@ -1,9 +1,8 @@
 import { LightningElement, api, track } from "lwc";
 import NewtonSelectorFlowCpeConfigModal from "c/newtonSelectorFlowCpeConfigModal";
 
-const CONFIG_KEY = "pickerConfigJson";
+const CONFIG_KEY = "selectorConfigJson";
 const SOURCE_RECORDS_KEY = "sourceRecords";
-const SOURCE_STRINGS_KEY = "sourceStrings";
 
 const DEFAULT_CONFIG = {
   dataSource: "",
@@ -51,7 +50,6 @@ const DEFAULT_CONFIG = {
     helpField: ""
   },
   custom: { items: [] },
-  stringCollection: { sampleValues: "" },
   includeNoneOption: false,
   noneOptionLabel: "--None--",
   noneOptionPosition: "start",
@@ -145,7 +143,6 @@ export default class NewtonSelectorFlowCpe extends LightningElement {
   _inputVariables = [];
   _genericTypeMappings = [];
   _sourceRecordsRef = "";
-  _sourceStringsRef = "";
   _lastGenericSObject = "";
   _lastHydratedJson = null; // perf: short-circuits re-parse on duplicate setter calls
   @track _config = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
@@ -197,7 +194,6 @@ export default class NewtonSelectorFlowCpe extends LightningElement {
       }
     }
     this._sourceRecordsRef = this.readInput(SOURCE_RECORDS_KEY) || "";
-    this._sourceStringsRef = this.readInput(SOURCE_STRINGS_KEY) || "";
 
     if (this.hasDataSource && !this._lastGenericSObject) {
       this.syncGenericTypeMapping();
@@ -219,9 +215,6 @@ export default class NewtonSelectorFlowCpe extends LightningElement {
   get isCollectionMode() {
     return this._config.dataSource === "collection";
   }
-  get isStringCollectionMode() {
-    return this._config.dataSource === "stringCollection";
-  }
   get isSObjectMode() {
     return this._config.dataSource === "sobject";
   }
@@ -234,7 +227,7 @@ export default class NewtonSelectorFlowCpe extends LightningElement {
   // Each section is { title, lines: [{ key, text, detail? }] }.
   // ========================================================================
 
-  // --- Section 1: Data source (what's feeding the picker) ---------------
+  // --- Section 1: Data source (what's feeding the selector) ---------------
   get dataSection() {
     const c = this._config;
     if (!c.dataSource) return null;
@@ -242,7 +235,6 @@ export default class NewtonSelectorFlowCpe extends LightningElement {
     const kindMap = {
       picklist: "Picklist",
       collection: "Record collection",
-      stringCollection: "String list",
       sobject: "SOQL query",
       custom: "Custom items"
     };
@@ -280,15 +272,6 @@ export default class NewtonSelectorFlowCpe extends LightningElement {
         lines.push({
           key: "map",
           text: `${mapped} field${mapped === 1 ? "" : "s"} mapped`,
-          muted: true
-        });
-    } else if (this.isStringCollectionMode) {
-      const ref = this._sourceStringsRef;
-      if (ref) lines.push({ key: "binding", text: ref, mono: true });
-      else
-        lines.push({
-          key: "missing",
-          text: "No String[] variable bound",
           muted: true
         });
     } else if (this.isSObjectMode) {
@@ -420,7 +403,7 @@ export default class NewtonSelectorFlowCpe extends LightningElement {
       dropdown: "Picklist",
       radio: "Radio cards",
       columns: "Drag/drop columns",
-      dualListbox: "Multi-select picker"
+      dualListbox: "Multi-select selector"
     };
     const layoutName = layoutNames[c.layout] || "Grid";
 
@@ -553,7 +536,7 @@ export default class NewtonSelectorFlowCpe extends LightningElement {
     const errors = [];
     if (!this.hasDataSource) {
       errors.push({
-        key: "pickerConfigJson",
+        key: "selectorConfigJson",
         errorString: "Select a data source — click Configure selector."
       });
       return errors;
@@ -568,12 +551,12 @@ export default class NewtonSelectorFlowCpe extends LightningElement {
     if (this.isPicklistMode) {
       if (!this._config.picklist.objectApiName)
         errors.push({
-          key: "pickerConfigJson",
+          key: "selectorConfigJson",
           errorString: "Picklist mode requires an object."
         });
       if (!this._config.picklist.fieldApiName)
         errors.push({
-          key: "pickerConfigJson",
+          key: "selectorConfigJson",
           errorString: "Picklist mode requires a picklist field."
         });
     }
@@ -585,21 +568,14 @@ export default class NewtonSelectorFlowCpe extends LightningElement {
         });
       if (!this._config.collection.fieldMap.label)
         errors.push({
-          key: "pickerConfigJson",
+          key: "selectorConfigJson",
           errorString: "Map at least the Label field for the collection."
-        });
-    }
-    if (this.isStringCollectionMode) {
-      if (!this._sourceStringsRef)
-        errors.push({
-          key: "sourceStrings",
-          errorString: "String list mode requires a Flow String[] variable."
         });
     }
     if (this.isSObjectMode) {
       if (!this._config.sobject.sObjectApiName)
         errors.push({
-          key: "pickerConfigJson",
+          key: "selectorConfigJson",
           errorString: "SObject mode requires an object."
         });
     }
@@ -609,7 +585,7 @@ export default class NewtonSelectorFlowCpe extends LightningElement {
         !this._config.manualInput?.enabled
       )
         errors.push({
-          key: "pickerConfigJson",
+          key: "selectorConfigJson",
           errorString: "Add at least one custom item."
         });
     }
@@ -622,19 +598,19 @@ export default class NewtonSelectorFlowCpe extends LightningElement {
           : Number(manual.maxLength);
       if (!manual.label || !String(manual.label).trim()) {
         errors.push({
-          key: "pickerConfigJson",
+          key: "selectorConfigJson",
           errorString: "Manual input needs an option label."
         });
       }
       if (!Number.isFinite(min) || min < 0) {
         errors.push({
-          key: "pickerConfigJson",
+          key: "selectorConfigJson",
           errorString: "Manual input minimum characters must be 0 or greater."
         });
       }
       if (max !== null && (!Number.isFinite(max) || max < Math.max(min, 1))) {
         errors.push({
-          key: "pickerConfigJson",
+          key: "selectorConfigJson",
           errorString:
             "Manual input maximum characters must be at least the minimum."
         });
@@ -665,7 +641,6 @@ export default class NewtonSelectorFlowCpe extends LightningElement {
       description: "Configure Newton Selector",
       initialConfig: JSON.parse(JSON.stringify(this._config)),
       initialSourceRecordsRef: this._sourceRecordsRef,
-      initialSourceStringsRef: this._sourceStringsRef,
       builderContext: this.builderContext,
       automaticOutputVariables: this.automaticOutputVariables
     });
@@ -685,14 +660,6 @@ export default class NewtonSelectorFlowCpe extends LightningElement {
       this.dispatchCpeChange(
         SOURCE_RECORDS_KEY,
         this._sourceRecordsRef,
-        "reference"
-      );
-    }
-    if (result.sourceStringsRef !== this._sourceStringsRef) {
-      this._sourceStringsRef = result.sourceStringsRef || "";
-      this.dispatchCpeChange(
-        SOURCE_STRINGS_KEY,
-        this._sourceStringsRef,
         "reference"
       );
     }
