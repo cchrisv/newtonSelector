@@ -1,6 +1,6 @@
-# Professor Flow - Newton Selector
+# Professor Flow | Newton Selector
 
-> A unified, modern visual tile picker for Salesforce Flow Screens — powered by a point-and-click Custom Property Editor.
+> A unified, modern choice selector for Salesforce Flow Screens — powered by a point-and-click Custom Property Editor.
 
 ![Salesforce API](https://img.shields.io/badge/Salesforce%20API-v66.0-blue?logo=salesforce)
 ![LWC](https://img.shields.io/badge/LWC-JavaScript-yellow?logo=javascript)
@@ -28,14 +28,15 @@
 
 ## Overview
 
-**Professor Flow Newton Selector** replaces plain picklists and radio groups on Flow Screens with a rich, visually customizable tile picker. Everything -- data source, layout, appearance, validation -- is configured through a built-in Custom Property Editor (CPE). No code, no formula fields, no hacks.
+**Newton Selector** replaces plain picklists and radio groups on Flow Screens with a rich, visually customizable selector. Everything -- data source, layout, content, behavior, appearance, and validation -- is configured through a built-in Custom Property Editor (CPE). No code, no formula fields, no hacks.
 
 Drop the `Professor Flow | Newton Selector` component onto any Flow Screen and the CPE walks you through:
 
 1. Where to get the options (picklist, record collection, SOQL query, static list, or a text collection)
-2. How to display them (grid, list, horizontal, dropdown, or radio group)
-3. How they should look (size, aspect ratio, icons, badges, patterns, elevation, spacing)
-4. What the Flow should receive when a user picks something (value, label, full SObject record)
+2. How to display them (grid, list, horizontal ribbon, picklist/dropdown, radio cards, card columns, or dual-listbox-style transfer)
+3. How they should look (size, aspect ratio, icons, badges, patterns, elevation, spacing, surfaces, and selected states)
+4. Whether to allow a manual "Other" value alongside sourced options
+5. What the Flow should receive when a user picks something (value, label, selection count, full SObject record)
 
 ---
 
@@ -44,13 +45,14 @@ Drop the `Professor Flow | Newton Selector` component onto any Flow Screen and t
 | Capability              | Detail                                                                                                                                         |
 | ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
 | **5 data sources**      | Picklist field, Record collection, String collection, SOQL query, Custom static list                                                           |
-| **5 layouts**           | Grid, List, Horizontal ribbon, Dropdown, Radio group                                                                                           |
+| **7 layouts**           | Grid, List, Horizontal ribbon, Picklist/dropdown, Radio cards, Columns, Dual-listbox-style transfer                                            |
 | **Selection modes**     | Single and Multi (with configurable min/max)                                                                                                   |
 | **Auto-advance**        | Automatically navigates to the next screen after a single selection                                                                            |
 | **Search/filter**       | Inline search bar filters tiles as the user types                                                                                              |
 | **Select all**          | One-click select-all button for multi-select mode                                                                                              |
 | **None option**         | Configurable --None-- tile that clears the selection (position: start or end)                                                                  |
-| **8 output variables**  | value, values, selectedRecord, selectedRecords, selectedLabel, selectedLabels, allValues, allLabels                                            |
+| **Manual input**        | Optional "Other" choice with configurable label and min/max character rules                                                                    |
+| **9 output variables**  | value, values, selectedRecord, selectedRecords, selectedLabel, selectedLabels, allValues, allLabels, selectionCount                            |
 | **Item overrides**      | Per-item label, icon, badge, and help text overrides layered on top of any data source                                                         |
 | **Sort and limit**      | Sort by label, value, or source order; optional result cap                                                                                     |
 | **Required validation** | Block flow navigation with a configurable error message                                                                                        |
@@ -79,10 +81,11 @@ Accepts a Flow `String[]` variable. Each string becomes a tile where both the la
 Issues a server-side SOQL query at runtime via `NewtonSelectorRuntimeController.queryItems`. The CPE exposes:
 
 - **Object picker** -- searchable dropdown of all accessible SObjects
-- **WHERE builder** -- visual clause builder with field picker, type-aware operator sets, and AND/OR logic
+- **WHERE builder** -- visual clause builder with field selector, type-aware operator sets, and AND/OR logic
 - **Field mapping** -- map any field to label, sublabel, value, icon, badge, and help text
 - **ORDER BY** -- field + direction selector
 - **LIMIT** -- row cap (max 2,000)
+- **Query validation** -- design-time validation via `NewtonSelectorRuntimeController.validateQuery`, including preview SOQL for the generated query
 
 All queries run in `USER_MODE` and field-level security is enforced server-side.
 
@@ -90,26 +93,32 @@ All queries run in `USER_MODE` and field-level security is enforced server-side.
 
 Type options directly into the CPE. Each item has a label, value, sublabel, icon, and badge. Useful for short, stable lists that don't live in the org's data model.
 
+### Manual Input
+
+Manual input is a behavior-level option that can add an "Other" choice to any selector configuration. The admin controls the displayed option label and optional minimum/maximum character limits. If a custom static list has no items, manual input can stand on its own as the only selectable path.
+
 ---
 
 ## Layouts
 
-| Layout         | Best for                                                                                       |
-| -------------- | ---------------------------------------------------------------------------------------------- |
-| **Grid**       | Visual, icon-forward choices; responsive tile grid with configurable column count or auto-fill |
-| **List**       | Dense option sets; stacked rows with icon, label, sublabel, and badge                          |
-| **Horizontal** | Timeline steps, status sequences, or any scrollable ribbon of options                          |
-| **Dropdown**   | Space-constrained screens; compact combobox that expands on click                              |
-| **Radio**      | Accessibility-first flows; native radio group with SLDS 2 styling                              |
+| Layout           | Best for                                                                                       |
+| ---------------- | ---------------------------------------------------------------------------------------------- |
+| **Grid**         | Visual, icon-forward choices; responsive tile grid with configurable column count or auto-fill |
+| **List**         | Dense option sets; stacked rows with icon, label, sublabel, and badge                          |
+| **Horizontal**   | Timeline steps, status sequences, or any scrollable ribbon of options                          |
+| **Picklist**     | Space-constrained screens; compact combobox-style selector that expands on click               |
+| **Radio**        | Accessibility-first flows; card-styled radio group pattern                                     |
+| **Columns**      | Multi-select card movement with drag/drop between available and selected columns               |
+| **Multi-select** | Dual-listbox-style transfer pattern with add/remove controls                                   |
 
 ---
 
 ## Selection Modes
 
-| Mode       | Behaviour                                                                                                                                         |
-| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Single** | One tile selected at a time. Outputs `value`, `selectedRecord`, `selectedLabel`.                                                                  |
-| **Multi**  | Any number of tiles. Configurable `minSelections` and `maxSelections` enforce constraints. Outputs `values`, `selectedRecords`, `selectedLabels`. |
+| Mode       | Behaviour                                                                                                                                                                 |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Single** | One option selected at a time. Outputs `value`, `selectedRecord`, `selectedLabel`, and `selectionCount`. Auto-advance applies only to this mode.                          |
+| **Multi**  | Any number of options. Configurable `minSelections` and `maxSelections` enforce constraints. Outputs `values`, `selectedRecords`, `selectedLabels`, and `selectionCount`. |
 
 Both modes support the `required` flag, which blocks the Flow's Next button until a valid selection is made and shows a configurable error message.
 
@@ -131,15 +140,18 @@ Aspect ratio options: `1:1` (square), `4:3` (landscape), `16:9` (wide), `3:4` (p
 
 ### Elevation
 
-Controls the tile card style: `outlined` (1px border, hover shadow), `flat` (no border), or `elevated` (permanent drop shadow).
+Controls the tile card style: `plain`, `subtle`, `outlined`, `raised`, `floating`, or `inset`.
 
 ### Selection Indicator
 
 How a selected tile communicates its state:
 
-- `checkmark` -- floating circle badge at the top-right corner (default)
+- `checkmark` -- floating circle badge at the top-right corner
 - `fill` -- tile surface fills with brand-weak colour
 - `bar` -- thick brand-coloured bar on the leading edge
+- `frame` -- inset selected outline (default)
+- `ribbon` -- folded corner marker
+- `pulse` -- selected halo
 
 ### Patterns and Surface Styles
 
@@ -169,6 +181,7 @@ Every output is available as a Flow resource once the component is placed on a s
 | `selectedLabels`  | String[]  | Display labels of all selected options (multi mode)                          |
 | `allValues`       | String[]  | Every value rendered by the picker, in display order                         |
 | `allLabels`       | String[]  | Every label rendered by the picker, in display order                         |
+| `selectionCount`  | Integer   | Number of currently selected options                                         |
 
 ---
 
@@ -177,54 +190,64 @@ Every output is available as a Flow resource once the component is placed on a s
 The project uses a layered LWC architecture. Layer roles stay in the design docs; bundle names describe product purpose.
 
 ```
-newtonSelectorFlowScreen                       <- Flow Screen component (entry point)
-  +-- newtonSelectorFlowCpe              <- Custom Property Editor (Flow Builder panel)
-        +-- newtonSelectorFlowCpeConfigModal <- LightningModal shell and configuration orchestration
-              +-- newtonSelectorFlowCpeStudio <- Studio layout, left navigation, splitter, scroll container
-              +-- newtonSelectorFlowCpeConfigPreview <- Live/fallback preview and preview-state controls
+newtonSelectorFlowScreen                         <- Flow Screen component (entry point)
+  +-- newtonSelectorFlowCpe                      <- Custom Property Editor (Flow Builder panel)
+        +-- newtonSelectorFlowCpeConfigModal     <- LightningModal shell and configuration orchestration
+              +-- newtonSelectorFlowCpeStudio    <- Studio layout, left navigation, splitter, scroll container
+              +-- newtonSelectorFlowCpeConfigPreview
+                                                    <- Live/fallback preview and preview-state controls
+              +-- newtonSelectorFlowCpeDataConfig
+              +-- newtonSelectorFlowCpeContentConfig
+              +-- newtonSelectorFlowCpeBehaviorConfig
+              +-- newtonSelectorFlowCpeAppearanceConfig
 
-newtonSelectorDataSelector               <- Data loading, source switching, state machine
-  +-- newtonSelectorGroup        <- Renders the correct layout + search/select-all
-        +-- newtonSelectorChoiceTile       <- Individual tile (icon, label, sublabel, badge)
+newtonSelectorDataSelector                       <- Data loading, source switching, state machine
+  +-- newtonSelectorGroup                        <- Layout renderer, search/select-all, transfer controls
+        +-- newtonSelectorChoiceTile             <- Individual tile (icon, label, sublabel, badge)
 
 Configuration helpers
-  newtonSelectorFlowCpeResourceSelector         <- Flow Builder resource/merge-field combobox
-  newtonSelectorFlowCpeWhereBuilder           <- Visual SOQL WHERE clause builder
+  newtonSelectorFlowCpeResourceSelector          <- Flow Builder resource/merge-field combobox
+  newtonSelectorFlowCpeWhereBuilder              <- Visual SOQL WHERE clause builder
 
 Input and picker controls
-  newtonSelectorFlowCpeCustomLookup           <- Searchable lookup with server typeahead
-  newtonSelectorFlowCpeFieldSelector            <- Object-scoped field selector
-  newtonSelectorFlowCpeIconSelector             <- SLDS icon name picker
+  newtonSelectorFlowCpeCustomLookup              <- Searchable lookup with server typeahead
+  newtonSelectorFlowCpeFieldSelector             <- Object-scoped field selector
+  newtonSelectorFlowCpeIconSelector              <- SLDS icon name picker
+  newtonSelectorFlowCpeChoiceControl             <- Option-tile control used in CPE sections
+  newtonSelectorFlowCpeLookupChoiceOption        <- Lookup option renderer
 
 Reusable primitives
-  newtonSelectorFlowCpeToggle                     <- Reusable toggle switch (boolean or CB_TRUE/CB_FALSE wire format)
-  newtonSelectorIcon                       <- Icon renderer with Lucide-style SVG catalog
-  newtonSelectorChoiceTile                 <- Choice tile (label / sublabel / badge / icon)
+  newtonSelectorFlowCpeToggle                    <- Reusable toggle switch (boolean or CB_TRUE/CB_FALSE wire format)
+  newtonSelectorIcon                             <- Icon renderer with Lucide-style SVG catalog
+  newtonSelectorChoiceTile                       <- Choice tile (label / sublabel / badge / icon)
 
 Utilities
-  newtonSelectorUtilityDataSources       <- Normalizers for all 5 data sources; filter/sort/limit
-  newtonSelectorFlowCpeUtilityHelpers              <- Flow Builder context helpers (merge fields, types)
-  newtonSelectorUtilityConfigDefaults    <- Shared default picker configuration
-  newtonSelectorFlowCpeUtilityConfigOptions     <- Shared option metadata for CPE and modal controls
-  newtonSelectorFlowCpeUtilityConfigState       <- Immutable config merge/patch helpers and preview/query mapping
-  newtonSelectorFlowCpeUtilityConfigValidation  <- Configuration issue generation and save-blocking rules
+  newtonSelectorUtilityDataSources               <- Normalizers for all 5 data sources; filter/sort/limit
+  newtonSelectorUtilityConfigDefaults            <- Shared default picker configuration
+  newtonSelectorFlowCpeUtilityHelpers            <- Flow Builder context helpers (merge fields, types)
+  newtonSelectorFlowCpeUtilityConfigOptions      <- Shared option metadata for CPE and modal controls
+  newtonSelectorFlowCpeUtilityConfigState        <- Immutable config merge/patch helpers and preview/query mapping
+  newtonSelectorFlowCpeUtilityConfigStyles       <- Style token helpers for CPE and preview rendering
+  newtonSelectorFlowCpeUtilityConfigValidation   <- Configuration issue generation and save-blocking rules
+  newtonSelectorFlowCpeUtilitySearchHighlight    <- Search result highlighting helper
 ```
 
-The config modal has been partially decomposed into shell, studio layout, preview, state, and validation modules. The Data, Content, Behavior, and Appearance chapter bodies still live in `newtonSelectorFlowCpeConfigModal` and remain the primary architecture debt before the modal meets the repository's sub-500-line component target.
+The config modal has been decomposed into shell, studio layout, preview, state, validation, and chapter-body modules. `newtonSelectorFlowCpeConfigModal` still owns orchestration, save handling, and cross-section state.
 
 ---
 
 ## Apex Layer
 
-| Class                             | Role                                                                                                                                                                   |
-| --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `NewtonSelectorRuntimeController` | `@AuraEnabled(cacheable=true)` endpoint for the SOQL data source. Deserializes the query config JSON and delegates to the service layer.                               |
-| `NewtonSelectorService`           | Maps SObject records to `NewtonSelectorItemDTO` instances using field mappings from `NewtonSelectorQueryDTO`.                                                          |
-| `NewtonSelectorRecordQuery`       | Builds and executes the dynamic SOQL query in `USER_MODE`. Validates object and field accessibility; allowlists WHERE fields/operators; enforces a 2,000-row hard cap. |
-| `NewtonSelectorQueryDTO`          | Input DTO: object API name, structured filters, legacy WHERE clause, ORDER BY, LIMIT, and field mappings.                                                              |
-| `NewtonSelectorItemDTO`           | Output DTO: `id`, `label`, `sublabel`, `icon`, `badge`, `helpText`, `value`, `disabled`.                                                                               |
-| `NewtonSelectorException`         | Typed exception surfaced to the LWC as an `AuraHandledException`.                                                                                                      |
-| `NewtonSelectorFlowCpeController` | Design-time Apex for the CPE: `searchSObjectTypes`, `searchFields`, `getObjectFields` -- powers the object/field pickers in the config modal.                          |
+| Class                                    | Role                                                                                                                                                                   |
+| ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `NewtonSelectorRuntimeController`        | Runtime SOQL endpoint plus design-time query validation. Deserializes query config JSON and delegates to the service layer.                                            |
+| `NewtonSelectorService`                  | Maps SObject records to `NewtonSelectorItemDTO` instances using field mappings from `NewtonSelectorQueryDTO`.                                                          |
+| `NewtonSelectorRecordQuery`              | Builds and executes the dynamic SOQL query in `USER_MODE`. Validates object and field accessibility; allowlists WHERE fields/operators; enforces a 2,000-row hard cap. |
+| `NewtonSelectorQueryDTO`                 | Input DTO: object API name, structured filters, legacy WHERE clause, ORDER BY, LIMIT, and field mappings.                                                              |
+| `NewtonSelectorQueryValidationResultDTO` | Output DTO for CPE query validation status, message, and generated SOQL preview.                                                                                       |
+| `NewtonSelectorItemDTO`                  | Output DTO: `id`, `label`, `sublabel`, `icon`, `badge`, `helpText`, `value`, `disabled`.                                                                               |
+| `NewtonSelectorException`                | Typed exception surfaced to the LWC as an `AuraHandledException`.                                                                                                      |
+| `NewtonSelectorFlowCpeController`        | Design-time Apex for the CPE: `searchSObjectTypes`, `searchFields`, `getObjectFields` -- powers the object/field selectors in the config modal.                        |
 
 All classes run `with sharing`. SOQL is executed via `Database.queryWithBinds` with `AccessLevel.USER_MODE` to respect field-level security and object permissions. Legacy WHERE text is parsed into allowlisted predicates before execution.
 
@@ -265,12 +288,9 @@ sf org open --target-org newton-dev
 
 ### Post-install
 
-1. Assign the permission set to users who will configure or run flows containing this component:
-   ```bash
-   sf org assign permset --name NewtonSelector --target-org my-org
-   ```
+1. Confirm the target users have access to the Apex classes if your org requires explicit Apex class permissions. This repository does not currently ship a `NewtonSelector` permission set.
 2. In Flow Builder, drag **Professor Flow | Newton Selector** onto a Screen element.
-3. Click the component to open the CPE and configure your data source, layout, and appearance.
+3. Click the component to open the CPE and configure your data source, content, behavior, layout, and appearance.
 
 ---
 
@@ -285,9 +305,12 @@ npm run lint
 
 # Format all source files
 npm run prettier
+
+# Verify formatting without writing changes
+npm run prettier:verify
 ```
 
-[Husky](https://typicode.github.io/husky/) runs Prettier, ESLint, and the Jest suite against staged files on every commit via `lint-staged`. No additional setup is needed after `npm install`.
+[Husky](https://typicode.github.io/husky/) runs Prettier, ESLint, and related Jest tests against staged files on every commit via `lint-staged`. No additional setup is needed after `npm install`.
 
 ---
 
@@ -308,16 +331,29 @@ npm run test:unit:coverage
 
 Test files live under `force-app/main/default/lwc/<component>/__tests__/`.
 
+### Flow Builder Smoke and E2E
+
+```bash
+# Install the Chromium browser used by Playwright
+npm run smoke:flow-builder:install
+
+# Run the Flow Builder UI smoke test
+npm run smoke:flow-builder
+
+# Run the deeper Flow Builder persistence E2E
+npm run test:e2e:flow-builder
+```
+
 ### Apex Tests
 
 ```bash
 sf apex run test --target-org my-org --result-format human --wait 10
 ```
 
-Key test classes: `NewtonSelectorRuntimeControllerTest`, `NewtonSelectorServiceTest`, `NewtonSelectorRecordQueryTest`. All use `NewtonSelectorTestDataFactory` for consistent setup data.
+Key test classes: `NewtonSelectorRuntimeControllerTest`, `NewtonSelectorServiceTest`, `NewtonSelectorRecordQueryTest`, and `NewtonSelectorFlowCpeControllerTest`. All use `NewtonSelectorTestDataFactory` for consistent setup data.
 
 ---
 
 ## License
 
-MIT (c) Professor Flow
+MIT (c) cchrisv
