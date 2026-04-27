@@ -1,0 +1,143 @@
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const root = path.resolve(__dirname, "..", "..");
+const lwcRoot = path.join(root, "force-app", "main", "default", "lwc");
+const lucidePath = path.join(
+  root,
+  "node_modules",
+  "lucide-static",
+  "icon-nodes.json"
+);
+
+const lucideNames = new Set(
+  Object.keys(JSON.parse(fs.readFileSync(lucidePath, "utf8")))
+);
+const findings = [];
+
+function walk(dir) {
+  return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+    const entryPath = path.join(dir, entry.name);
+    if (entry.isDirectory()) return walk(entryPath);
+    if (/\.(html|js|css)$/.test(entry.name)) return [entryPath];
+    return [];
+  });
+}
+
+function lineNumber(source, index) {
+  return source.slice(0, index).split(/\r?\n/).length;
+}
+
+function report(file, line, message) {
+  findings.push(`${path.relative(root, file)}:${line}: ${message}`);
+}
+
+for (const file of walk(lwcRoot)) {
+  if (file.includes(`${path.sep}__tests__${path.sep}`)) continue;
+
+  const source = fs.readFileSync(file, "utf8");
+
+  const lightningIconIndex = source.indexOf("lightning-icon");
+  if (lightningIconIndex !== -1) {
+    report(
+      file,
+      lineNumber(source, lightningIconIndex),
+      "lightning-icon is not allowed"
+    );
+  }
+
+  const legacyIconMatch = source.match(
+    /\b(?:utility|standard|action|custom):[A-Za-z0-9_]+/
+  );
+  if (legacyIconMatch) {
+    report(
+      file,
+      lineNumber(source, legacyIconMatch.index),
+      `legacy SLDS icon namespace is not allowed: ${legacyIconMatch[0]}`
+    );
+  }
+
+  const atomIconRegex = /<c-newton-atom-icon\b[\s\S]*?<\/c-newton-atom-icon>/g;
+  for (const match of source.matchAll(atomIconRegex)) {
+    const tag = match[0].replace(/\s+/g, " ");
+    const nameMatch = tag.match(/\bname="([^"]+)"/);
+    if (nameMatch && !lucideNames.has(nameMatch[1])) {
+      report(
+        file,
+        lineNumber(source, match.index),
+        `static icon name is not in Lucide: ${nameMatch[1]}`
+      );
+    }
+
+    const classMatch = tag.match(/\bclass="([^"]+)"/);
+    if (classMatch && /\bslds-icon(?:_| |$)/.test(classMatch[1])) {
+      report(
+        file,
+        lineNumber(source, match.index),
+        `slds-icon classes should not be applied to newtonAtomIcon: ${classMatch[1]}`
+      );
+    }
+
+    if (classMatch && /\bslds-float_right\b/.test(classMatch[1])) {
+      report(
+        file,
+        lineNumber(source, match.index),
+        'floating newtonAtomIcon breaks icon/text symmetry; use a flex wrapper and box="button"'
+      );
+    }
+
+    if (classMatch && /\bslds-button__icon\b/.test(classMatch[1])) {
+      report(
+        file,
+        lineNumber(source, match.index),
+        'slds-button__icon should not be applied to newtonAtomIcon; use box="button"'
+      );
+    }
+
+    if (
+      classMatch &&
+      /\bslds-input__icon\b/.test(classMatch[1]) &&
+      !/\bbox="input"/.test(tag)
+    ) {
+      report(
+        file,
+        lineNumber(source, match.index),
+        'input-positioned newtonAtomIcon must use box="input" for centered glyph sizing'
+      );
+    }
+
+    if (!/\bsize\s*=\s*(?:"[^"]+"|\{[^}]+\})/.test(tag)) {
+      report(
+        file,
+        lineNumber(source, match.index),
+        "newtonAtomIcon must declare size explicitly"
+      );
+    }
+  }
+
+  if (file.endsWith(".js")) {
+    const iconPropertyRegex = /\b(?:icon|optionIcon)\s*:\s*["']([^"']+)["']/g;
+    for (const match of source.matchAll(iconPropertyRegex)) {
+      const iconName = match[1];
+      if (
+        iconName &&
+        !lucideNames.has(iconName.toLowerCase().replace(/_/g, "-"))
+      ) {
+        report(
+          file,
+          lineNumber(source, match.index),
+          `JS icon option name is not in Lucide: ${iconName}`
+        );
+      }
+    }
+  }
+}
+
+if (findings.length) {
+  console.error(findings.join("\n"));
+  process.exit(1);
+}
+
+console.log("Lucide icon usage audit passed.");

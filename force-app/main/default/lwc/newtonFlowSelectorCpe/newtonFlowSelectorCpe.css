@@ -1,0 +1,282 @@
+/* =============================================================================
+   newtonFlowSelectorCpe — Flow Builder inline sidebar
+   Quiet editorial summary: section headings + plain-language lines. Readable
+   at a glance. No cryptic abbreviations, no color-coded chapter numerals.
+   One brand accent; typography does the hierarchy.
+   ============================================================================= */
+
+:host {
+  display: block;
+
+  /* Surface + ink */
+  --newton-cpe-surface: var(--slds-g-color-neutral-base-100, #ffffff);
+  --newton-cpe-ink-strong: var(--slds-g-color-neutral-base-10, #181818);
+  --newton-cpe-ink-body: var(--slds-g-color-neutral-base-20, #2e2e2e);
+  --newton-cpe-ink-muted: var(--slds-g-color-neutral-base-50, #747474);
+  --newton-cpe-ink-soft: var(--slds-g-color-neutral-base-60, #9a9a9a);
+  --newton-cpe-hairline: var(--slds-g-color-border-base-1, #e5e5e5);
+  --newton-cpe-line: var(--newton-cpe-border-base-2, #d9d9d9);
+
+  /* Brand + status */
+  --newton-cpe-brand: var(--slds-g-color-brand-base-50, #0176d3);
+  --newton-cpe-brand-deep: var(--slds-g-color-brand-base-40, #014486);
+  --newton-cpe-brand-weak: var(--slds-g-color-brand-base-95, #eaf3ff);
+
+  /* Shape */
+  --newton-cpe-radius: var(--slds-g-radius-border-2, 0.25rem);
+  --newton-cpe-radius-lg: var(--slds-g-radius-border-3, 0.5rem);
+  --newton-cpe-shadow: var(--slds-g-shadow-1, 0 1px 2px rgba(0, 0, 0, 0.06));
+
+  /* Mono kept ONLY for API-style strings (Lead.Rating, {!myVar}) — not for
+       eyebrows or chips. Makes api-code visually distinct from prose. */
+  --newton-cpe-mono:
+    ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+}
+
+.newton-cpe {
+  display: flex;
+  flex-direction: column;
+  gap: var(--slds-g-spacing-3, 0.75rem);
+  padding: var(--slds-g-spacing-3, 0.75rem);
+}
+
+/* =============================================================================
+   VALIDATION ERRORS
+   ============================================================================= */
+
+.newton-cpe__errors {
+  display: flex;
+  gap: var(--slds-g-spacing-2, 0.5rem);
+  padding: var(--slds-g-spacing-2, 0.5rem) var(--slds-g-spacing-3, 0.75rem);
+  border: var(--slds-g-sizing-border-1, 1px) solid
+    var(--slds-g-color-error-base-50, #ba0517);
+  background: var(--slds-g-color-error-base-95, #fdeef0);
+  color: var(--slds-g-color-error-base-30, #8e030f);
+  border-radius: var(--newton-cpe-radius);
+  align-items: flex-start;
+}
+
+.newton-cpe__errors-list {
+  list-style: disc;
+  margin: 0;
+  padding: 0 0 0 var(--slds-g-spacing-4, 1rem);
+  font-size: var(--slds-g-font-scale-neg-1, 0.75rem);
+  line-height: var(--newton-static-v-1-45, 1.45);
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.newton-cpe__errors-list li {
+  list-style: disc;
+}
+
+/* =============================================================================
+   SUMMARY CARD — a single sheet with quiet section dividers
+   ============================================================================= */
+
+.newton-cpe__card {
+  background: var(--newton-cpe-surface);
+  border: var(--slds-g-sizing-border-1, 1px) solid var(--newton-cpe-hairline);
+  border-radius: var(--newton-cpe-radius-lg);
+  box-shadow: var(--newton-cpe-shadow);
+  padding: var(--slds-g-spacing-4, 1rem);
+  display: flex;
+  flex-direction: column;
+  gap: var(--slds-g-spacing-4, 1rem);
+}
+
+.newton-cpe__card-head {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  padding-bottom: var(--slds-g-spacing-3, 0.75rem);
+  border-bottom: var(--newton-static-v-1px, 1px) solid
+    var(--newton-cpe-hairline);
+}
+
+.newton-cpe__card-eyebrow {
+  margin: 0;
+  font-size: var(--newton-static-v-0-6875rem, 0.6875rem);
+  font-weight: var(--slds-g-font-weight-6, 600);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--newton-cpe-brand);
+}
+
+.newton-cpe__card-title {
+  margin: 0;
+  font-size: var(--newton-static-v-0-9375rem, 0.9375rem);
+  font-weight: var(--slds-g-font-weight-7, 700);
+  color: var(--newton-cpe-ink-strong);
+  line-height: var(--newton-static-v-1-3, 1.3);
+  letter-spacing: -0.005em;
+}
+
+/* =============================================================================
+   SECTIONS — heading + stacked plain lines
+   ============================================================================= */
+
+.newton-cpe__section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1875rem;
+}
+
+.newton-cpe__section-title {
+  margin: 0 0 var(--newton-static-v-0-1875rem, 0.1875rem) 0;
+  font-size: var(--newton-static-v-0-6875rem, 0.6875rem);
+  font-weight: var(--slds-g-font-weight-7, 700);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--newton-cpe-ink-muted);
+}
+
+/* First line in data-source section renders as the "kind" (Picklist, SOQL,
+   etc.) with slightly stronger weight — it's the primary identifier. */
+.newton-cpe__section-kind {
+  margin: 0;
+  font-size: var(--slds-g-font-scale-1, 0.875rem);
+  font-weight: var(--slds-g-font-weight-7, 700);
+  color: var(--newton-cpe-ink-strong);
+  line-height: var(--newton-static-v-1-3, 1.3);
+}
+
+.newton-cpe__line {
+  margin: 0;
+  font-size: var(--slds-g-font-scale-base, 0.8125rem);
+  font-weight: var(--slds-g-font-weight-4, 400);
+  color: var(--newton-cpe-ink-body);
+  line-height: var(--newton-static-v-1-4, 1.4);
+  overflow-wrap: anywhere;
+}
+
+/* First line of each non-data section renders stronger — it's the primary
+   statement (e.g., "Single select, required"). */
+.newton-cpe__section > .newton-cpe__line:first-of-type {
+  font-weight: var(--slds-g-font-weight-6, 600);
+  color: var(--newton-cpe-ink-strong);
+  font-size: var(--slds-g-font-scale-1, 0.875rem);
+}
+
+/* Muted = supporting detail / secondary info */
+.newton-cpe__line[data-muted="true"] {
+  font-size: var(--slds-g-font-scale-neg-1, 0.75rem);
+  font-weight: var(--slds-g-font-weight-4, 400);
+  color: var(--newton-cpe-ink-muted);
+  line-height: var(--newton-static-v-1-4, 1.4);
+}
+
+/* Mono = API reference (Lead.Rating, {!myVariable}). Visually separates code
+   from prose without resorting to chip pills. */
+.newton-cpe__line[data-mono="true"] {
+  font-family: var(--newton-cpe-mono);
+  font-size: var(--slds-g-font-scale-neg-1, 0.75rem);
+  color: var(--newton-cpe-ink-body);
+  word-break: break-all;
+}
+
+/* =============================================================================
+   CTA BUTTON
+   ============================================================================= */
+
+.newton-cpe__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--slds-g-spacing-2, 0.5rem);
+  padding: var(--slds-g-spacing-2, 0.5rem) var(--slds-g-spacing-3, 0.75rem);
+  background: var(--newton-cpe-brand);
+  color: var(--slds-g-color-on-accent-1, #ffffff);
+  border: var(--slds-g-sizing-border-1, 1px) solid var(--newton-cpe-brand);
+  border-radius: var(--newton-cpe-radius);
+  font-size: var(--slds-g-font-scale-base, 0.8125rem);
+  font-weight: var(--slds-g-font-weight-6, 600);
+  cursor: pointer;
+  width: var(--newton-static-v-100-percent, 100%);
+  transition:
+    background-color 120ms ease,
+    box-shadow 120ms ease,
+    transform 120ms ease;
+}
+
+.newton-cpe__cta:hover {
+  background: var(--newton-cpe-brand-deep);
+  border-color: var(--newton-cpe-brand-deep);
+  box-shadow: var(--newton-cpe-shadow);
+}
+
+.newton-cpe__cta:active {
+  transform: translateY(0.5px);
+}
+
+.newton-cpe__cta:focus-visible {
+  outline: var(--slds-g-sizing-border-2, 2px) solid
+    var(--slds-g-color-brand-base-60, #0b5cab);
+  outline-offset: var(--slds-g-sizing-border-2, 2px);
+}
+
+.newton-cpe__cta c-newton-atom-icon {
+  color: var(--slds-g-color-neutral-base-100, #ffffff);
+}
+
+.newton-cpe__cta_primary {
+  padding: var(--slds-g-spacing-3, 0.75rem) var(--slds-g-spacing-4, 1rem);
+  font-size: var(--slds-g-font-scale-1, 0.875rem);
+}
+
+/* =============================================================================
+   EMPTY STATE
+   ============================================================================= */
+
+.newton-cpe__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--slds-g-spacing-2, 0.5rem);
+  padding: var(--slds-g-spacing-6, 1.5rem) var(--slds-g-spacing-3, 0.75rem);
+  border: var(--slds-g-sizing-border-1, 1px) dashed var(--newton-cpe-line);
+  border-radius: var(--newton-cpe-radius-lg);
+  background: var(--newton-cpe-surface);
+  text-align: center;
+}
+
+.newton-cpe__empty-glyph {
+  width: var(--newton-static-v-2-5rem, 2.5rem);
+  height: var(--newton-static-v-2-5rem, 2.5rem);
+  border-radius: var(--newton-static-v-999px, 999px);
+  background: var(--newton-cpe-brand-weak);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--newton-cpe-brand);
+  margin-bottom: var(--slds-g-spacing-1, 0.25rem);
+}
+
+.newton-cpe__empty-glyph c-newton-atom-icon {
+  color: var(--newton-cpe-brand);
+}
+
+.newton-cpe__empty-title {
+  margin: 0;
+  font-size: var(--newton-static-v-0-9375rem, 0.9375rem);
+  font-weight: var(--slds-g-font-weight-7, 700);
+  color: var(--newton-cpe-ink-strong);
+}
+
+.newton-cpe__empty-copy {
+  margin: 0 0 var(--slds-g-spacing-1, 0.25rem);
+  font-size: var(--slds-g-font-scale-base, 0.8125rem);
+  color: var(--newton-cpe-ink-muted);
+  line-height: var(--newton-static-v-1-45, 1.45);
+  max-width: var(--newton-static-v-16rem, 16rem);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .newton-cpe__cta {
+    transition: none;
+  }
+  .newton-cpe__cta:active {
+    transform: none;
+  }
+}

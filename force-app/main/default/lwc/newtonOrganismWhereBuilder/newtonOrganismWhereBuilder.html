@@ -1,0 +1,369 @@
+<template>
+  <section class="cc-where" aria-labelledby="cc-where-title">
+    <header class="cc-where__header">
+      <div class="cc-where__title-block">
+        <p id="cc-where-title" class="cc-where__title">Where clause</p>
+        <p class="cc-where__subtitle">
+          Build grouped filters without typing custom SOQL logic.
+        </p>
+      </div>
+      <template lwc:if={showManualMode}>
+        <lightning-button
+          variant="neutral"
+          label="Rebuild visually"
+          onclick={handleRebuildVisual}
+          disabled={disabled}
+        ></lightning-button>
+      </template>
+      <template lwc:else>
+        <div class="cc-where__root-mode">
+          <span class="cc-where__mode-label">Match root</span>
+          <div
+            class="cc-where-segment-group"
+            role="group"
+            aria-label="Root logic"
+          >
+            <template for:each={rootLogicSegments} for:item="segment">
+              <button
+                key={segment.value}
+                type="button"
+                class={segment.cssClass}
+                data-value={segment.value}
+                aria-pressed={segment.ariaPressed}
+                disabled={disabled}
+                onclick={handleRootOperatorChange}
+              >
+                {segment.label}
+              </button>
+            </template>
+          </div>
+        </div>
+      </template>
+    </header>
+
+    <template lwc:if={showManualMode}>
+      <div class="cc-where-manual">
+        <label class="cc-where-manual__label" for="cc-where-manual-input">
+          Manual WHERE clause
+        </label>
+        <lightning-textarea
+          id="cc-where-manual-input"
+          class="cc-where-manual__input"
+          label="Manual WHERE clause"
+          variant="label-hidden"
+          value={manualWhere}
+          disabled={disabled}
+          oninput={handleManualInput}
+        ></lightning-textarea>
+        <p class="cc-where-manual__hint">
+          This legacy clause is preserved because it cannot be safely
+          represented as visual groups yet.
+        </p>
+      </div>
+    </template>
+
+    <template lwc:else>
+      <template lwc:if={showSelectionToolbar}>
+        <div class="cc-where-toolbar" aria-label="WHERE builder actions">
+          <div class="cc-where-toolbar__selection">
+            <span class="cc-where-toolbar__label">Selected</span>
+            <span class="cc-where-toolbar__count">{selectedCount}</span>
+          </div>
+          <lightning-button
+            variant="neutral"
+            label="Group"
+            icon-name="utility:merge"
+            onclick={handleGroupSelected}
+            disabled={groupSelectionDisabled}
+          ></lightning-button>
+          <lightning-button
+            variant="neutral"
+            label="Clear"
+            onclick={handleClearSelection}
+            disabled={disabled}
+          ></lightning-button>
+        </div>
+      </template>
+
+      <div class="cc-where__canvas" ondragover={handleDragOver}>
+        <template lwc:if={hasRows}>
+          <template for:each={builderRows} for:item="row">
+            <article
+              key={row.key}
+              class={row.rowClass}
+              style={row.style}
+              data-id={row.id}
+              draggable="true"
+              ondragstart={handleDragStart}
+              ondrop={handleDrop}
+            >
+              <div class="cc-where-node__rail">
+                <input
+                  type="checkbox"
+                  class="cc-where-node__check"
+                  aria-label="Select row"
+                  data-id={row.id}
+                  checked={row.selectedChecked}
+                  disabled={disabled}
+                  onchange={handleNodeSelect}
+                />
+                <button
+                  type="button"
+                  class="cc-where-node__drag"
+                  title="Drag to reorder"
+                  aria-label="Drag to reorder"
+                  disabled={disabled}
+                >
+                  <c-newton-atom-icon
+                    name="grip-vertical"
+                    size="xx-small"
+                    box="button"
+                    alternative-text=""
+                  ></c-newton-atom-icon>
+                </button>
+              </div>
+
+              <template lwc:if={row.isGroup}>
+                <div class="cc-where-group">
+                  <div class="cc-where-group__meta">
+                    <span class="cc-where-group__badge">{row.title}</span>
+                    <span class="cc-where-group__count">{row.countLabel}</span>
+                  </div>
+                  <div class="cc-where-group__logic">
+                    <div
+                      class="cc-where-segment-group"
+                      role="group"
+                      aria-label="Group logic"
+                    >
+                      <template for:each={row.logicSegments} for:item="segment">
+                        <button
+                          key={segment.value}
+                          type="button"
+                          class={segment.cssClass}
+                          data-id={row.id}
+                          data-value={segment.value}
+                          aria-pressed={segment.ariaPressed}
+                          disabled={disabled}
+                          onclick={handleGroupOperatorChange}
+                        >
+                          {segment.label}
+                        </button>
+                      </template>
+                    </div>
+                  </div>
+                </div>
+              </template>
+
+              <template lwc:if={row.isCondition}>
+                <div class="cc-where-condition">
+                  <span
+                    class="cc-where-condition__num"
+                    title={row.numberTitle}
+                    aria-label={row.numberTitle}
+                    >{row.number}</span
+                  >
+                  <div class="cc-where-condition__fields">
+                    <c-newton-molecule-custom-lookup
+                      label="Field"
+                      placeholder="Select field..."
+                      variant="label-hidden"
+                      selection={row.fieldSelection}
+                      disabled={disabled}
+                      min-search-term-length="0"
+                      scroll-after-n-items="5"
+                      data-id={row.id}
+                      onsearch={handleFieldSearch}
+                      onselectionchange={handleFieldSelectionChange}
+                    ></c-newton-molecule-custom-lookup>
+                    <c-newton-molecule-studio-choice-control
+                      label="Operator"
+                      value={row.operator}
+                      items={row.operatorOptions}
+                      variant="picklist"
+                      disabled={disabled}
+                      data-id={row.id}
+                      onvaluechange={handleOperatorChange}
+                      form-variant="label-hidden"
+                    ></c-newton-molecule-studio-choice-control>
+                    <template lwc:if={row.isBooleanValue}>
+                      <c-newton-molecule-studio-choice-control
+                        label="Value"
+                        value={row.value}
+                        items={row.booleanOptions}
+                        variant="picklist"
+                        disabled={disabled}
+                        data-id={row.id}
+                        onvaluechange={handleValueChange}
+                        form-variant="label-hidden"
+                      ></c-newton-molecule-studio-choice-control>
+                    </template>
+                    <template lwc:else>
+                      <c-newton-organism-resource-selector
+                        name={row.valueName}
+                        value={row.value}
+                        value-type="reference"
+                        variant="label-hidden"
+                        builder-context={builderContext}
+                        automatic-output-variables={automaticOutputVariables}
+                        allow-hard-code-reference
+                        max-width={maxWidth}
+                        data-id={row.id}
+                        onvaluechanged={handleResourceValueChange}
+                      ></c-newton-organism-resource-selector>
+                    </template>
+                  </div>
+                  <template lwc:if={row.hasError}>
+                    <p class="cc-where-condition__error" role="alert">
+                      {row.errorMessage}
+                    </p>
+                  </template>
+                </div>
+              </template>
+
+              <div class="cc-where-node__actions">
+                <button
+                  type="button"
+                  class="cc-where-icon-button"
+                  title="Move up"
+                  aria-label="Move up"
+                  data-id={row.id}
+                  data-direction="up"
+                  disabled={disabled}
+                  onclick={handleMoveNode}
+                >
+                  <c-newton-atom-icon
+                    name="arrow-up"
+                    size="xx-small"
+                    box="button"
+                    alternative-text=""
+                  ></c-newton-atom-icon>
+                </button>
+                <button
+                  type="button"
+                  class="cc-where-icon-button"
+                  title="Move down"
+                  aria-label="Move down"
+                  data-id={row.id}
+                  data-direction="down"
+                  disabled={disabled}
+                  onclick={handleMoveNode}
+                >
+                  <c-newton-atom-icon
+                    name="arrow-down"
+                    size="xx-small"
+                    box="button"
+                    alternative-text=""
+                  ></c-newton-atom-icon>
+                </button>
+                <template lwc:if={row.isCondition}>
+                  <button
+                    type="button"
+                    class="cc-where-icon-button"
+                    title="Group with next"
+                    aria-label="Group with next"
+                    data-id={row.id}
+                    disabled={disabled}
+                    onclick={handleGroupWithNext}
+                  >
+                    <c-newton-atom-icon
+                      name="brackets"
+                      size="xx-small"
+                      box="button"
+                      alternative-text=""
+                    ></c-newton-atom-icon>
+                  </button>
+                  <button
+                    type="button"
+                    class="cc-where-icon-button"
+                    title="Indent into previous group"
+                    aria-label="Indent into previous group"
+                    data-id={row.id}
+                    disabled={disabled}
+                    onclick={handleIndentNode}
+                  >
+                    <c-newton-atom-icon
+                      name="list-indent-increase"
+                      size="xx-small"
+                      box="button"
+                      alternative-text=""
+                    ></c-newton-atom-icon>
+                  </button>
+                  <button
+                    type="button"
+                    class="cc-where-icon-button"
+                    title="Outdent"
+                    aria-label="Outdent"
+                    data-id={row.id}
+                    disabled={disabled}
+                    onclick={handleOutdentNode}
+                  >
+                    <c-newton-atom-icon
+                      name="list-indent-decrease"
+                      size="xx-small"
+                      box="button"
+                      alternative-text=""
+                    ></c-newton-atom-icon>
+                  </button>
+                  <button
+                    type="button"
+                    class="cc-where-icon-button cc-where-icon-button_danger"
+                    title="Remove condition"
+                    aria-label="Remove condition"
+                    data-id={row.id}
+                    disabled={disabled}
+                    onclick={handleRemoveCondition}
+                  >
+                    <c-newton-atom-icon
+                      name="trash-2"
+                      size="xx-small"
+                      box="button"
+                      alternative-text=""
+                    ></c-newton-atom-icon>
+                  </button>
+                </template>
+                <template lwc:if={row.isGroup}>
+                  <button
+                    type="button"
+                    class="cc-where-icon-button"
+                    title="Ungroup"
+                    aria-label="Ungroup"
+                    data-id={row.id}
+                    disabled={disabled}
+                    onclick={handleUngroup}
+                  >
+                    <c-newton-atom-icon
+                      name="ungroup"
+                      size="xx-small"
+                      box="button"
+                      alternative-text=""
+                    ></c-newton-atom-icon>
+                  </button>
+                </template>
+              </div>
+            </article>
+          </template>
+        </template>
+      </div>
+
+      <template lwc:if={hasValidationMessage}>
+        <p class="cc-where__error" role="alert">{_validationMessage}</p>
+      </template>
+
+      <button
+        type="button"
+        class="cc-where-add"
+        data-parent-id="root"
+        disabled={disabled}
+        onclick={handleAddCondition}
+      >
+        <c-newton-atom-icon
+          name="plus"
+          size="xx-small"
+          box="button"
+          alternative-text=""
+        ></c-newton-atom-icon>
+        <span>Add condition</span>
+      </button>
+    </template>
+  </section>
+</template>

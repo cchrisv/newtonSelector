@@ -1,0 +1,177 @@
+<template>
+  <!-- SLDS 2 form-element pattern. The label uses the standard field label
+         class only so the picker aligns with lightning-input labels. -->
+  <fieldset class="slds-form-element newton-organism">
+    <template lwc:if={hasLabel}>
+      <legend class="slds-form-element__label newton-organism__label">
+        <template lwc:if={required}>
+          <abbr title="required" class="slds-required">*</abbr>
+        </template>
+        <span class="newton-organism__label-text">{label}</span>
+        <template lwc:if={hasFieldHelp}>
+          <lightning-helptext
+            class="newton-organism__field-help"
+            content={fieldLevelHelp}
+          ></lightning-helptext>
+        </template>
+      </legend>
+      <template lwc:if={hasHelp}>
+        <div class="slds-form-element__help newton-organism__help" role="note">
+          {helpText}
+        </div>
+      </template>
+    </template>
+
+    <div class="slds-form-element__control newton-organism__control">
+      <template lwc:if={isLoading}>
+        <div
+          class="newton-state newton-state_loading"
+          role="status"
+          aria-live="polite"
+        >
+          <div class="newton-skeleton newton-skeleton_card"></div>
+          <div class="newton-skeleton newton-skeleton_card"></div>
+          <div class="newton-skeleton newton-skeleton_card"></div>
+          <span class="slds-assistive-text">Loading options</span>
+        </div>
+      </template>
+
+      <template lwc:if={hasError}>
+        <div class="newton-state newton-state_error" role="alert">
+          <div class="newton-state__plate" aria-hidden="true">
+            <span
+              class="newton-state__plate-corner newton-state__plate-corner_tl"
+            ></span>
+            <span
+              class="newton-state__plate-corner newton-state__plate-corner_tr"
+            ></span>
+            <span
+              class="newton-state__plate-corner newton-state__plate-corner_bl"
+            ></span>
+            <span
+              class="newton-state__plate-corner newton-state__plate-corner_br"
+            ></span>
+            <span class="newton-state__glyph newton-state__glyph_error">
+              <c-newton-atom-icon
+                name="circle-alert"
+                size="small"
+                alternative-text="Error"
+              ></c-newton-atom-icon>
+            </span>
+          </div>
+          <p class="newton-state__message">{resolvedErrorMessage}</p>
+          <button
+            type="button"
+            class="newton-state__retry"
+            onclick={handleRetry}
+          >
+            <c-newton-atom-icon
+              name="rotate-cw"
+              size="xx-small"
+              alternative-text=""
+            ></c-newton-atom-icon>
+            <span>Try again</span>
+          </button>
+        </div>
+      </template>
+
+      <template lwc:if={isEmpty}>
+        <div class="newton-state newton-state_empty">
+          <div class="newton-state__plate" aria-hidden="true">
+            <span
+              class="newton-state__plate-corner newton-state__plate-corner_tl"
+            ></span>
+            <span
+              class="newton-state__plate-corner newton-state__plate-corner_tr"
+            ></span>
+            <span
+              class="newton-state__plate-corner newton-state__plate-corner_bl"
+            ></span>
+            <span
+              class="newton-state__plate-corner newton-state__plate-corner_br"
+            ></span>
+            <span class="newton-state__glyph">
+              <c-newton-atom-icon
+                name="search"
+                size="small"
+                alternative-text=""
+              ></c-newton-atom-icon>
+            </span>
+          </div>
+          <p class="newton-state__message">{emptyStateMessage}</p>
+        </div>
+      </template>
+
+      <template lwc:if={isPopulated}>
+        <c-newton-molecule-selector-group
+          items={_items}
+          variant={layout}
+          selection-mode={selectionMode}
+          selected-values={selectedValuesForMolecule}
+          min-selections={minSelections}
+          max-selections={maxSelections}
+          show-select-all={showSelectAll}
+          enable-search={enableSearch}
+          preview-mode={previewMode}
+          grid-min-width={gridMinWidth}
+          gap-horizontal={gapHorizontal}
+          gap-vertical={gapVertical}
+          margin-top={marginTop}
+          margin-right={marginRight}
+          margin-bottom={marginBottom}
+          margin-left={marginLeft}
+          padding-top={paddingTop}
+          padding-right={paddingRight}
+          padding-bottom={paddingBottom}
+          padding-left={paddingLeft}
+          size={size}
+          aspect-ratio={aspectRatio}
+          badge-position={badgePosition}
+          badge-variant={badgeVariant}
+          badge-shape={badgeShape}
+          columns={columns}
+          selection-indicator={selectionIndicator}
+          elevation={elevation}
+          pattern={pattern}
+          pattern-tone={patternTone}
+          pattern-hover-tone={patternHoverTone}
+          pattern-selected-tone={patternSelectedTone}
+          pattern-disabled-tone={patternDisabledTone}
+          corner-style={cornerStyle}
+          corner-tone={cornerTone}
+          surface-style={surfaceStyle}
+          surface-tone={surfaceTone}
+          surface-hover-tone={surfaceHoverTone}
+          surface-selected-tone={surfaceSelectedTone}
+          surface-disabled-tone={surfaceDisabledTone}
+          icon-decor={iconDecor}
+          icon-style={iconStyle}
+          icon-shading={iconShading}
+          icon-tone={iconTone}
+          icon-tone-hex={iconToneHex}
+          icon-glyph-tone={iconGlyphTone}
+          icon-glyph-tone-hex={iconGlyphToneHex}
+          icon-size={iconSize}
+          pattern-tone-hex={patternToneHex}
+          pattern-hover-tone-hex={patternHoverToneHex}
+          pattern-selected-tone-hex={patternSelectedToneHex}
+          pattern-disabled-tone-hex={patternDisabledToneHex}
+          corner-tone-hex={cornerToneHex}
+          surface-tone-hex={surfaceToneHex}
+          surface-hover-tone-hex={surfaceHoverToneHex}
+          surface-selected-tone-hex={surfaceSelectedToneHex}
+          surface-disabled-tone-hex={surfaceDisabledToneHex}
+          badge-variant-hex={badgeVariantHex}
+          show-icons={showIcons}
+          show-badges={showBadges}
+          allow-manual-input={allowManualInput}
+          manual-input-label={manualInputLabel}
+          manual-input-value={manualValueForMolecule}
+          manual-input-min-length={manualInputMinLength}
+          manual-input-max-length={manualInputMaxLength}
+          onselectionchange={handleSelectionChange}
+        ></c-newton-molecule-selector-group>
+      </template>
+    </div>
+  </fieldset>
+</template>

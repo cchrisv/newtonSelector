@@ -1,0 +1,183 @@
+<template>
+  <div class="slds-form-element">
+    <div class="slds-form-element__control">
+      <div class="slds-combobox_container">
+        <div
+          class={comboboxClass}
+          aria-expanded={ariaExpanded}
+          aria-haspopup="listbox"
+          aria-owns={_listboxId}
+          role="combobox"
+        >
+          <div class={inputContainerClass} role="none">
+            <template lwc:if={showSelectedShape}>
+              <span
+                class="slds-icon_container slds-combobox__input-entity-icon newton-rich-combobox__input-entity-icon"
+              >
+                <span
+                  class="newton-rich-combobox__leading-shape"
+                  style={selectedShapeStyle}
+                  aria-hidden="true"
+                ></span>
+              </span>
+            </template>
+            <template lwc:elseif={showSelectedIcon}>
+              <span
+                class="slds-icon_container slds-combobox__input-entity-icon newton-rich-combobox__input-entity-icon"
+              >
+                <c-newton-atom-icon
+                  name={selectedIconName}
+                  size="x-small"
+                  box="input"
+                  alternative-text="Selected option icon"
+                ></c-newton-atom-icon>
+              </span>
+            </template>
+
+            <input
+              lwc:ref="input"
+              id={inputId}
+              class={inputClass}
+              type="text"
+              role="textbox"
+              autocomplete="off"
+              aria-autocomplete="list"
+              aria-controls={_listboxId}
+              aria-activedescendant={activeOptionId}
+              aria-expanded={ariaExpanded}
+              disabled={disabled}
+              readonly={inputReadonly}
+              value={inputValue}
+              placeholder={computedPlaceholder}
+              oninput={handleInput}
+              onfocus={handleFocus}
+              onclick={handleClick}
+              onblur={handleBlur}
+              onkeydown={handleKeydown}
+            />
+
+            <span
+              class="slds-icon_container slds-input__icon slds-input__icon_right"
+            >
+              <c-newton-atom-icon
+                name="chevron-down"
+                size="x-small"
+                box="input"
+                alternative-text="Show options"
+              ></c-newton-atom-icon>
+            </span>
+          </div>
+
+          <template lwc:if={_open}>
+            <div
+              id={_listboxId}
+              class="slds-dropdown slds-dropdown_fluid newton-rich-combobox__dropdown"
+              role="listbox"
+            >
+              <ul
+                class="slds-listbox slds-listbox_vertical"
+                role="presentation"
+              >
+                <template lwc:if={hasResults}>
+                  <template for:each={displayedItems} for:item="item">
+                    <li
+                      key={item.id}
+                      class="slds-listbox__item"
+                      role="presentation"
+                    >
+                      <div
+                        id={item.optionId}
+                        class="slds-media slds-listbox__option slds-listbox__option_entity slds-media_small newton-rich-combobox__option"
+                        data-value={item.value}
+                        role="option"
+                        aria-selected={item.ariaSelected}
+                        data-active={item.isActive}
+                        data-disabled={item.disabled}
+                        onclick={handleOptionSelect}
+                        onmousedown={handleOptionPointerDown}
+                      >
+                        <span
+                          class="slds-media__figure slds-listbox__option-icon"
+                        >
+                          <template lwc:if={item.shape}>
+                            <span
+                              class="newton-rich-combobox__shape"
+                              style={item._shapeStyle}
+                              aria-hidden="true"
+                            ></span>
+                          </template>
+                          <template lwc:elseif={item.icon}>
+                            <c-newton-atom-icon
+                              name={item.icon}
+                              size="small"
+                              box="option"
+                              alternative-text="Option icon"
+                            ></c-newton-atom-icon>
+                          </template>
+                        </span>
+
+                        <span
+                          class="slds-media__body newton-rich-combobox__body"
+                        >
+                          <span class="newton-rich-combobox__title-row">
+                            <span
+                              class="slds-listbox__option-text slds-listbox__option-text_entity"
+                            >
+                              <template
+                                for:each={item.titleTokens}
+                                for:item="token"
+                              >
+                                <span key={token.key}>
+                                  <mark
+                                    lwc:if={token.isHighlight}
+                                    class="newton-rich-combobox__mark"
+                                    >{token.text}</mark
+                                  >
+                                  <template lwc:else>{token.text}</template>
+                                </span>
+                              </template>
+                            </span>
+                            <span lwc:if={item.badge} class={item._badgeClass}
+                              >{item.badge}</span
+                            >
+                          </span>
+                          <span
+                            lwc:if={item.secondaryText}
+                            class="slds-listbox__option-meta slds-listbox__option-meta_entity"
+                          >
+                            {item.secondaryText}
+                          </span>
+                        </span>
+
+                        <span
+                          lwc:if={item.isSelected}
+                          class="newton-rich-combobox__check"
+                        >
+                          <c-newton-atom-icon
+                            name="check"
+                            size="x-small"
+                            box="button"
+                            alternative-text="Selected"
+                          ></c-newton-atom-icon>
+                        </span>
+                      </div>
+                    </li>
+                  </template>
+                </template>
+                <template lwc:else>
+                  <li class="slds-listbox__item" role="presentation">
+                    <div
+                      class="slds-p-around_small slds-text-color_weak newton-rich-combobox__empty"
+                    >
+                      {noResultsMessage}
+                    </div>
+                  </li>
+                </template>
+              </ul>
+            </div>
+          </template>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>66.0</apiVersion>
+    <isExposed>false</isExposed>
+    <description
+  >Professor Flow | CPE Helpers — shared utility module for the CPE Toolkit. Exposes a field-metadata LRU cache, merge-field helpers, and data-source mode resolvers.</description>
+</LightningComponentBundle>

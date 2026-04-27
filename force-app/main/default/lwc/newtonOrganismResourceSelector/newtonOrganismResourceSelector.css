@@ -1,0 +1,42 @@
+:host {
+  display: block;
+  width: var(--newton-static-v-100-percent, 100%);
+}
+
+.newton-resource-selector__value-input {
+  display: block;
+  width: var(--newton-static-v-100-percent, 100%);
+  padding-left: 0 !important;
+}
+
+.newton-resource-selector__input-icon {
+  top: var(--newton-resource-selector-input-icon-top, 56%) !important;
+}
+
+.newton-resource-selector__icon-small {
+  color: currentColor;
+}
+
+.newton-resource-selector__chevron {
+  margin-left: auto;
+  color: var(--slds-g-color-neutral-base-50);
+}
+
+.newton-resource-selector__option-body {
+  min-width: 0;
+}
+
+.custom-text-transform_uppercase {
+  text-transform: uppercase;
+}
+
+.custom-width-full {
+  width: var(--newton-static-v-100-percent, 100%);
+}
+
+/* Standard SLDS pill (not bare): center in combobox row, allow wrapping for long merge field paths */
+.cpe-picker-pill-wrap {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: var(--newton-static-v-0-125rem, 0.125rem) 0;
+}
