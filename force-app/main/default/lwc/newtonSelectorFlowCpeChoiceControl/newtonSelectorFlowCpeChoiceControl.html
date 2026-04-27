@@ -1,0 +1,50 @@
+<template>
+  <fieldset class={formElementClass}>
+    <template lwc:if={hasLabel}>
+      <legend class={legendClass}>
+        <template lwc:if={required}>
+          <abbr class="slds-required" title="required">*</abbr>
+        </template>
+        {label}
+        <template lwc:if={fieldLevelHelp}>
+          <lightning-helptext content={fieldLevelHelp}></lightning-helptext>
+        </template>
+      </legend>
+    </template>
+    <template lwc:if={description}>
+      <div class="slds-form-element__help" role="note">{description}</div>
+    </template>
+    <div class="slds-form-element__control newton-studio-choice__control">
+      <c-newton-selector-group
+        items={normalizedItems}
+        variant={variant}
+        selection-mode={selectionMode}
+        selected-values={selectedValues}
+        min-selections={minSelections}
+        max-selections={maxSelections}
+        show-select-all={showSelectAll}
+        enable-search={enableSearch}
+        preview-mode={disabled}
+        size={size}
+        aspect-ratio={aspectRatio}
+        icon-size={iconSize}
+        selection-indicator={selectionIndicator}
+        elevation={elevation}
+        pattern={pattern}
+        surface-style={surfaceStyle}
+        surface-tone={surfaceTone}
+        icon-decor={iconDecor}
+        icon-style={iconStyle}
+        icon-shading={iconShading}
+        icon-tone={iconTone}
+        icon-glyph-tone={iconGlyphTone}
+        badge-position={badgePosition}
+        badge-variant={badgeVariant}
+        badge-shape={badgeShape}
+        show-icons={showIcons}
+        show-badges={showBadges}
+        onselectionchange={handleSelectionChange}
+      ></c-newton-selector-group>
+    </div>
+  </fieldset>
+</template>

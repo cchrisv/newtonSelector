@@ -1,7 +1,7 @@
 ---
 name: lwc-well-architected
 description: "Atomic design framework for scalable LWC development. Use when: creating new Lightning Web Components, refactoring existing LWC, reviewing LWC code, determining component level (atom/molecule/organism/template/page/utility/flow), enforcing unidirectional data flow, adding accessibility or SLDS compliance, writing LWC Jest tests, migrating god components, or building Flow-reactive screen components."
-argument-hint: "Component name or task, e.g. 'create atom for toggle switch' or 'review newtonOrganismDataSelector'"
+argument-hint: "Component name or task, e.g. 'create atom for toggle switch' or 'review newtonSelectorDataSelector'"
 ---
 
 # LWC Well-Architected Framework
@@ -39,17 +39,21 @@ Use this decision tree — evaluate top-to-bottom, first match wins:
 
 ### 2. Name the Component
 
-**Format:** `{appPrefix}{Level}{PascalName}`
+**Format:** `{appPrefix}{PascalName}`
+
+For Newton Selector, component level is an architectural classification, not part
+of the public LWC bundle name. Keep `Utility` only for technical modules where it
+clarifies the purpose.
 
 | Level    | Pattern                    | Example                           |
 |----------|----------------------------|-----------------------------------|
-| Atom     | `{app}Atom{Name}`          | `newtonAtomCheckbox`               |
-| Molecule | `{app}Molecule{Name}`      | `newtonMoleculeFieldSelector`        |
-| Organism | `{app}Organism{Name}`      | `newtonOrganismDataSelector`         |
-| Template | `{app}Template{Name}`      | `coreTemplateListView`            |
-| Page     | `{app}Page{Name}`          | `newtonPagePickerManager`          |
-| Utility  | `{app}Utility{Name}`       | `newtonUtilityCpeHelpers`          |
-| Flow     | `{app}Flow{Name}`          | `newtonFlowSelector`                 |
+| Atom     | `{app}{Name}`              | `newtonCheckbox`                  |
+| Molecule | `{app}{Name}`              | `newtonSelectorFlowCpeFieldSelector`            |
+| Organism | `{app}{Name}`              | `newtonSelectorDataSelector`             |
+| Template | `{app}{Name}`              | `newtonSelectorFlowCpeStudio`           |
+| Page     | `{app}Page{Name}`          | `newtonPageSelectorManager`       |
+| Utility  | `{app}Utility{Name}`       | `newtonSelectorFlowCpeUtilityHelpers`          |
+| Flow     | `{app}Flow{Name}`          | `newtonSelectorFlowScreen`                 |
 
 - `{app}` = project/team prefix (e.g., `newton`, `core`, `admissions`)
 - Name describes **what** the component does, not **how**
@@ -96,7 +100,7 @@ Apply level-specific rules strictly:
 
 **Utilities** — Pure JS modules (not LWC components).
 - Stateless exports (or module-level caches with clear invalidation)
-- Importable by any level: `import { normalize } from 'c/newtonUtilityDataSources'`
+- Importable by any level: `import { normalize } from 'c/newtonSelectorUtilityDataSources'`
 - Single technical concern per module
 
 **Flow Components** — Thin wrappers around organisms.
@@ -163,7 +167,7 @@ Apply level-specific rules strictly:
 | **Premature Abstraction** | Extracted component used only once            | Rule of Three — inline until 3rd use       |
 | **Shallow Components**    | Parent coordinates many tiny children         | Deep components with simple interfaces     |
 | **Mixed Levels**          | Atom fetches data, molecule has business logic| Strictly follow level responsibilities     |
-| **Missing App Prefix**    | `customButton` instead of `coreAtomButton`   | Always: `{app}{Level}{Name}`               |
+| **Missing App Prefix**    | `customButton` instead of `newtonSelectorChoiceTile` | Always: `{app}{PurposeName}`               |
 | **Bidirectional Data**    | Child mutates `@api` property directly        | Events up, props down — always             |
 
 ## Migration Procedure (Legacy → Atomic)

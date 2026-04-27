@@ -22,15 +22,15 @@ Atomic design for scalable, maintainable Salesforce interfaces. Build **systems 
 
 ## Seven Levels
 
-| Level        | Format                | Data          | Logic          | Example                             |
-| ------------ | --------------------- | ------------- | -------------- | ----------------------------------- |
-| **Atom**     | `{app}Atom{Name}`     | Never         | Never          | `coreAtomButton`                    |
-| **Molecule** | `{app}Molecule{Name}` | Never         | Coordination   | `coreMoleculeSearchBar`             |
-| **Organism** | `{app}Organism{Name}` | wire/Apex     | Business rules | `emplidLoaderOrganismStudentSearch` |
-| **Template** | `{app}Template{Name}` | Never         | Never          | `coreTemplateListView`              |
-| **Page**     | `{app}Page{Name}`     | Orchestration | Process        | `emplidLoaderPageEmplidManager`     |
-| **Utility**  | `{app}Utility{Name}`  | Varies        | Technical      | `coreUtilityFormatters`             |
-| **Flow**     | `{app}Flow{Name}`     | Delegation    | Delegation     | `admissionsFlowApplicationSelector` |
+| Level        | Format               | Data          | Logic          | Example                              |
+| ------------ | -------------------- | ------------- | -------------- | ------------------------------------ |
+| **Atom**     | `{app}{Name}`        | Never         | Never          | `newtonSelectorChoiceTile`           |
+| **Molecule** | `{app}{Name}`        | Never         | Coordination   | `newtonSelectorFlowCpeFieldSelector` |
+| **Organism** | `{app}{Name}`        | wire/Apex     | Business rules | `newtonSelectorDataSelector`         |
+| **Template** | `{app}{Name}`        | Never         | Never          | `newtonSelectorFlowCpeStudio`        |
+| **Page**     | `{app}Page{Name}`    | Orchestration | Process        | `emplidLoaderPageEmplidManager`      |
+| **Utility**  | `{app}Utility{Name}` | Varies        | Technical      | `coreUtilityFormatters`              |
+| **Flow**     | `{app}Flow{Name}`    | Delegation    | Delegation     | `admissionsFlowApplicationSelector`  |
 
 **Atoms** — presentational only, `@api` in, events out.
 **Molecules** — 2-5 atoms, local coordination, transform child events. No data fetching.
@@ -97,6 +97,6 @@ Audit → extract atoms (repeated UI) → identify molecules (atom groups) → r
 | **Premature Abstraction** | Rule of Three                            |
 | **Shallow Components**    | Deep with simple interfaces              |
 | **Mixed Levels**          | Strictly follow level responsibilities   |
-| **Missing App Prefix**    | Always: `coreAtomButton`                 |
+| **Missing App Prefix**    | Always: `newtonSelectorChoiceTile`       |
 
 → Apex: [apex-well-architected.md]

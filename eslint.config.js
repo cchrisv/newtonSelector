@@ -22,10 +22,10 @@ module.exports = defineConfig([
   // delayed blur handling, or Flow auto-advance.
   {
     files: [
-      "**/lwc/newtonFlowSelector/newtonFlowSelector.js",
-      "**/lwc/newtonMoleculeCustomLookup/newtonMoleculeCustomLookup.js",
-      "**/lwc/newtonMoleculeIconSelector/newtonMoleculeIconSelector.js",
-      "**/lwc/newtonOrganismDataSelector/newtonOrganismDataSelector.js"
+      "**/lwc/newtonSelectorFlowScreen/newtonSelectorFlowScreen.js",
+      "**/lwc/newtonSelectorFlowCpeCustomLookup/newtonSelectorFlowCpeCustomLookup.js",
+      "**/lwc/newtonSelectorFlowCpeIconSelector/newtonSelectorFlowCpeIconSelector.js",
+      "**/lwc/newtonSelectorDataSelector/newtonSelectorDataSelector.js"
     ],
     rules: {
       "@lwc/lwc/no-async-operation": "off"

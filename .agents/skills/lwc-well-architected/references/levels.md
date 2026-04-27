@@ -17,11 +17,11 @@ Pure presentational. Receives all state via `@api`, communicates out via `Custom
 - No child component imports beyond base Lightning components
 - No business logic — not even simple conditionals about data shape
 
-**Example — newtonAtomCheckbox:**
+**Example — newtonCheckbox:**
 ```javascript
 import { LightningElement, api } from 'lwc';
 
-export default class NewtonAtomCheckbox extends LightningElement {
+export default class NewtonCheckbox extends LightningElement {
     /** @type {string} Label displayed next to the checkbox */
     @api label = '';
     /** @type {boolean} Current checked state */
@@ -57,11 +57,11 @@ Composes 2-5 atoms/molecules. Adds **local coordination** — search filtering, 
 - Does not contain business rules (validation logic belongs in organisms)
 - Maximum 5 direct child components
 
-**Example — newtonMoleculeFieldSelector:**
+**Example — newtonSelectorFlowCpeFieldSelector:**
 ```javascript
 import { LightningElement, api, track } from 'lwc';
 
-export default class NewtonMoleculeFieldSelector extends LightningElement {
+export default class NewtonSelectorFlowCpeFieldSelector extends LightningElement {
     /** @type {Array} Available fields to pick from */
     @api items = [];
 
@@ -103,9 +103,9 @@ Owns a **data domain**. Fetches, transforms, validates, and presents data with f
 **Required patterns:**
 ```javascript
 import { LightningElement, api, track, wire } from 'lwc';
-import queryItems from '@salesforce/apex/NewtonSelectorController.queryItems';
+import queryItems from '@salesforce/apex/NewtonSelectorRuntimeController.queryItems';
 
-export default class NewtonOrganismDataSelector extends LightningElement {
+export default class NewtonSelectorDataSelector extends LightningElement {
     @track _items = [];
     @track _loading = true;
     @track _error = null;
@@ -152,16 +152,16 @@ export default class NewtonOrganismDataSelector extends LightningElement {
         <lightning-spinner alternative-text="Loading"></lightning-spinner>
     </template>
     <template if:true={_error}>
-        <c-newton-atom-error-message message={_error}></c-newton-atom-error-message>
+        <c-newton-error-message message={_error}></c-newton-error-message>
     </template>
     <template if:true={showEmptyState}>
-        <c-newton-atom-empty-state message="No items found"></c-newton-atom-empty-state>
+        <c-newton-empty-state message="No items found"></c-newton-empty-state>
     </template>
     <template if:true={hasItems}>
         <template for:each={_items} for:item="item">
-            <c-newton-atom-picker-card key={item.id} item={item}
+            <c-newton-picker-card key={item.id} item={item}
                 onselect={handleItemSelect}>
-            </c-newton-atom-picker-card>
+            </c-newton-picker-card>
         </template>
     </template>
 </template>
@@ -251,7 +251,7 @@ Thin wrapper that bridges Flow runtime ↔ LWC organisms.
 import { LightningElement, api } from 'lwc';
 import { FlowAttributeChangeEvent, FlowNavigationNextEvent } from 'lightning/flowSupport';
 
-export default class NewtonFlowSelector extends LightningElement {
+export default class NewtonSelectorFlowScreen extends LightningElement {
     /** @type {string} Flow input — selected value */
     @api value;
     /** @type {Array} Flow input — available actions */

@@ -126,7 +126,7 @@ function assert(condition, message) {
 }
 
 function isProductDiagnosticText(text) {
-  return /newton|professor flow|Newton selector|custom_selector|newtonflowselector|Newton_Selector|c-newton|TypeError|ReferenceError|Unhandled|Cannot read|undefined is not|is not a function/i.test(
+  return /newton|professor flow|Newton selector|custom_selector|newtonselectorflowscreen|Newton_Selector|c-newton|TypeError|ReferenceError|Unhandled|Cannot read|undefined is not|is not a function/i.test(
     text || ""
   );
 }
@@ -463,7 +463,7 @@ function componentFieldXml(name, config, extraInputs = "") {
                 <typeName>T</typeName>
                 <typeValue>Lead</typeValue>
             </dataTypeMappings>
-            <extensionName>c:newtonFlowSelector</extensionName>
+            <extensionName>c:newtonSelectorFlowScreen</extensionName>
             <fieldType>ComponentInstance</fieldType>
             <inputParameters>
                 <name>pickerConfigJson</name>
@@ -880,7 +880,7 @@ async function dispatchCardSelect(page, ariaLabel, value) {
 }
 
 async function activateStudioSection(page, key) {
-  const studio = page.locator("c-newton-template-selector-studio").first();
+  const studio = page.locator("c-newton-selector-flow-cpe-studio").first();
   await assertVisible(studio, "template picker studio");
   await dispatchCustomEvent(studio, "sectionclick", key);
   await page.waitForTimeout(250);
@@ -907,7 +907,7 @@ async function dispatchToggle(locator, checked) {
 
 async function dispatchSelectionMode(page, mode) {
   const toggle = page
-    .locator("c-newton-organism-selector-behavior-config c-newton-atom-toggle")
+    .locator("c-newton-selector-flow-cpe-behavior-config c-newton-selector-flow-cpe-toggle")
     .first();
   await dispatchToggle(toggle, mode === "multi");
 }
@@ -963,7 +963,7 @@ async function assertModalSaveEnabled(page, label) {
 }
 
 async function exerciseInvalidBuilderStates(page) {
-  const dataConfig = page.locator("c-newton-organism-selector-data-config");
+  const dataConfig = page.locator("c-newton-selector-flow-cpe-data-config");
 
   await dispatchCardSelect(page, "Data source", "collection");
   await assertModalSaveDisabled(
@@ -1038,7 +1038,7 @@ async function exerciseAllConfigChapters(page) {
 
   await activateStudioSection(page, "content");
   const contentFields = page.locator(
-    "c-newton-organism-selector-content-config c-newton-organism-resource-selector"
+    "c-newton-selector-flow-cpe-content-config c-newton-selector-flow-cpe-resource-selector"
   );
   await dispatchValueChanged(contentFields.nth(0), "E2E Custom Picker Edited");
   await dispatchValueChanged(
@@ -1056,27 +1056,27 @@ async function exerciseAllConfigChapters(page) {
   await dispatchSelectionMode(page, "multi");
   await dispatchToggle(
     page.locator(
-      'c-newton-organism-selector-behavior-config c-newton-atom-toggle[data-key="required"]'
+      'c-newton-selector-flow-cpe-behavior-config c-newton-selector-flow-cpe-toggle[data-key="required"]'
     ),
     true
   );
   await dispatchSelectionMode(page, "single");
   await dispatchToggle(
     page.locator(
-      'c-newton-organism-selector-behavior-config c-newton-atom-toggle[data-key="autoAdvance"]'
+      'c-newton-selector-flow-cpe-behavior-config c-newton-selector-flow-cpe-toggle[data-key="autoAdvance"]'
     ),
     false
   );
   await dispatchToggle(
     page.locator(
-      'c-newton-organism-selector-behavior-config c-newton-atom-toggle[data-key="includeNoneOption"]'
+      'c-newton-selector-flow-cpe-behavior-config c-newton-selector-flow-cpe-toggle[data-key="includeNoneOption"]'
     ),
     true
   );
   await dispatchValueChanged(
     page
       .locator(
-        "c-newton-organism-selector-behavior-config c-newton-organism-resource-selector"
+        "c-newton-selector-flow-cpe-behavior-config c-newton-selector-flow-cpe-resource-selector"
       )
       .first(),
     "None of these"
@@ -1084,13 +1084,13 @@ async function exerciseAllConfigChapters(page) {
   await dispatchCardSelect(page, "None option position", "end");
   await dispatchToggle(
     page.locator(
-      'c-newton-organism-selector-behavior-config c-newton-atom-toggle[data-key="enableSearch"]'
+      'c-newton-selector-flow-cpe-behavior-config c-newton-selector-flow-cpe-toggle[data-key="enableSearch"]'
     ),
     true
   );
   await dispatchToggle(
     page.locator(
-      'c-newton-organism-selector-behavior-config c-newton-atom-toggle[data-key="includeNoneOption"]'
+      'c-newton-selector-flow-cpe-behavior-config c-newton-selector-flow-cpe-toggle[data-key="includeNoneOption"]'
     ),
     false
   );
@@ -1172,7 +1172,7 @@ async function exerciseAllConfigChapters(page) {
   }
 
   const appearance = page.locator(
-    "c-newton-organism-selector-appearance-config"
+    "c-newton-selector-flow-cpe-appearance-config"
   );
   for (const [label, value] of [
     ["Columns", "3"],

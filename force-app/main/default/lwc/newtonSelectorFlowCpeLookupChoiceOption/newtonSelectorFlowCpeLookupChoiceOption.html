@@ -1,0 +1,36 @@
+<template>
+  <span class={optionClass}>
+    <c-newton-selector-choice-tile
+      item={visualItem}
+      variant="list"
+      selected={selected}
+      selection-mode="single"
+      group-name={groupName}
+      size="small"
+      aspect-ratio="1:1"
+      icon-size="small"
+      elevation="subtle"
+      selection-indicator="bar"
+      surface-style="solid"
+      surface-tone="neutral"
+      icon-decor="ring"
+      icon-style="outlined"
+      icon-tone="neutral"
+      badge-position="bottom-inline"
+      badge-variant="neutral"
+    ></c-newton-selector-choice-tile>
+
+    <span class="slds-assistive-text">
+      <template for:each={titleTokens} for:item="token">
+        <span key={token.key}>
+          <mark
+            lwc:if={token.isHighlight}
+            class="newton-visual-lookup-option__mark"
+            >{token.text}</mark
+          >
+          <template lwc:else>{token.text}</template>
+        </span>
+      </template>
+    </span>
+  </span>
+</template>

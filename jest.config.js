@@ -5,8 +5,8 @@ module.exports = {
   modulePathIgnorePatterns: ["<rootDir>/.localdevserver"],
   moduleNameMapper: {
     ...(jestConfig.moduleNameMapper || {}),
-    "^c/newtonUtilitySelectorConfigStyles$":
-      "<rootDir>/force-app/test/jest-mocks/newtonUtilitySelectorConfigStyles",
+    "^c/newtonSelectorFlowCpeUtilityConfigStyles$":
+      "<rootDir>/force-app/test/jest-mocks/newtonSelectorFlowCpeUtilityConfigStyles",
     "^lightning/flowSupport$":
       "<rootDir>/force-app/test/jest-mocks/lightning/flowSupport"
   }

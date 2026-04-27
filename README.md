@@ -76,7 +76,7 @@ Accepts a Flow `String[]` variable. Each string becomes a tile where both the la
 
 ### SOQL Query
 
-Issues a server-side SOQL query at runtime via `NewtonSelectorController.queryItems`. The CPE exposes:
+Issues a server-side SOQL query at runtime via `NewtonSelectorRuntimeController.queryItems`. The CPE exposes:
 
 - **Object picker** -- searchable dropdown of all accessible SObjects
 - **WHERE builder** -- visual clause builder with field picker, type-aware operator sets, and AND/OR logic
@@ -174,59 +174,57 @@ Every output is available as a Flow resource once the component is placed on a s
 
 ## Component Architecture
 
-The project follows the LWC Atomic Design pattern. Every layer has a single responsibility.
+The project uses a layered LWC architecture. Layer roles stay in the design docs; bundle names describe product purpose.
 
 ```
-newtonFlowSelector                       <- Flow Screen component (entry point)
-  +-- newtonFlowSelectorCpe              <- Custom Property Editor (Flow Builder panel)
-        +-- newtonFlowSelectorConfigModal <- LightningModal shell and configuration orchestration
-              +-- newtonTemplateSelectorStudio <- Studio layout, left navigation, splitter, scroll container
-              +-- newtonOrganismSelectorConfigPreview <- Live/fallback preview and preview-state controls
+newtonSelectorFlowScreen                       <- Flow Screen component (entry point)
+  +-- newtonSelectorFlowCpe              <- Custom Property Editor (Flow Builder panel)
+        +-- newtonSelectorFlowCpeConfigModal <- LightningModal shell and configuration orchestration
+              +-- newtonSelectorFlowCpeStudio <- Studio layout, left navigation, splitter, scroll container
+              +-- newtonSelectorFlowCpeConfigPreview <- Live/fallback preview and preview-state controls
 
-newtonOrganismDataSelector               <- Data loading, source switching, state machine
-  +-- newtonMoleculeSelectorGroup        <- Renders the correct layout + search/select-all
-        +-- newtonAtomChoiceTile       <- Individual tile (icon, label, sublabel, badge)
+newtonSelectorDataSelector               <- Data loading, source switching, state machine
+  +-- newtonSelectorGroup        <- Renders the correct layout + search/select-all
+        +-- newtonSelectorChoiceTile       <- Individual tile (icon, label, sublabel, badge)
 
-CPE helper organisms
-  newtonOrganismResourceSelector         <- Flow Builder resource/merge-field combobox
-  newtonOrganismWhereBuilder           <- Visual SOQL WHERE clause builder
+Configuration helpers
+  newtonSelectorFlowCpeResourceSelector         <- Flow Builder resource/merge-field combobox
+  newtonSelectorFlowCpeWhereBuilder           <- Visual SOQL WHERE clause builder
 
-Molecules
-  newtonMoleculeCustomLookup           <- Searchable lookup with server typeahead
-  newtonMoleculeFieldSelector            <- Object-scoped field selector
-  newtonMoleculeIconSelector             <- SLDS icon name picker
-  newtonMoleculeOrderLimit             <- Sort + limit controls
-  newtonMoleculeRichCombobox           <- Combobox with icon + sublabel support
+Input and picker controls
+  newtonSelectorFlowCpeCustomLookup           <- Searchable lookup with server typeahead
+  newtonSelectorFlowCpeFieldSelector            <- Object-scoped field selector
+  newtonSelectorFlowCpeIconSelector             <- SLDS icon name picker
 
-Atoms
-  newtonAtomToggle                     <- Reusable toggle switch (boolean or CB_TRUE/CB_FALSE wire format)
-  newtonAtomIcon                       <- Icon renderer with Lucide-style SVG catalog
-newtonAtomChoiceTile                 <- Choice tile (label / sublabel / badge / icon)
+Reusable primitives
+  newtonSelectorFlowCpeToggle                     <- Reusable toggle switch (boolean or CB_TRUE/CB_FALSE wire format)
+  newtonSelectorIcon                       <- Icon renderer with Lucide-style SVG catalog
+  newtonSelectorChoiceTile                 <- Choice tile (label / sublabel / badge / icon)
 
 Utilities
-  newtonUtilitySelectorDataSources       <- Normalizers for all 5 data sources; filter/sort/limit
-  newtonUtilityCpeHelpers              <- Flow Builder context helpers (merge fields, types)
-  newtonUtilitySelectorConfigDefaults    <- Shared default picker configuration
-  newtonUtilitySelectorConfigOptions     <- Shared option metadata for CPE and modal controls
-  newtonUtilitySelectorConfigState       <- Immutable config merge/patch helpers and preview/query mapping
-  newtonUtilitySelectorConfigValidation  <- Configuration issue generation and save-blocking rules
+  newtonSelectorUtilityDataSources       <- Normalizers for all 5 data sources; filter/sort/limit
+  newtonSelectorFlowCpeUtilityHelpers              <- Flow Builder context helpers (merge fields, types)
+  newtonSelectorUtilityConfigDefaults    <- Shared default picker configuration
+  newtonSelectorFlowCpeUtilityConfigOptions     <- Shared option metadata for CPE and modal controls
+  newtonSelectorFlowCpeUtilityConfigState       <- Immutable config merge/patch helpers and preview/query mapping
+  newtonSelectorFlowCpeUtilityConfigValidation  <- Configuration issue generation and save-blocking rules
 ```
 
-The config modal has been partially decomposed into shell, studio layout, preview, state, and validation modules. The Data, Content, Behavior, and Appearance chapter bodies still live in `newtonFlowSelectorConfigModal` and remain the primary architecture debt before the modal meets the repository's sub-500-line component target.
+The config modal has been partially decomposed into shell, studio layout, preview, state, and validation modules. The Data, Content, Behavior, and Appearance chapter bodies still live in `newtonSelectorFlowCpeConfigModal` and remain the primary architecture debt before the modal meets the repository's sub-500-line component target.
 
 ---
 
 ## Apex Layer
 
-| Class                         | Role                                                                                                                                                                   |
-| ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `NewtonSelectorController`    | `@AuraEnabled(cacheable=true)` endpoint for the SOQL data source. Deserializes the query config JSON and delegates to the service layer.                               |
-| `NewtonSelectorService`       | Maps SObject records to `NewtonSelectorItemDTO` instances using field mappings from `NewtonSelectorQueryDTO`.                                                          |
-| `NewtonSelectorRecordQuery`   | Builds and executes the dynamic SOQL query in `USER_MODE`. Validates object and field accessibility; allowlists WHERE fields/operators; enforces a 2,000-row hard cap. |
-| `NewtonSelectorQueryDTO`      | Input DTO: object API name, structured filters, legacy WHERE clause, ORDER BY, LIMIT, and field mappings.                                                              |
-| `NewtonSelectorItemDTO`       | Output DTO: `id`, `label`, `sublabel`, `icon`, `badge`, `helpText`, `value`, `disabled`.                                                                               |
-| `NewtonSelectorException`     | Typed exception surfaced to the LWC as an `AuraHandledException`.                                                                                                      |
-| `NewtonSelectorCpeController` | Design-time Apex for the CPE: `searchSObjectTypes`, `searchFields`, `getObjectFields` -- powers the object/field pickers in the config modal.                          |
+| Class                             | Role                                                                                                                                                                   |
+| --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `NewtonSelectorRuntimeController` | `@AuraEnabled(cacheable=true)` endpoint for the SOQL data source. Deserializes the query config JSON and delegates to the service layer.                               |
+| `NewtonSelectorService`           | Maps SObject records to `NewtonSelectorItemDTO` instances using field mappings from `NewtonSelectorQueryDTO`.                                                          |
+| `NewtonSelectorRecordQuery`       | Builds and executes the dynamic SOQL query in `USER_MODE`. Validates object and field accessibility; allowlists WHERE fields/operators; enforces a 2,000-row hard cap. |
+| `NewtonSelectorQueryDTO`          | Input DTO: object API name, structured filters, legacy WHERE clause, ORDER BY, LIMIT, and field mappings.                                                              |
+| `NewtonSelectorItemDTO`           | Output DTO: `id`, `label`, `sublabel`, `icon`, `badge`, `helpText`, `value`, `disabled`.                                                                               |
+| `NewtonSelectorException`         | Typed exception surfaced to the LWC as an `AuraHandledException`.                                                                                                      |
+| `NewtonSelectorFlowCpeController` | Design-time Apex for the CPE: `searchSObjectTypes`, `searchFields`, `getObjectFields` -- powers the object/field pickers in the config modal.                          |
 
 All classes run `with sharing`. SOQL is executed via `Database.queryWithBinds` with `AccessLevel.USER_MODE` to respect field-level security and object permissions. Legacy WHERE text is parsed into allowlisted predicates before execution.
 
@@ -316,7 +314,7 @@ Test files live under `force-app/main/default/lwc/<component>/__tests__/`.
 sf apex run test --target-org my-org --result-format human --wait 10
 ```
 
-Key test classes: `NewtonSelectorControllerTest`, `NewtonSelectorServiceTest`, `NewtonSelectorRecordQueryTest`. All use `NewtonSelectorTestDataFactory` for consistent setup data.
+Key test classes: `NewtonSelectorRuntimeControllerTest`, `NewtonSelectorServiceTest`, `NewtonSelectorRecordQueryTest`. All use `NewtonSelectorTestDataFactory` for consistent setup data.
 
 ---
 

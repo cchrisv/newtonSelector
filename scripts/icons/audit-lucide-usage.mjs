@@ -59,7 +59,7 @@ for (const file of walk(lwcRoot)) {
     );
   }
 
-  const atomIconRegex = /<c-newton-atom-icon\b[\s\S]*?<\/c-newton-atom-icon>/g;
+  const atomIconRegex = /<c-newton-selector-icon\b[\s\S]*?<\/c-newton-selector-icon>/g;
   for (const match of source.matchAll(atomIconRegex)) {
     const tag = match[0].replace(/\s+/g, " ");
     const nameMatch = tag.match(/\bname="([^"]+)"/);
@@ -76,7 +76,7 @@ for (const file of walk(lwcRoot)) {
       report(
         file,
         lineNumber(source, match.index),
-        `slds-icon classes should not be applied to newtonAtomIcon: ${classMatch[1]}`
+        `slds-icon classes should not be applied to newtonSelectorIcon: ${classMatch[1]}`
       );
     }
 
@@ -84,7 +84,7 @@ for (const file of walk(lwcRoot)) {
       report(
         file,
         lineNumber(source, match.index),
-        'floating newtonAtomIcon breaks icon/text symmetry; use a flex wrapper and box="button"'
+        'floating newtonSelectorIcon breaks icon/text symmetry; use a flex wrapper and box="button"'
       );
     }
 
@@ -92,7 +92,7 @@ for (const file of walk(lwcRoot)) {
       report(
         file,
         lineNumber(source, match.index),
-        'slds-button__icon should not be applied to newtonAtomIcon; use box="button"'
+        'slds-button__icon should not be applied to newtonSelectorIcon; use box="button"'
       );
     }
 
@@ -104,7 +104,7 @@ for (const file of walk(lwcRoot)) {
       report(
         file,
         lineNumber(source, match.index),
-        'input-positioned newtonAtomIcon must use box="input" for centered glyph sizing'
+        'input-positioned newtonSelectorIcon must use box="input" for centered glyph sizing'
       );
     }
 
@@ -112,7 +112,7 @@ for (const file of walk(lwcRoot)) {
       report(
         file,
         lineNumber(source, match.index),
-        "newtonAtomIcon must declare size explicitly"
+        "newtonSelectorIcon must declare size explicitly"
       );
     }
   }

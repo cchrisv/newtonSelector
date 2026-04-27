@@ -47,7 +47,7 @@ describe('c-component-name', () => {
 Test rendering and event emission. No mocks needed.
 
 ```javascript
-describe('c-newton-atom-checkbox', () => {
+describe('c-newton-checkbox', () => {
     it('renders with provided label', () => {
         const el = mount({ label: 'Show Border' });
         const input = el.shadowRoot.querySelector('lightning-input');
@@ -82,7 +82,7 @@ describe('c-newton-atom-checkbox', () => {
 Test coordination and event transformation.
 
 ```javascript
-describe('c-newton-molecule-field-selector', () => {
+describe('c-newton-selector-flow-cpe-field-selector', () => {
     const MOCK_ITEMS = [
         { id: '1', label: 'Name', value: 'Name' },
         { id: '2', label: 'Email', value: 'Email' },
@@ -100,7 +100,7 @@ describe('c-newton-molecule-field-selector', () => {
         }));
         await flushPromises();
 
-        const cards = el.shadowRoot.querySelectorAll('c-newton-atom-picker-card');
+        const cards = el.shadowRoot.querySelectorAll('c-newton-picker-card');
         expect(cards.length).toBe(1);
     });
 
@@ -111,7 +111,7 @@ describe('c-newton-molecule-field-selector', () => {
         const handler = jest.fn();
         el.addEventListener('fieldselect', handler);
 
-        const card = el.shadowRoot.querySelector('c-newton-atom-picker-card');
+        const card = el.shadowRoot.querySelector('c-newton-picker-card');
         card.dispatchEvent(new CustomEvent('select', {
             detail: { value: 'Email' }
         }));
@@ -127,15 +127,15 @@ describe('c-newton-molecule-field-selector', () => {
 Test business logic, Apex mocking, and all UI states.
 
 ```javascript
-import queryItems from '@salesforce/apex/NewtonSelectorController.queryItems';
+import queryItems from '@salesforce/apex/NewtonSelectorRuntimeController.queryItems';
 
 // Mock Apex
-jest.mock('@salesforce/apex/NewtonSelectorController.queryItems',
+jest.mock('@salesforce/apex/NewtonSelectorRuntimeController.queryItems',
     () => ({ default: jest.fn() }),
     { virtual: true }
 );
 
-describe('c-newton-organism-data-selector', () => {
+describe('c-newton-selector-data-selector', () => {
     it('shows loading spinner initially', () => {
         queryItems.mockResolvedValue([]);
         const el = mount();
@@ -150,7 +150,7 @@ describe('c-newton-organism-data-selector', () => {
         const el = mount();
         await flushPromises();
 
-        const cards = el.shadowRoot.querySelectorAll('c-newton-atom-picker-card');
+        const cards = el.shadowRoot.querySelectorAll('c-newton-picker-card');
         expect(cards.length).toBe(1);
         expect(el.shadowRoot.querySelector('lightning-spinner')).toBeNull();
     });
@@ -180,7 +180,7 @@ describe('c-newton-organism-data-selector', () => {
 Pure function input/output testing.
 
 ```javascript
-import { normalizePicklist, filterByParent } from 'c/newtonUtilitySelectorDataSources';
+import { normalizePicklist, filterByParent } from 'c/newtonSelectorUtilityDataSources';
 
 describe('normalizePicklist', () => {
     it('transforms picklist values to unified shape', () => {
@@ -225,7 +225,7 @@ jest.mock('lightning/flowSupport', () => ({
     FlowNavigationNextEvent: jest.fn()
 }), { virtual: true });
 
-describe('c-newton-flow-selector', () => {
+describe('c-newton-selector-flow-screen', () => {
     it('dispatches FlowAttributeChangeEvent on selection', async () => {
         const el = mount({ value: '' });
         await flushPromises();
@@ -234,7 +234,7 @@ describe('c-newton-flow-selector', () => {
         el.addEventListener('FlowAttributeChangeEvent', handler);
 
         // Trigger selection in composed organism
-        const organism = el.shadowRoot.querySelector('c-newton-organism-data-selector');
+        const organism = el.shadowRoot.querySelector('c-newton-selector-data-selector');
         organism.dispatchEvent(new CustomEvent('select', {
             detail: { value: 'selected-id' }
         }));

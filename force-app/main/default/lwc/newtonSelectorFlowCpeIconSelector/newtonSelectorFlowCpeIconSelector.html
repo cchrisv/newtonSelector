@@ -1,0 +1,241 @@
+<template>
+  <div class={pickerClass}>
+    <template lwc:if={isCombobox}>
+      <label class="slds-form-element__label" for="combobox-trigger">
+        <template lwc:if={required}>
+          <abbr title="required" class="slds-required">*</abbr>
+        </template>
+        {label}
+      </label>
+      <div class="slds-form-element__control">
+        <div class="newton-combobox" onblur={handleBlur}>
+          <button
+            type="button"
+            class="newton-combobox__trigger slds-button slds-button_neutral"
+            id="combobox-trigger"
+            aria-haspopup="listbox"
+            aria-expanded={_isOpen}
+            aria-label={label}
+            disabled={disabled}
+            onclick={handleOpen}
+          >
+            <template lwc:if={hasSelection}>
+              <span class="newton-combobox__preview" aria-hidden="true">
+                <c-newton-selector-icon
+                  name={_value}
+                  size="small"
+                  box="tile"
+                  alternative-text=""
+                ></c-newton-selector-icon>
+              </span>
+            </template>
+            <span class="newton-combobox__label">{placeholderLabel}</span>
+            <template lwc:if={hasSelection}>
+              <span
+                class="newton-combobox__clear"
+                role="button"
+                tabindex="0"
+                aria-label="Clear selection"
+                onclick={handleClear}
+              >
+                <c-newton-selector-icon
+                  name="x"
+                  size="xx-small"
+                  box="button"
+                  alternative-text="Clear"
+                ></c-newton-selector-icon>
+              </span>
+            </template>
+            <c-newton-selector-icon
+              name="chevron-down"
+              size="x-small"
+              box="button"
+              alternative-text=""
+            ></c-newton-selector-icon>
+          </button>
+
+          <template lwc:if={shouldRenderComboboxPanel}>
+            <div
+              class={comboboxPanelClass}
+              role="dialog"
+              aria-label="Icon picker"
+            >
+              <ul
+                class="slds-tabs_default__nav newton-tabs"
+                role="tablist"
+                onkeydown={handleTabKeydown}
+              >
+                <template for:each={setTabs} for:item="t">
+                  <li key={t.key} class={t.liClass} role="presentation">
+                    <button
+                      type="button"
+                      class={t.buttonClass}
+                      role="tab"
+                      aria-selected={t.ariaSelected}
+                      tabindex={t.tabIndex}
+                      data-set={t.key}
+                      onclick={handleTabClick}
+                    >
+                      {t.label}
+                    </button>
+                  </li>
+                </template>
+              </ul>
+
+              <div class="newton-search">
+                <c-newton-selector-icon
+                  name="search"
+                  size="x-small"
+                  box="input"
+                  alternative-text=""
+                ></c-newton-selector-icon>
+                <input
+                  type="search"
+                  class="newton-search__input"
+                  placeholder="Search icons..."
+                  value={_searchTerm}
+                  oninput={handleSearchInput}
+                  aria-label="Search icons"
+                />
+              </div>
+
+              <template lwc:if={hasVisibleIcons}>
+                <div class="newton-grid" role="listbox" aria-label="Icons">
+                  <template for:each={visibleIcons} for:item="entry">
+                    <button
+                      key={entry.id}
+                      type="button"
+                      class={entry.buttonClass}
+                      role="option"
+                      aria-selected={entry.selected}
+                      aria-label={entry.assistiveLabel}
+                      title={entry.iconName}
+                      data-icon={entry.iconName}
+                      onclick={handleIconClick}
+                      onkeydown={handleIconKeydown}
+                    >
+                      <c-newton-selector-icon
+                        name={entry.iconName}
+                        size="medium"
+                        box="tile"
+                        alternative-text=""
+                      ></c-newton-selector-icon>
+                      <span class="newton-selector-icon-cell__label"
+                        >{entry.displayLabel}</span
+                      >
+                    </button>
+                  </template>
+                </div>
+                <div class="newton-selector-icon-picker__more" role="status">
+                  <span>{resultCountLabel}</span>
+                  <template lwc:if={hasMoreIcons}>
+                    <lightning-button
+                      variant="neutral"
+                      label={showMoreLabel}
+                      onclick={handleShowMore}
+                    ></lightning-button>
+                  </template>
+                </div>
+              </template>
+              <template lwc:if={hasNoVisibleIcons}>
+                <div class="newton-selector-icon-picker__empty" role="status">
+                  No icons match this search.
+                </div>
+              </template>
+            </div>
+          </template>
+        </div>
+      </div>
+    </template>
+
+    <template lwc:if={isTabs}>
+      <fieldset class="slds-form-element">
+        <legend class="slds-form-element__legend slds-form-element__label">
+          <template lwc:if={required}>
+            <abbr title="required" class="slds-required">*</abbr>
+          </template>
+          {label}
+        </legend>
+        <ul
+          class="slds-tabs_default__nav newton-tabs"
+          role="tablist"
+          onkeydown={handleTabKeydown}
+        >
+          <template for:each={setTabs} for:item="t">
+            <li key={t.key} class={t.liClass} role="presentation">
+              <button
+                type="button"
+                class={t.buttonClass}
+                role="tab"
+                aria-selected={t.ariaSelected}
+                tabindex={t.tabIndex}
+                data-set={t.key}
+                onclick={handleTabClick}
+              >
+                {t.label}
+              </button>
+            </li>
+          </template>
+        </ul>
+
+        <div class="newton-search">
+          <c-newton-selector-icon
+            name="search"
+            size="x-small"
+            box="input"
+            alternative-text=""
+          ></c-newton-selector-icon>
+          <input
+            type="search"
+            class="newton-search__input"
+            placeholder="Search icons..."
+            value={_searchTerm}
+            oninput={handleSearchInput}
+            aria-label="Search icons"
+          />
+        </div>
+
+        <div
+          class="newton-grid newton-grid_wide"
+          role="radiogroup"
+          aria-label="Icons"
+        >
+          <template for:each={visibleIcons} for:item="entry">
+            <button
+              key={entry.id}
+              type="button"
+              class={entry.buttonClass}
+              role="radio"
+              aria-checked={entry.selected}
+              aria-label={entry.assistiveLabel}
+              title={entry.iconName}
+              data-icon={entry.iconName}
+              onclick={handleIconClick}
+              onkeydown={handleIconKeydown}
+            >
+              <c-newton-selector-icon
+                name={entry.iconName}
+                size="medium"
+                box="tile"
+                alternative-text=""
+              ></c-newton-selector-icon>
+              <span class="newton-selector-icon-cell__label"
+                >{entry.displayLabel}</span
+              >
+            </button>
+          </template>
+        </div>
+        <div class="newton-selector-icon-picker__more" role="status">
+          <span>{resultCountLabel}</span>
+          <template lwc:if={hasMoreIcons}>
+            <lightning-button
+              variant="neutral"
+              label={showMoreLabel}
+              onclick={handleShowMore}
+            ></lightning-button>
+          </template>
+        </div>
+      </fieldset>
+    </template>
+  </div>
+</template>

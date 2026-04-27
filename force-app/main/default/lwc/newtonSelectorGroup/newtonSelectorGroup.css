@@ -1,0 +1,484 @@
+:host {
+  display: block;
+
+  --newton-group-gap-x: var(--slds-g-spacing-2, 0.5rem);
+  --newton-group-gap-y: var(--slds-g-spacing-2, 0.5rem);
+  --newton-group-min-w: 7.5rem;
+  --newton-transfer-transition-duration: 0.1s;
+  --newton-z-index-dropdown: 7000;
+}
+
+.newton-group-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* Search bar */
+.newton-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: var(--slds-g-spacing-2, 0.5rem) var(--slds-g-spacing-3, 0.75rem);
+  border: var(--slds-g-sizing-border-1, 1px) solid
+    var(--slds-g-color-border-base-1, #c9c9c9);
+  border-radius: var(--slds-g-radius-border-2, 0.25rem);
+  background: var(--slds-g-color-neutral-base-100, #ffffff);
+}
+
+.newton-search-bar__input {
+  flex: 1 1 auto;
+  border: 0;
+  outline: none;
+  background: transparent;
+  font-size: var(--slds-g-font-scale-1, 0.875rem);
+}
+
+/* Multi-select toolbar */
+.newton-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: var(--slds-g-spacing-1, 0.25rem) 0;
+}
+
+.newton-toolbar__btn {
+  flex: 0 0 auto;
+}
+
+/* Grid layout: fixed column width = chosen tile size (Small=7.5rem, Medium=12rem,
+   Large=16rem, or whatever the user set as --newton-group-min-w). Columns are
+   a fixed size — they don't grow with the container. This keeps tiles at a
+   predictable size regardless of container width and keeps column-gap and
+   row-gap visually identical (no centering whitespace inside a grown column).
+   The `min(100%, X)` guard ensures very narrow containers don't overflow:
+   the column shrinks to 100% of the container before clipping. */
+.newton-group_grid {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(min(100%, var(--newton-group-min-w)), var(--newton-group-min-w))
+  );
+  column-gap: var(--newton-group-gap-x);
+  row-gap: var(--newton-group-gap-y);
+  align-items: stretch;
+  justify-items: stretch;
+  /* Leftover horizontal space (when the container is wider than N columns
+       fit exactly) stays at the right edge — tiles never spread apart to fill. */
+  justify-content: start;
+  margin-top: var(--newton-group-margin-t, 0);
+  margin-right: var(--newton-group-margin-r, 0);
+  margin-bottom: var(--newton-group-margin-b, 0);
+  margin-left: var(--newton-group-margin-l, 0);
+}
+
+/* List layout: single column flex */
+.newton-group_list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--newton-group-gap-y);
+  margin-top: var(--newton-group-margin-t, 0);
+  margin-right: var(--newton-group-margin-r, 0);
+  margin-bottom: var(--newton-group-margin-b, 0);
+  margin-left: var(--newton-group-margin-l, 0);
+}
+
+.newton-group_list c-newton-selector-choice-tile {
+  display: block;
+  width: var(--newton-static-v-100-percent, 100%);
+}
+
+/* Fixed-column override: when --newton-group-cols is set (1–6), force an
+   equal-fraction grid regardless of container width. Leaves the auto-fill
+   behavior intact when the variable is absent. */
+.newton-group_grid {
+  grid-template-columns: repeat(
+    var(--newton-group-cols, auto-fill),
+    minmax(min(100%, var(--newton-group-min-w)), var(--newton-group-min-w))
+  );
+}
+/* Fixed column count — tiles keep their configured width (size setting)
+   rather than stretching to fill the container. Previously we used
+   `minmax(0, 1fr)` which made column count dominate tile size; users
+   expect "columns = how many per row", not "columns = tile width". If
+   the container is narrower than cols × min-width, tiles overflow — that's
+   the deliberate consequence of pinning a column count. */
+.newton-group_grid[style*="--newton-group-cols:"] {
+  grid-template-columns: repeat(
+    var(--newton-group-cols),
+    var(--newton-group-min-w)
+  );
+}
+
+/* =============================================================================
+   HORIZONTAL variant — single scrolling row with scroll-snap.
+   Tiles sit at their nominal width, overflow scrolls horizontally. Useful for
+   ribbon/carousel patterns on narrow screens.
+   ============================================================================= */
+
+.newton-group_horizontal {
+  display: flex;
+  flex-direction: row;
+  gap: var(--newton-group-gap-x);
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--newton-group-margin-l, 0);
+  padding-bottom: var(--slds-g-spacing-2, 0.5rem); /* room for scrollbar */
+  margin-top: var(--newton-group-margin-t, 0);
+  margin-right: var(--newton-group-margin-r, 0);
+  margin-bottom: var(--newton-group-margin-b, 0);
+  margin-left: var(--newton-group-margin-l, 0);
+}
+
+.newton-group_horizontal c-newton-selector-choice-tile {
+  flex: 0 0 var(--newton-group-min-w);
+  scroll-snap-align: start;
+}
+
+/* Subtle scrollbar — visible but unobtrusive */
+.newton-group_horizontal::-webkit-scrollbar {
+  height: var(--slds-g-sizing-3, 0.5rem);
+}
+.newton-group_horizontal::-webkit-scrollbar-thumb {
+  background: var(--slds-g-color-neutral-base-80, #d4d4d4);
+  border-radius: var(--newton-static-v-999px, 999px);
+}
+.newton-group_horizontal::-webkit-scrollbar-thumb:hover {
+  background: var(--slds-g-color-neutral-base-70, #aeaeae);
+}
+.newton-group_horizontal::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Radio layout: explicit radio affordance, same card atom for content. */
+.newton-group_radio {
+  display: flex;
+  flex-direction: column;
+  gap: var(--newton-group-gap-y);
+  margin-top: var(--newton-group-margin-t, 0);
+  margin-right: var(--newton-group-margin-r, 0);
+  margin-bottom: var(--newton-group-margin-b, 0);
+  margin-left: var(--newton-group-margin-l, 0);
+}
+
+.newton-radio-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  column-gap: var(--slds-g-spacing-3, 0.75rem);
+}
+
+.newton-radio-card c-newton-selector-choice-tile {
+  display: block;
+  min-width: 0;
+  width: var(--newton-static-v-100-percent, 100%);
+}
+
+.newton-radio-card__marker {
+  box-sizing: border-box;
+  width: var(--slds-g-sizing-5, 1rem);
+  height: var(--slds-g-sizing-5, 1rem);
+  border: var(--slds-g-sizing-border-1, 1px) solid
+    var(--slds-g-color-border-base-1, #c9c9c9);
+  border-radius: var(--newton-static-v-999px, 999px);
+  background: var(--slds-g-color-neutral-base-100, #ffffff);
+}
+
+.newton-radio-card_selected .newton-radio-card__marker {
+  border-color: var(--slds-g-color-brand-base-50, #0176d3);
+  box-shadow: inset 0 0 0 var(--slds-g-spacing-1, 0.25rem)
+    var(--slds-g-color-neutral-base-100, #ffffff);
+  background: var(--slds-g-color-brand-base-50, #0176d3);
+}
+
+.newton-radio-card_multi .newton-radio-card__marker {
+  border-radius: var(--slds-g-radius-border-1, 0.125rem);
+}
+
+.newton-radio-card_multi.newton-radio-card_selected .newton-radio-card__marker {
+  position: relative;
+  box-shadow: none;
+}
+
+.newton-radio-card_multi.newton-radio-card_selected
+  .newton-radio-card__marker::after {
+  content: "";
+  position: absolute;
+  top: var(--newton-static-v-2px, 2px);
+  left: var(--newton-static-v-4px, 4px);
+  width: var(--newton-static-v-4px, 4px);
+  height: var(--newton-static-v-7px, 7px);
+  border-right: var(--slds-g-sizing-border-2, 2px) solid
+    var(--slds-g-color-on-accent-1, #ffffff);
+  border-bottom: var(--slds-g-sizing-border-2, 2px) solid
+    var(--slds-g-color-on-accent-1, #ffffff);
+  transform: rotate(45deg);
+}
+
+.newton-radio-card_disabled .newton-radio-card__marker {
+  border-color: var(--slds-g-color-border-disabled-1, #c9c9c9);
+  background: var(--slds-g-color-neutral-base-95, #f3f3f3);
+}
+
+/* Picklist layout: field-like trigger, card-backed option menu. */
+.newton-picklist {
+  position: relative;
+  --newton-group-gap-y: 0;
+  margin-top: var(--newton-group-margin-t, 0);
+  margin-right: var(--newton-group-margin-r, 0);
+  margin-bottom: var(--newton-group-margin-b, 0);
+  margin-left: var(--newton-group-margin-l, 0);
+}
+
+.newton-picklist__combobox {
+  position: relative;
+}
+
+.newton-picklist__selected-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.newton-picklist__chevron {
+  pointer-events: none;
+  color: var(--slds-g-color-neutral-base-30, #444444);
+}
+
+.newton-picklist__menu {
+  position: absolute;
+  z-index: var(--newton-z-index-dropdown);
+  margin-top: var(--slds-g-spacing-1, 0.25rem);
+  width: var(--newton-static-v-100-percent, 100%);
+  max-height: var(--newton-static-v-20rem, 20rem);
+  padding: var(--slds-g-spacing-1, 0.25rem);
+  overflow: auto;
+}
+
+.newton-picklist__search {
+  margin: 0;
+  padding: 0 0 var(--slds-g-spacing-1, 0.25rem);
+}
+
+.newton-picklist__listbox {
+  display: flex;
+  flex-direction: column;
+  gap: var(--newton-group-gap-y);
+}
+
+.newton-picklist__item + .newton-picklist__item {
+  margin-top: var(--slds-g-spacing-1, 0.25rem);
+}
+
+.newton-picklist__option {
+  display: block;
+  padding: 0;
+  border-radius: var(--slds-g-radius-border-2, 0.25rem);
+  cursor: pointer;
+}
+
+.newton-transfer__search {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  column-gap: var(--slds-g-spacing-2, 0.5rem);
+  padding: var(--slds-g-spacing-2, 0.5rem) var(--slds-g-spacing-3, 0.75rem);
+  border: var(--slds-g-sizing-border-1, 1px) solid
+    var(--slds-g-color-border-base-1, #c9c9c9);
+  border-radius: var(--slds-g-radius-border-2, 0.25rem);
+  background: var(--slds-g-color-neutral-base-100, #ffffff);
+}
+
+.newton-transfer__search {
+  margin: var(--slds-g-spacing-3, 0.75rem) var(--slds-g-spacing-3, 0.75rem) 0;
+}
+
+.newton-picklist__item c-newton-selector-choice-tile {
+  display: block;
+  width: var(--newton-static-v-100-percent, 100%);
+  --newton-tile-pad-base: var(--slds-g-spacing-2, 0.5rem);
+  --newton-tile-pad-l: var(--slds-g-spacing-2, 0.5rem);
+  --newton-tile-pad-r: var(--slds-g-spacing-2, 0.5rem);
+  --newton-tile-pad-t: var(--slds-g-spacing-2, 0.5rem);
+  --newton-tile-pad-b: var(--slds-g-spacing-2, 0.5rem);
+}
+
+.newton-picklist__empty {
+  margin: 0;
+  padding: var(--slds-g-spacing-4, 1rem);
+  color: var(--slds-g-color-neutral-base-50, #747474);
+  text-align: center;
+}
+
+/* Transfer layouts: columns and Salesforce-style multi-select picker. */
+.newton-transfer {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: var(--newton-group-gap-x);
+  row-gap: var(--newton-group-gap-y);
+  margin-top: var(--newton-group-margin-t, 0);
+  margin-right: var(--newton-group-margin-r, 0);
+  margin-bottom: var(--newton-group-margin-b, 0);
+  margin-left: var(--newton-group-margin-l, 0);
+}
+
+.newton-transfer__panel {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: var(--newton-static-v-12rem, 12rem);
+  border: var(--slds-g-sizing-border-1, 1px) solid
+    var(--slds-g-color-border-base-1, #c9c9c9);
+  border-radius: var(--slds-g-radius-border-2, 0.25rem);
+  background: var(--slds-g-color-neutral-base-100, #ffffff);
+  transition:
+    border-color var(--newton-transfer-transition-duration) ease,
+    box-shadow var(--newton-transfer-transition-duration) ease;
+}
+
+.newton-transfer_columns .newton-transfer__panel {
+  background: var(--slds-g-color-neutral-base-95, #f3f3f3);
+}
+
+.newton-transfer_dualListbox .newton-transfer__panel {
+  background: var(--slds-g-color-neutral-base-100, #ffffff);
+}
+
+.newton-transfer_has-controls {
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: stretch;
+}
+
+.newton-transfer__controls {
+  display: flex;
+  flex-direction: column;
+  align-self: center;
+  align-items: center;
+  justify-content: center;
+  gap: var(--slds-g-spacing-2, 0.5rem);
+  inline-size: var(--slds-g-sizing-10, 2rem);
+}
+
+.newton-transfer__control {
+  display: inline-flex;
+  flex: 0 0 var(--slds-g-sizing-10, 2rem);
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--slds-g-sizing-10, 2rem);
+  block-size: var(--slds-g-sizing-10, 2rem);
+  margin: 0;
+}
+
+.newton-transfer__control c-newton-selector-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.newton-transfer__panel_drop {
+  border-color: var(--slds-g-color-brand-base-60, #0b5cab);
+  box-shadow: inset 0 0 0 var(--slds-g-sizing-border-2, 2px)
+    var(--slds-g-color-brand-base-80, #aacbff);
+}
+
+.newton-transfer__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--slds-g-spacing-2, 0.5rem);
+  padding: var(--slds-g-spacing-2, 0.5rem) var(--slds-g-spacing-3, 0.75rem);
+  border-bottom: var(--slds-g-sizing-border-1, 1px) solid
+    var(--slds-g-color-border-base-1, #c9c9c9);
+}
+
+.newton-transfer__label {
+  font-size: var(--slds-g-font-scale-base, 0.8125rem);
+  font-weight: var(--slds-g-font-weight-7, 700);
+  color: var(--slds-g-color-neutral-base-20, #2e2e2e);
+}
+
+.newton-transfer__count {
+  font-size: var(--slds-g-font-scale-neg-1, 0.75rem);
+  color: var(--slds-g-color-neutral-base-50, #747474);
+  white-space: nowrap;
+}
+
+.newton-transfer__list {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: var(--newton-group-gap-y);
+  min-height: var(--newton-static-v-10rem, 10rem);
+  padding: var(--slds-g-spacing-3, 0.75rem);
+}
+
+.newton-transfer__item {
+  border-radius: var(--slds-g-radius-border-2, 0.25rem);
+}
+
+.newton-transfer__item_draggable {
+  cursor: grab;
+}
+
+.newton-transfer__item_draggable:active {
+  cursor: grabbing;
+}
+
+.newton-transfer__item_active {
+  box-shadow: 0 0 0 var(--slds-g-sizing-border-2, 2px)
+    var(--slds-g-color-brand-base-60, #0b5cab);
+}
+
+.newton-transfer__item c-newton-selector-choice-tile {
+  display: block;
+  width: var(--newton-static-v-100-percent, 100%);
+}
+
+.newton-transfer__empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1 1 auto;
+  min-height: var(--newton-static-v-6rem, 6rem);
+  margin: 0;
+  padding: var(--slds-g-spacing-4, 1rem);
+  color: var(--slds-g-color-neutral-base-50, #747474);
+  text-align: center;
+}
+
+.newton-manual-input {
+  margin-top: var(--slds-g-spacing-2, 0.5rem);
+}
+
+.newton-manual-input__control {
+  max-width: var(--newton-static-v-100-percent, 100%);
+}
+
+/* Empty state */
+.newton-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: var(--slds-g-spacing-6, 2rem) var(--slds-g-spacing-4, 1rem);
+  color: var(--slds-g-color-neutral-base-50, #747474);
+  text-align: center;
+}
+
+@media (max-width: 48rem) {
+  .newton-transfer {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .newton-transfer_has-controls {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .newton-transfer__controls {
+    flex-direction: row;
+    justify-content: center;
+    inline-size: auto;
+  }
+}

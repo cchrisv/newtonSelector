@@ -1,0 +1,83 @@
+:host {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: var(--slds-g-font-line-height-1, 1);
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+
+.newton-selector-icon {
+  --newton-selector-icon-size: var(--slds-g-sizing-7, 1.5rem);
+  --newton-selector-icon-box-size: var(--newton-selector-icon-size);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: currentColor;
+  flex-shrink: 0;
+  width: var(--newton-selector-icon-box-size);
+  height: var(--newton-selector-icon-box-size);
+  max-width: var(--newton-static-v-100-percent, 100%);
+  max-height: var(--newton-static-v-100-percent, 100%);
+}
+
+.newton-selector-icon__svg {
+  width: var(--newton-selector-icon-size);
+  height: var(--newton-selector-icon-size);
+  display: block;
+  color: currentColor;
+  overflow: visible;
+  forced-color-adjust: auto;
+  max-width: var(--newton-static-v-100-percent, 100%);
+  max-height: var(--newton-static-v-100-percent, 100%);
+}
+
+/* Size tokens mirror Lightning's size scale so existing `size="medium"` etc. call sites keep working. */
+.newton-selector-icon_size-xs {
+  --newton-selector-icon-size: var(--slds-g-sizing-4, 0.75rem);
+}
+.newton-selector-icon_size-sm {
+  --newton-selector-icon-size: var(--slds-g-sizing-5, 1rem);
+}
+.newton-selector-icon_size-md {
+  --newton-selector-icon-size: var(--slds-g-sizing-7, 1.5rem);
+}
+.newton-selector-icon_size-lg {
+  --newton-selector-icon-size: var(--slds-g-sizing-9, 2rem);
+}
+.newton-selector-icon_size-xl {
+  --newton-selector-icon-size: var(--slds-g-sizing-10, 3rem);
+}
+
+.newton-selector-icon_box-input {
+  --newton-selector-icon-box-size: var(--slds-g-sizing-5, 1rem);
+}
+
+.newton-selector-icon_box-button {
+  --newton-selector-icon-box-size: var(--slds-g-sizing-6, 1.25rem);
+}
+
+.newton-selector-icon_box-option {
+  --newton-selector-icon-box-size: var(--slds-g-sizing-7, 1.5rem);
+}
+
+.newton-selector-icon_box-tile {
+  --newton-selector-icon-box-size: var(--slds-g-sizing-8, 1.75rem);
+}
+
+/* Variants use SLDS 2 color tokens while the Lucide SVG inherits currentColor. */
+.newton-selector-icon_variant-error {
+  color: var(--slds-g-color-error-base-40, #ba0517);
+}
+.newton-selector-icon_variant-warning {
+  color: var(--slds-g-color-warning-base-50, #9a6700);
+}
+.newton-selector-icon_variant-success {
+  color: var(--slds-g-color-success-base-40, #2e844a);
+}
+.newton-selector-icon_variant-brand {
+  color: var(--slds-g-color-brand-base-50, #0176d3);
+}
+.newton-selector-icon_variant-inverse {
+  color: var(--slds-g-color-neutral-base-100, #ffffff);
+}

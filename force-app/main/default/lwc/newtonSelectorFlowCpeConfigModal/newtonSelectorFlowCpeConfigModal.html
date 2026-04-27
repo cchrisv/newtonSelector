@@ -1,0 +1,86 @@
+<template>
+  <lightning-modal-header
+    label="Configure Newton Selector"
+  ></lightning-modal-header>
+
+  <lightning-modal-body class="newton-modal">
+    <c-newton-selector-flow-cpe-studio
+      sections={sections}
+      left-width={_leftWidth}
+      onsectionclick={handleSectionClick}
+      onactivechapterchange={handleActiveChapterChange}
+      onleftwidthchange={handleLeftWidthChange}
+    >
+      <c-newton-selector-flow-cpe-config-preview
+        slot="preview"
+        config={_config}
+        forced-state={previewForcedState}
+        record-collection-sample-records={recordCollectionSampleRecords}
+        string-collection-sample-strings={stringCollectionSampleStrings}
+        onpreviewstatechange={handlePreviewStateChange}
+      ></c-newton-selector-flow-cpe-config-preview>
+
+      <div slot="controls">
+        <template lwc:if={hasActiveSectionIssues}>
+          <ul class="newton-studio__issues" aria-label="Current section issues">
+            <template for:each={activeSectionIssues} for:item="i">
+              <li key={i.key} class={i.className}>
+                <c-newton-selector-icon
+                  name={i.icon}
+                  size="xx-small"
+                  box="option"
+                  alternative-text=""
+                ></c-newton-selector-icon>
+                <span>{i.message}</span>
+              </li>
+            </template>
+          </ul>
+        </template>
+
+        <c-newton-selector-flow-cpe-data-config
+          data-chapter="data"
+          config={_config}
+          source-records-ref={_sourceRecordsRef}
+          source-strings-ref={_sourceStringsRef}
+          builder-context={builderContext}
+          automatic-output-variables={automaticOutputVariables}
+          onconfigpatch={handleConfigPatch}
+          onrefchange={handleRefChange}
+        ></c-newton-selector-flow-cpe-data-config>
+
+        <c-newton-selector-flow-cpe-content-config
+          data-chapter="content"
+          config={_config}
+          builder-context={builderContext}
+          automatic-output-variables={automaticOutputVariables}
+          onconfigpatch={handleConfigPatch}
+        ></c-newton-selector-flow-cpe-content-config>
+
+        <c-newton-selector-flow-cpe-behavior-config
+          data-chapter="behavior"
+          config={_config}
+          builder-context={builderContext}
+          automatic-output-variables={automaticOutputVariables}
+          onconfigpatch={handleConfigPatch}
+        ></c-newton-selector-flow-cpe-behavior-config>
+
+        <c-newton-selector-flow-cpe-appearance-config
+          data-chapter="appearance"
+          config={_config}
+          onconfigpatch={handleConfigPatch}
+        ></c-newton-selector-flow-cpe-appearance-config>
+      </div>
+    </c-newton-selector-flow-cpe-studio>
+  </lightning-modal-body>
+
+  <lightning-modal-footer>
+    <lightning-button label="Cancel" onclick={handleCancel}></lightning-button>
+    <lightning-button
+      variant="brand"
+      label="Save"
+      disabled={saveDisabled}
+      title={saveDisabledTitle}
+      onclick={handleSave}
+    ></lightning-button>
+  </lightning-modal-footer>
+</template>

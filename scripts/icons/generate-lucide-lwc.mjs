@@ -17,7 +17,7 @@ const atomTarget = path.join(
   "main",
   "default",
   "lwc",
-  "newtonAtomIcon",
+  "newtonSelectorIcon",
   "lucideIconPaths.js"
 );
 const pickerTarget = path.join(
@@ -26,7 +26,7 @@ const pickerTarget = path.join(
   "main",
   "default",
   "lwc",
-  "newtonMoleculeIconSelector",
+  "newtonSelectorFlowCpeIconSelector",
   "iconCatalog.js"
 );
 
@@ -248,5 +248,5 @@ execFileSync(
 );
 
 console.log(
-  `Generated ${iconNames.length} Lucide icons for newtonAtomIcon and newtonMoleculeIconSelector.`
+  `Generated ${iconNames.length} Lucide icons for newtonSelectorIcon and newtonSelectorFlowCpeIconSelector.`
 );

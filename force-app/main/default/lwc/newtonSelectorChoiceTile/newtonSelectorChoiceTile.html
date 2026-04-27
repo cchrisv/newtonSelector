@@ -1,0 +1,90 @@
+<template>
+  <div class={wrapperClass} style={customColorStyle}>
+    <input
+      type={inputType}
+      id={inputId}
+      name={inputName}
+      value={item.value}
+      checked={selected}
+      disabled={isDisabled}
+      aria-describedby={helpId}
+      class="newton-selector-choice-tile__input"
+      onchange={handleChange}
+    />
+    <label for={inputId} class="newton-selector-choice-tile__label">
+      <span class="newton-selector-choice-tile__figure">
+        <template lwc:if={hasPattern}>
+          <span
+            class="newton-selector-choice-tile__pattern"
+            aria-hidden="true"
+          ></span>
+        </template>
+        <template lwc:if={hasCornerDecor}>
+          <span
+            class="newton-selector-choice-tile__corner newton-selector-choice-tile__corner_tl"
+            aria-hidden="true"
+          ></span>
+          <span
+            class="newton-selector-choice-tile__corner newton-selector-choice-tile__corner_tr"
+            aria-hidden="true"
+          ></span>
+          <span
+            class="newton-selector-choice-tile__corner newton-selector-choice-tile__corner_bl"
+            aria-hidden="true"
+          ></span>
+          <span
+            class="newton-selector-choice-tile__corner newton-selector-choice-tile__corner_br"
+            aria-hidden="true"
+          ></span>
+        </template>
+        <template lwc:if={hasShape}>
+          <span
+            class="newton-selector-choice-tile__shape"
+            style={shapeStyle}
+            aria-hidden="true"
+          ></span>
+        </template>
+        <template lwc:if={hasIcon}>
+          <span class={iconWrapClass}>
+            <template lwc:if={hasIconDecor}>
+              <span
+                class="newton-selector-choice-tile__icon-decor"
+                aria-hidden="true"
+              ></span>
+            </template>
+            <c-newton-selector-icon
+              name={item.icon}
+              size={resolvedIconSize}
+              variant={iconVariant}
+              class="newton-selector-choice-tile__icon"
+            ></c-newton-selector-icon>
+          </span>
+        </template>
+        <span class="newton-selector-choice-tile__text">
+          <span class="newton-selector-choice-tile__title">{item.label}</span>
+          <template lwc:if={hasSublabel}>
+            <span class="newton-selector-choice-tile__sub"
+              >{item.sublabel}</span
+            >
+          </template>
+        </span>
+        <template lwc:if={hasBadge}>
+          <span class={badgeClass}>{item.badge}</span>
+        </template>
+        <span class="newton-selector-choice-tile__check" aria-hidden="true">
+          <c-newton-selector-icon
+            name="check"
+            size="xx-small"
+            variant="inverse"
+            class="newton-selector-choice-tile__check-icon"
+          ></c-newton-selector-icon>
+        </span>
+      </span>
+      <template lwc:if={hasHelp}>
+        <span id={helpId} class="newton-selector-choice-tile__help"
+          >{item.helpText}</span
+        >
+      </template>
+    </label>
+  </div>
+</template>
