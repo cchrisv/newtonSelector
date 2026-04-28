@@ -1,6 +1,8 @@
 @IsTest
 /** @description Test data helpers for Newton Selector Apex tests. */
 public class NewtonSelectorTestDataFactory {
+  private static Integer userCounter = 0;
+
   /**
    * @description Creates Account test records in the Technology industry.
    * @param count Number of Accounts to create.
@@ -38,7 +40,8 @@ public class NewtonSelectorTestDataFactory {
    */
   public static User createStandardUser() {
     Profile p = [SELECT Id FROM Profile WHERE Name = 'Standard User' LIMIT 1];
-    String uniq = String.valueOf(System.currentTimeMillis());
+    userCounter++;
+    String uniq = String.valueOf(System.currentTimeMillis()) + userCounter;
     User u = new User(
       FirstName = 'Newton',
       LastName = 'Test',

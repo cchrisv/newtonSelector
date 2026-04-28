@@ -1,150 +1,179 @@
 @IsTest
 private class NewtonSelectorRuntimeControllerTest {
-  @TestSetup
-  static void setup() {
-    NewtonSelectorTestDataFactory.createAccounts(3, 'Technology');
-  }
+  private static final Integer BULK_RECORD_COUNT = 251;
 
   @IsTest
   static void queryItemsSuccess() {
-    NewtonSelectorQueryDTO config = NewtonSelectorTestDataFactory.buildSimpleAccountConfig();
-    String configJson = JSON.serialize(config);
+    User testUser = NewtonSelectorTestDataFactory.createStandardUser();
+    System.runAs(testUser) {
+      NewtonSelectorTestDataFactory.createAccounts(3, 'Technology');
+      NewtonSelectorQueryDTO config = NewtonSelectorTestDataFactory.buildSimpleAccountConfig();
+      String configJson = JSON.serialize(config);
 
-    Test.startTest();
-    List<NewtonSelectorItemDTO> dtos = NewtonSelectorRuntimeController.queryItems(
-      configJson
-    );
-    Test.stopTest();
+      Test.startTest();
+      List<NewtonSelectorItemDTO> dtos = NewtonSelectorRuntimeController.queryItems(
+        configJson
+      );
+      Test.stopTest();
 
-    System.assertEquals(3, dtos.size());
+      Assert.areEqual(3, dtos.size());
+    }
   }
 
   @IsTest
   static void queryItemsRejectsBlankConfig() {
-    Test.startTest();
-    try {
-      NewtonSelectorRuntimeController.queryItems('');
-      System.assert(false, 'Should have thrown for blank config');
-    } catch (AuraHandledException e) {
-      System.assert(true);
+    User testUser = NewtonSelectorTestDataFactory.createStandardUser();
+    System.runAs(testUser) {
+      Test.startTest();
+      try {
+        NewtonSelectorRuntimeController.queryItems('');
+        Assert.fail('Should have thrown for blank config');
+      } catch (AuraHandledException e) {
+        Assert.isTrue(String.isNotBlank(e.getMessage()));
+      }
+      Test.stopTest();
     }
-    Test.stopTest();
   }
 
   @IsTest
   static void queryItemsRejectsMalformedJson() {
-    Test.startTest();
-    try {
-      NewtonSelectorRuntimeController.queryItems('{ not valid json');
-      System.assert(false, 'Should have thrown for malformed JSON');
-    } catch (AuraHandledException e) {
-      System.assert(true);
+    User testUser = NewtonSelectorTestDataFactory.createStandardUser();
+    System.runAs(testUser) {
+      Test.startTest();
+      try {
+        NewtonSelectorRuntimeController.queryItems('{ not valid json');
+        Assert.fail('Should have thrown for malformed JSON');
+      } catch (AuraHandledException e) {
+        Assert.isTrue(String.isNotBlank(e.getMessage()));
+      }
+      Test.stopTest();
     }
-    Test.stopTest();
   }
 
   @IsTest
   static void queryItemsAppliesWhereClause() {
-    NewtonSelectorQueryDTO config = NewtonSelectorTestDataFactory.buildSimpleAccountConfig();
-    config.whereClause = 'Industry = \'Technology\'';
-    String configJson = JSON.serialize(config);
+    User testUser = NewtonSelectorTestDataFactory.createStandardUser();
+    System.runAs(testUser) {
+      NewtonSelectorTestDataFactory.createAccounts(3, 'Technology');
+      NewtonSelectorTestDataFactory.createAccounts(2, 'Banking');
+      NewtonSelectorQueryDTO config = NewtonSelectorTestDataFactory.buildSimpleAccountConfig();
+      config.whereClause = 'Industry = \'Technology\'';
+      String configJson = JSON.serialize(config);
 
-    NewtonSelectorTestDataFactory.createAccounts(2, 'Banking');
+      Test.startTest();
+      List<NewtonSelectorItemDTO> techOnly = NewtonSelectorRuntimeController.queryItems(
+        configJson
+      );
+      Test.stopTest();
 
-    Test.startTest();
-    List<NewtonSelectorItemDTO> techOnly = NewtonSelectorRuntimeController.queryItems(
-      configJson
-    );
-    Test.stopTest();
-
-    System.assertEquals(
-      3,
-      techOnly.size(),
-      'WHERE should filter to Technology only'
-    );
+      Assert.areEqual(
+        3,
+        techOnly.size(),
+        'WHERE should filter to Technology only'
+      );
+    }
   }
 
   @IsTest
   static void queryItemsBulk() {
-    NewtonSelectorTestDataFactory.createAccounts(200, 'Bulk');
-    NewtonSelectorQueryDTO config = NewtonSelectorTestDataFactory.buildSimpleAccountConfig();
-    config.whereClause = 'Industry = \'Bulk\'';
-    config.queryLimit = 500;
-    String configJson = JSON.serialize(config);
+    User testUser = NewtonSelectorTestDataFactory.createStandardUser();
+    System.runAs(testUser) {
+      NewtonSelectorTestDataFactory.createAccounts(BULK_RECORD_COUNT, 'Bulk');
+      NewtonSelectorQueryDTO config = NewtonSelectorTestDataFactory.buildSimpleAccountConfig();
+      config.whereClause = 'Industry = \'Bulk\'';
+      config.queryLimit = 500;
+      String configJson = JSON.serialize(config);
 
-    Test.startTest();
-    List<NewtonSelectorItemDTO> dtos = NewtonSelectorRuntimeController.queryItems(
-      configJson
-    );
-    Test.stopTest();
+      Test.startTest();
+      List<NewtonSelectorItemDTO> dtos = NewtonSelectorRuntimeController.queryItems(
+        configJson
+      );
+      Test.stopTest();
 
-    System.assertEquals(200, dtos.size());
+      Assert.areEqual(BULK_RECORD_COUNT, dtos.size());
+    }
   }
 
   @IsTest
   static void validateQueryAcceptsValidConfig() {
-    NewtonSelectorQueryDTO config = NewtonSelectorTestDataFactory.buildSimpleAccountConfig();
-    config.whereClause = 'Industry = \'Technology\'';
+    User testUser = NewtonSelectorTestDataFactory.createStandardUser();
+    System.runAs(testUser) {
+      NewtonSelectorTestDataFactory.createAccounts(1, 'Technology');
+      NewtonSelectorQueryDTO config = NewtonSelectorTestDataFactory.buildSimpleAccountConfig();
+      config.whereClause = 'Industry = \'Technology\'';
 
-    Test.startTest();
-    NewtonSelectorQueryValidationResultDTO result = NewtonSelectorRuntimeController.validateQuery(
-      JSON.serialize(config)
-    );
-    Test.stopTest();
+      Test.startTest();
+      NewtonSelectorQueryValidationResultDTO result = NewtonSelectorRuntimeController.validateQuery(
+        JSON.serialize(config)
+      );
+      Test.stopTest();
 
-    System.assertEquals(true, result.valid);
-    System.assert(result.soql.contains('FROM Account'));
-    System.assert(result.soql.contains('LIMIT 1'));
+      Assert.areEqual(true, result.valid);
+      Assert.isTrue(result.soql.contains('FROM Account'));
+      Assert.isTrue(result.soql.contains('LIMIT 1'));
+    }
   }
 
   @IsTest
   static void validateQueryRejectsBadWhereClause() {
-    NewtonSelectorQueryDTO config = NewtonSelectorTestDataFactory.buildSimpleAccountConfig();
-    config.whereClause = 'DefinitelyMissing__c = \'Nope\'';
+    User testUser = NewtonSelectorTestDataFactory.createStandardUser();
+    System.runAs(testUser) {
+      NewtonSelectorQueryDTO config = NewtonSelectorTestDataFactory.buildSimpleAccountConfig();
+      config.whereClause = 'DefinitelyMissing__c = \'Nope\'';
 
-    Test.startTest();
-    NewtonSelectorQueryValidationResultDTO result = NewtonSelectorRuntimeController.validateQuery(
-      JSON.serialize(config)
-    );
-    Test.stopTest();
+      Test.startTest();
+      NewtonSelectorQueryValidationResultDTO result = NewtonSelectorRuntimeController.validateQuery(
+        JSON.serialize(config)
+      );
+      Test.stopTest();
 
-    System.assertEquals(false, result.valid);
-    System.assert(String.isNotBlank(result.message));
+      Assert.areEqual(false, result.valid);
+      Assert.isTrue(String.isNotBlank(result.message));
+    }
   }
 
   @IsTest
   static void validateQueryRejectsBlankConfig() {
-    Test.startTest();
-    NewtonSelectorQueryValidationResultDTO result = NewtonSelectorRuntimeController.validateQuery(
-      ''
-    );
-    Test.stopTest();
+    User testUser = NewtonSelectorTestDataFactory.createStandardUser();
+    System.runAs(testUser) {
+      Test.startTest();
+      NewtonSelectorQueryValidationResultDTO result = NewtonSelectorRuntimeController.validateQuery(
+        ''
+      );
+      Test.stopTest();
 
-    System.assertEquals(false, result.valid);
-    System.assert(result.message.contains('required'));
+      Assert.areEqual(false, result.valid);
+      Assert.isTrue(result.message.contains('required'));
+    }
   }
 
   @IsTest
   static void validateQueryRejectsMalformedJson() {
-    Test.startTest();
-    NewtonSelectorQueryValidationResultDTO result = NewtonSelectorRuntimeController.validateQuery(
-      '{ not valid json'
-    );
-    Test.stopTest();
+    User testUser = NewtonSelectorTestDataFactory.createStandardUser();
+    System.runAs(testUser) {
+      Test.startTest();
+      NewtonSelectorQueryValidationResultDTO result = NewtonSelectorRuntimeController.validateQuery(
+        '{ not valid json'
+      );
+      Test.stopTest();
 
-    System.assertEquals(false, result.valid);
-    System.assertEquals('Invalid selector configuration.', result.message);
+      Assert.areEqual(false, result.valid);
+      Assert.areEqual('Invalid selector configuration.', result.message);
+    }
   }
 
   @IsTest
-  static void validateQueryHandlesUnexpectedErrors() {
-    Test.startTest();
-    NewtonSelectorQueryValidationResultDTO result = NewtonSelectorRuntimeController.validateQuery(
-      'null'
-    );
-    Test.stopTest();
+  static void validateQueryRejectsNullJson() {
+    User testUser = NewtonSelectorTestDataFactory.createStandardUser();
+    System.runAs(testUser) {
+      Test.startTest();
+      NewtonSelectorQueryValidationResultDTO result = NewtonSelectorRuntimeController.validateQuery(
+        'null'
+      );
+      Test.stopTest();
 
-    System.assertEquals(false, result.valid);
-    System.assertEquals('Unable to validate this query.', result.message);
+      Assert.areEqual(false, result.valid);
+      Assert.isTrue(result.message.contains('required'));
+    }
   }
 }

@@ -8,15 +8,7 @@ public with sharing class NewtonSelectorRuntimeController {
   @AuraEnabled(cacheable=true)
   public static List<NewtonSelectorItemDTO> queryItems(String configJson) {
     try {
-      if (String.isBlank(configJson)) {
-        throw new NewtonSelectorException(
-          'Selector configuration is required.'
-        );
-      }
-      NewtonSelectorQueryDTO config = (NewtonSelectorQueryDTO) JSON.deserialize(
-        configJson,
-        NewtonSelectorQueryDTO.class
-      );
+      NewtonSelectorQueryDTO config = parseConfig(configJson);
       return NewtonSelectorService.fetchItems(config);
     } catch (NewtonSelectorException e) {
       throw new AuraHandledException(e.getMessage());
@@ -37,15 +29,7 @@ public with sharing class NewtonSelectorRuntimeController {
     String configJson
   ) {
     try {
-      if (String.isBlank(configJson)) {
-        throw new NewtonSelectorException(
-          'Selector configuration is required.'
-        );
-      }
-      NewtonSelectorQueryDTO config = (NewtonSelectorQueryDTO) JSON.deserialize(
-        configJson,
-        NewtonSelectorQueryDTO.class
-      );
+      NewtonSelectorQueryDTO config = parseConfig(configJson);
       config.queryLimit = 1;
       String soql = NewtonSelectorRecordQuery.previewSoql(config);
       NewtonSelectorService.fetchItems(config);
@@ -64,5 +48,20 @@ public with sharing class NewtonSelectorRuntimeController {
         'Unable to validate this query.'
       );
     }
+  }
+
+  private static NewtonSelectorQueryDTO parseConfig(String configJson) {
+    if (String.isBlank(configJson)) {
+      throw new NewtonSelectorException('Selector configuration is required.');
+    }
+
+    NewtonSelectorQueryDTO config = (NewtonSelectorQueryDTO) JSON.deserialize(
+      configJson,
+      NewtonSelectorQueryDTO.class
+    );
+    if (config == null) {
+      throw new NewtonSelectorException('Selector configuration is required.');
+    }
+    return config;
   }
 }
