@@ -2,6 +2,8 @@ import { LightningElement, api } from "lwc";
 
 const MODE_SINGLE = "single";
 const MODE_MULTI = "multi";
+const VARIANT_PICKLIST = "picklist";
+const VARIANT_DROPDOWN = "dropdown";
 
 function toBoolean(value) {
   return value === true || value === "true" || value === "";
@@ -102,6 +104,20 @@ export default class NewtonSelectorFlowCpeChoiceControl extends LightningElement
 
   get isMulti() {
     return this.selectionMode === MODE_MULTI;
+  }
+
+  get isPicklistVariant() {
+    return (
+      this.variant === VARIANT_PICKLIST || this.variant === VARIANT_DROPDOWN
+    );
+  }
+
+  get comboboxValue() {
+    return this.isMulti ? undefined : this.value;
+  }
+
+  get comboboxValues() {
+    return this.isMulti ? this.values : undefined;
   }
 
   get selectedValues() {

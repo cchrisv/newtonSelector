@@ -2,7 +2,7 @@ import { LightningElement, api } from "lwc";
 import { buildTokens } from "c/newtonSelectorFlowCpeUtilitySearchHighlight";
 
 const DEFAULT_PRESENTATION = Object.freeze({
-  icon: "circle-question-mark",
+  icon: "box",
   iconTone: "neutral",
   badgeVariant: "neutral"
 });
@@ -126,6 +126,21 @@ export default class NewtonSelectorFlowCpeLookupChoiceOption extends LightningEl
     return String(value);
   }
 
+  get subtitleLine() {
+    const value = String(
+      this.normalizedRow.value || this.normalizedRow.id || ""
+    ).trim();
+    const subtitle = this.subtitle.trim();
+    const showValue =
+      value &&
+      value !== this.title &&
+      !subtitle.toLowerCase().includes(value.toLowerCase());
+    const parts = [showValue ? value : "", subtitle]
+      .map((part) => String(part || "").trim())
+      .filter(Boolean);
+    return [...new Set(parts)].join(" — ");
+  }
+
   get iconName() {
     return this.resourcePresentation.icon;
   }
@@ -134,6 +149,10 @@ export default class NewtonSelectorFlowCpeLookupChoiceOption extends LightningEl
     const r = this.normalizedRow;
     const value = r.badge || r.sObjectType || "";
     return String(value);
+  }
+
+  get showBadge() {
+    return Boolean(this.badge);
   }
 
   get resourcePresentation() {
@@ -151,7 +170,12 @@ export default class NewtonSelectorFlowCpeLookupChoiceOption extends LightningEl
       };
     }
 
-    if (r.isObject || normalizeType(r.displayType) === "sobject") {
+    if (
+      r.sObjectType ||
+      r.isObject ||
+      normalizeType(r.type) === "sobject" ||
+      normalizeType(r.displayType) === "sobject"
+    ) {
       return TYPE_PRESENTATION.sobject;
     }
 

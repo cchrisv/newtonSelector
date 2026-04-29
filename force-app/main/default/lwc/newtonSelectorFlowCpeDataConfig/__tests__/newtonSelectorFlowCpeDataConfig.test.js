@@ -1,6 +1,7 @@
 import { createElement } from "lwc";
 import NewtonSelectorFlowCpeDataConfig from "c/newtonSelectorFlowCpeDataConfig";
 import { getObjectInfo, getPicklistValues } from "lightning/uiObjectInfoApi";
+import searchSObjectTypes from "@salesforce/apex/NewtonSelectorFlowCpeController.searchSObjectTypes";
 import searchLookupDatasetFieldsForObject from "@salesforce/apex/NewtonSelectorFlowCpeController.searchLookupDatasetFieldsForObject";
 import queryItems from "@salesforce/apex/NewtonSelectorRuntimeController.queryItems";
 
@@ -153,6 +154,7 @@ function overrideModeToggle(element) {
 
 describe("c-newton-selector-flow-cpe-data-config events", () => {
   beforeEach(() => {
+    searchSObjectTypes.mockResolvedValue([]);
     searchLookupDatasetFieldsForObject.mockResolvedValue([]);
   });
 
@@ -223,6 +225,112 @@ describe("c-newton-selector-flow-cpe-data-config events", () => {
     });
   });
 
+  it("resolves collection field mapping metadata from a mapped Get Records resource", () => {
+    const element = mount({
+      sourceRecordsRef: "{!Get_Contacts}",
+      builderContext: {
+        recordLookups: [
+          {
+            name: "Get_Contacts",
+            label: "Get Contacts",
+            object: "Contact",
+            getFirstRecordOnly: "false"
+          }
+        ]
+      },
+      config: {
+        ...BASE_CONFIG,
+        dataSource: "collection",
+        collection: {
+          fieldMap: { label: "", value: "" }
+        }
+      }
+    });
+
+    const fieldselectors = element.shadowRoot.querySelectorAll(
+      "c-newton-selector-flow-cpe-field-selector[data-field]"
+    );
+
+    expect(fieldselectors).toHaveLength(6);
+    fieldselectors.forEach((selector) => {
+      expect(selector.objectApiName).toBe("Contact");
+    });
+  });
+
+  it("hydrates collection object metadata from builder context when the selection event omits objectType", () => {
+    const element = mount({
+      config: { ...BASE_CONFIG, dataSource: "collection" },
+      builderContext: {
+        recordLookups: [
+          {
+            name: "Get_Accounts",
+            label: "Get Accounts",
+            object: "Account",
+            getFirstRecordOnly: "false"
+          }
+        ]
+      }
+    });
+    const patches = collect(element);
+
+    valueChanged(
+      element.shadowRoot.querySelector(
+        "c-newton-selector-flow-cpe-resource-selector"
+      ),
+      "{!Get_Accounts}",
+      { isCollection: true }
+    );
+
+    expect(patches.at(-1).value.collection.objectApiName).toBe("Account");
+    expect(patches.at(-1).value.collection.fieldMap).toEqual({
+      label: "",
+      sublabel: "",
+      icon: "",
+      value: "",
+      badge: "",
+      helpText: ""
+    });
+  });
+
+  it("tags sObject search results with record-object presentation metadata", async () => {
+    searchSObjectTypes.mockResolvedValue([
+      {
+        value: "DataActionJobSummary",
+        label: "Data Action Job Summary",
+        subtitle: "DataActionJobSummary"
+      }
+    ]);
+    const element = mount({
+      config: { ...BASE_CONFIG, dataSource: "sobject" }
+    });
+    const lookup = byLabel(
+      element.shadowRoot,
+      "c-newton-selector-combobox",
+      "SObject"
+    );
+    lookup.setSearchResults = jest.fn();
+
+    lookup.dispatchEvent(
+      new CustomEvent("search", {
+        detail: { searchTerm: "data", rawSearchTerm: "Data" },
+        bubbles: true,
+        composed: true
+      })
+    );
+    await flushPromises();
+
+    expect(lookup.setSearchResults).toHaveBeenCalledWith([
+      expect.objectContaining({
+        id: "DataActionJobSummary",
+        title: "Data Action Job Summary",
+        icon: "database",
+        type: "SObject",
+        displayType: "SObject",
+        badge: "DataActionJobSummary"
+      })
+    ]);
+  });
+
   it("passes collection object metadata into every collection field mapper", () => {
     const element = mount({
       config: {
@@ -248,7 +356,7 @@ describe("c-newton-selector-flow-cpe-data-config events", () => {
     const element = mount();
     const patches = collect(element);
 
-    click(element.shadowRoot.querySelector("lightning-button"));
+    click(element.shadowRoot.querySelector(".newton-studio__button-with-icon"));
     expect(patches.at(-1).value.custom.items).toHaveLength(3);
 
     valueChanged(
@@ -277,7 +385,7 @@ describe("c-newton-selector-flow-cpe-data-config events", () => {
 
     const firstRowButtons = [
       ...element.shadowRoot.querySelectorAll(
-        'lightning-button-icon[data-index="0"]'
+        '.newton-studio__custom-row-head button[data-index="0"]'
       )
     ];
 

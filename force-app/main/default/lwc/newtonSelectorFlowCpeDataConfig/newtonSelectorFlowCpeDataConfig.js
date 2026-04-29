@@ -546,8 +546,11 @@ export default class NewtonSelectorFlowCpeDataConfig extends LightningElement {
           id: row.value,
           title: row.label,
           subtitle: row.subtitle,
-          icon: row.icon,
-          sObjectType: row.sObjectType
+          icon: row.icon || "database",
+          sObjectType: row.sObjectType,
+          type: "SObject",
+          displayType: "SObject",
+          badge: row.value
         }))
       );
     } catch {
@@ -558,7 +561,16 @@ export default class NewtonSelectorFlowCpeDataConfig extends LightningElement {
   get picklistObjectSelection() {
     const objectApiName = this._config.picklist?.objectApiName;
     return objectApiName
-      ? [{ id: objectApiName, title: objectApiName, icon: "sparkle" }]
+      ? [
+          {
+            id: objectApiName,
+            title: objectApiName,
+            icon: "database",
+            type: "SObject",
+            displayType: "SObject",
+            badge: objectApiName
+          }
+        ]
       : [];
   }
   get sobjectSelection() {

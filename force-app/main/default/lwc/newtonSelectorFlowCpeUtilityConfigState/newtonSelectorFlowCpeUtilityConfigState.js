@@ -6,6 +6,9 @@ import {
 
 const BUILDER_CONTEXT_RESOURCE_BUCKETS = [
   "variables",
+  "recordLookups",
+  "recordCreates",
+  "recordUpdates",
   "constants",
   "choices",
   "dynamicChoiceSets",
@@ -94,7 +97,7 @@ export function resolveRecordCollectionMetadataFromBuilderContext(
   for (const bucket of BUILDER_CONTEXT_RESOURCE_BUCKETS) {
     const list = builderContext[bucket];
     if (!Array.isArray(list)) continue;
-    const match = list.find((resource) => resource?.name === ref);
+    const match = list.find((resource) => resourceMatchesRef(resource, ref));
     if (!match) continue;
     return {
       objectApiName:
@@ -127,6 +130,13 @@ function normalizeFlowReference(rawRef) {
     .replace(/^\{!\s*/, "")
     .replace(/\s*\}$/, "")
     .trim();
+}
+
+function resourceMatchesRef(resource, ref) {
+  if (!resource || !ref) return false;
+  return [resource.name, resource.apiName, resource.varApiName]
+    .filter(Boolean)
+    .some((candidate) => String(candidate) === ref);
 }
 
 function resolveRecordArrayFromResource(resource) {

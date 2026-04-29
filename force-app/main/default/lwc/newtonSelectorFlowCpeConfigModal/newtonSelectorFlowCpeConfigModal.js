@@ -2,7 +2,6 @@ import { api, track } from "lwc";
 import LightningModal from "lightning/modal";
 import {
   mergeSelectorConfig,
-  recordCollectionSamples,
   setConfigPath
 } from "c/newtonSelectorFlowCpeUtilityConfigState";
 import {
@@ -104,14 +103,6 @@ export default class NewtonSelectorFlowCpeConfigModal extends LightningModal {
 
   get hasActiveSectionIssues() {
     return this.activeSectionIssues.length > 0;
-  }
-
-  get recordCollectionSampleRecords() {
-    return recordCollectionSamples(
-      this._config,
-      this.builderContext,
-      this._sourceRecordsRef
-    );
   }
 
   handleSectionClick(event) {

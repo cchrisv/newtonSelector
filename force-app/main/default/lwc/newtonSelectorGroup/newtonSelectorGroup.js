@@ -233,6 +233,9 @@ export default class NewtonSelectorGroup extends LightningElement {
   get picklistItems() {
     return this.decoratedItems.map((item) => ({
       ...item,
+      title: item.label,
+      subtitle: item.sublabel || "",
+      type: item.type || item.displayType || "",
       _ariaSelected: String(item._selected),
       _ariaDisabled: String(item._disabled),
       _class: [
@@ -489,12 +492,6 @@ export default class NewtonSelectorGroup extends LightningElement {
       .join(" ");
   }
 
-  get picklistComboboxClass() {
-    const base =
-      "slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click newton-picklist__combobox";
-    return this._picklistOpen ? `${base} slds-is-open` : base;
-  }
-
   get picklistInputContainerClass() {
     const base = "slds-combobox__form-element slds-input-has-icon";
     return this.selectedPicklistIcon
@@ -503,7 +500,7 @@ export default class NewtonSelectorGroup extends LightningElement {
   }
 
   get picklistInputClass() {
-    const base = "slds-input slds-combobox__input";
+    const base = "slds-input_faux slds-combobox__input newton-picklist__button";
     return this.selectedPicklistIcon
       ? `${base} slds-combobox__input-value`
       : base;
@@ -523,6 +520,10 @@ export default class NewtonSelectorGroup extends LightningElement {
     return this.picklistSelectionLabel;
   }
 
+  get picklistButtonLabel() {
+    return this.picklistInputValue || this.picklistPlaceholder;
+  }
+
   get picklistInputTitle() {
     if (this.isPicklistSingle) {
       return [this.selectedPicklistLabel, this.selectedPicklistSublabel]
@@ -530,6 +531,10 @@ export default class NewtonSelectorGroup extends LightningElement {
         .join(" - ");
     }
     return this.picklistInputValue;
+  }
+
+  get picklistAriaLabel() {
+    return this.picklistInputTitle || this.picklistPlaceholder;
   }
 
   get picklistExpanded() {
@@ -645,8 +650,17 @@ export default class NewtonSelectorGroup extends LightningElement {
 
   handlePicklistCardSelect(event) {
     event.stopPropagation();
-    const value = event.detail?.value;
+    this.applyPicklistValue(event.detail?.value);
+  }
+
+  handlePicklistOptionSelect(event) {
+    this.applyPicklistValue(event.currentTarget.dataset.value);
+  }
+
+  applyPicklistValue(value) {
     if (value === undefined || value === null) return;
+    const item = this.findItem(value);
+    if (item?.disabled) return;
     const changed = this.isMulti
       ? this.toggleMulti(value)
       : this.setSelectedValues(value === "" ? [] : [value]);

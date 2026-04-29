@@ -30,33 +30,35 @@ describe("c-newton-selector-flow-cpe-choice-control", () => {
     }
   });
 
-  it("renders finite choices through the Newton selector group", async () => {
+  it("renders picklist choices through the base combobox", async () => {
     const element = mount({ variant: "picklist" });
     await Promise.resolve();
 
-    const group = element.shadowRoot.querySelector("c-newton-selector-group");
-    expect(group).not.toBeNull();
-    expect(group.variant).toBe("picklist");
-    expect(group.selectedValues).toEqual(["a"]);
-    expect(group.items).toEqual(
+    const combobox = element.shadowRoot.querySelector(
+      "c-newton-selector-combobox"
+    );
+    expect(combobox).not.toBeNull();
+    expect(combobox.mode).toBe("select");
+    expect(combobox.value).toBe("a");
+    expect(combobox.options).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ label: "Alpha", value: "a" })
+        expect.objectContaining({ title: "Alpha", id: "a" })
       ])
     );
   });
 
-  it("applies the shared CPE dropdown icon treatment", async () => {
+  it("normalizes option icons before passing them to the base combobox", async () => {
     const element = mount({
       items: [{ label: "Source order", value: "none" }]
     });
     await Promise.resolve();
 
-    const group = element.shadowRoot.querySelector("c-newton-selector-group");
-    expect(group.iconDecor).toBe("square");
-    expect(group.iconStyle).toBe("soft");
-    expect(group.iconShading).toBe("flat");
-    expect(group.iconTone).toBe("brand");
-    expect(group.items[0]).toEqual(expect.objectContaining({ icon: "circle" }));
+    const combobox = element.shadowRoot.querySelector(
+      "c-newton-selector-combobox"
+    );
+    expect(combobox.options[0]).toEqual(
+      expect.objectContaining({ icon: "circle" })
+    );
   });
 
   it("translates Newton selector selection into a valuechange event", async () => {
@@ -65,15 +67,17 @@ describe("c-newton-selector-flow-cpe-choice-control", () => {
     element.addEventListener("valuechange", handler);
     await Promise.resolve();
 
-    element.shadowRoot.querySelector("c-newton-selector-group").dispatchEvent(
-      new CustomEvent("selectionchange", {
-        detail: {
-          values: ["b"],
-          items: [{ label: "Beta", value: "b" }]
-        },
-        bubbles: true
-      })
-    );
+    element.shadowRoot
+      .querySelector("c-newton-selector-combobox")
+      .dispatchEvent(
+        new CustomEvent("selectionchange", {
+          detail: {
+            values: ["b"],
+            items: [{ label: "Beta", value: "b" }]
+          },
+          bubbles: true
+        })
+      );
 
     expect(handler).toHaveBeenCalledTimes(1);
     expect(handler.mock.calls[0][0].detail).toMatchObject({
@@ -91,8 +95,10 @@ describe("c-newton-selector-flow-cpe-choice-control", () => {
     });
     await Promise.resolve();
 
-    const group = element.shadowRoot.querySelector("c-newton-selector-group");
-    expect(group.selectionMode).toBe("multi");
-    expect(group.selectedValues).toEqual(["a", "b"]);
+    const combobox = element.shadowRoot.querySelector(
+      "c-newton-selector-combobox"
+    );
+    expect(combobox.selectionMode).toBe("multi");
+    expect(combobox.values).toEqual(["a", "b"]);
   });
 });

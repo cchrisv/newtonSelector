@@ -1,6 +1,13 @@
 :host {
   --newton-selector-icon-cell-size: var(--slds-g-sizing-11, 3.5rem);
-  --newton-selector-icon-cell-gap: var(--slds-g-spacing-3, 0.75rem);
+  --newton-selector-icon-cell-gap: var(--slds-g-spacing-2, 0.5rem);
+  --newton-cpe-dropdown-surface: var(--slds-g-color-neutral-base-100, #ffffff);
+  --newton-cpe-dropdown-border: var(--slds-g-color-border-base-1, #c9c9c9);
+  --newton-cpe-dropdown-shadow: var(
+    --slds-g-shadow-3,
+    0 8px 24px rgba(0, 0, 0, 0.14)
+  );
+  --newton-cpe-dropdown-radius: var(--slds-g-radius-border-3, 0.5rem);
   --newton-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
   display: block;
 }
@@ -16,6 +23,14 @@
 
 .newton-combobox {
   position: relative;
+  --newton-selector-combobox-dropdown-width: max(
+    var(--newton-static-v-100-percent, 100%),
+    var(--newton-static-v-24rem, 24rem)
+  );
+  --newton-selector-combobox-dropdown-max-height: var(
+    --newton-static-v-26rem,
+    26rem
+  );
 }
 
 .newton-combobox__trigger {
@@ -36,14 +51,10 @@
   width: var(--slds-g-sizing-8, 1.75rem);
   height: var(--slds-g-sizing-8, 1.75rem);
   border-radius: var(--slds-g-radius-border-2, 0.25rem);
-  color: var(--slds-g-color-brand-base-40, #0b5cab);
-  background: var(--slds-g-color-brand-base-95, #eef4ff);
-  border: var(--slds-g-sizing-border-1, 1px) solid
-    color-mix(
-      in oklab,
-      var(--slds-g-color-brand-base-50, #0176d3) 22%,
-      transparent
-    );
+  color: var(--slds-g-color-brand-base-50, #0176d3);
+  background: var(--slds-g-color-neutral-base-100, #ffffff);
+  border: var(--slds-g-sizing-border-2, 2px) solid
+    var(--slds-g-color-brand-base-50, #0176d3);
 }
 
 .newton-combobox__label {
@@ -67,33 +78,8 @@
   background: var(--slds-g-color-neutral-base-95, #f5f5f5);
 }
 
-.newton-combobox__panel {
-  position: absolute;
-  top: calc(100% + var(--slds-g-spacing-1, 0.25rem));
-  left: 0;
-  right: auto;
-  width: max(
-    var(--newton-static-v-100-percent, 100%),
-    var(--newton-static-v-24rem, 24rem)
-  );
-  background: var(--slds-g-color-neutral-base-100, #ffffff);
-  border: var(--slds-g-sizing-border-1, 1px) solid
-    var(--slds-g-color-border-base-1, #e5e5e5);
-  border-radius: var(--slds-g-radius-border-3, 0.5rem);
-  box-shadow: var(--slds-g-shadow-3, 0 8px 24px -4px rgba(0, 0, 0, 0.12));
-  z-index: var(--newton-static-v-9000, 9000);
-  max-height: 0;
-  overflow: hidden;
-  opacity: 0;
-  transition:
-    max-height 200ms var(--newton-ease),
-    opacity 140ms var(--newton-ease);
-}
-.newton-combobox__panel_open {
-  max-height: var(--newton-static-v-26rem, 26rem);
-  opacity: 1;
-  overflow: auto;
-  padding-bottom: var(--slds-g-spacing-3, 0.75rem);
+.newton-combobox__panel-content {
+  padding-bottom: var(--slds-g-spacing-2, 0.5rem);
 }
 
 .newton-tabs {
@@ -105,13 +91,10 @@
     var(--slds-g-color-border-base-1, #e5e5e5);
   padding: 0 var(--slds-g-spacing-2, 0.5rem);
   display: flex;
-  gap: 0.25rem;
+  gap: var(--slds-g-spacing-1, 0.25rem);
 }
 
 .newton-search {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
   padding: var(--slds-g-spacing-2, 0.5rem) var(--slds-g-spacing-3, 0.75rem);
   border-bottom: var(--newton-static-v-1px, 1px) solid
     var(--slds-g-color-border-base-1, #e5e5e5);
@@ -121,12 +104,7 @@
   z-index: 1;
 }
 .newton-search__input {
-  flex: 1 1 auto;
-  border: none;
-  outline: none;
-  font-size: var(--slds-g-font-scale-1, 0.875rem);
-  padding: var(--slds-g-spacing-1, 0.25rem) 0;
-  background: transparent;
+  width: var(--newton-static-v-100-percent, 100%);
 }
 
 .newton-grid {
@@ -136,7 +114,7 @@
     minmax(var(--newton-selector-icon-cell-size), 1fr)
   );
   gap: var(--newton-selector-icon-cell-gap);
-  padding: var(--slds-g-spacing-3, 0.75rem);
+  padding: var(--slds-g-spacing-2, 0.5rem);
 }
 .newton-grid_wide {
   grid-template-columns: repeat(
@@ -217,7 +195,10 @@
 }
 
 @media (max-width: 40rem) {
-  .newton-combobox__panel {
-    width: var(--newton-static-v-100-percent, 100%);
+  .newton-combobox {
+    --newton-selector-combobox-dropdown-width: var(
+      --newton-static-v-100-percent,
+      100%
+    );
   }
 }

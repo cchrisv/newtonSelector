@@ -225,7 +225,6 @@
 /* Picklist layout: field-like trigger, card-backed option menu. */
 .newton-picklist {
   position: relative;
-  --newton-group-gap-y: 0;
   margin-top: var(--newton-group-margin-t, 0);
   margin-right: var(--newton-group-margin-r, 0);
   margin-bottom: var(--newton-group-margin-b, 0);
@@ -234,6 +233,11 @@
 
 .newton-picklist__combobox {
   position: relative;
+  --newton-selector-combobox-dropdown-max-height: var(
+    --newton-static-v-20rem,
+    20rem
+  );
+  --newton-selector-combobox-dropdown-padding: 0;
 }
 
 .newton-picklist__selected-icon {
@@ -242,57 +246,56 @@
   justify-content: center;
 }
 
+.newton-picklist__button {
+  display: flex;
+  align-items: center;
+  width: var(--newton-static-v-100-percent, 100%);
+  text-align: left;
+  cursor: pointer;
+}
+
 .newton-picklist__chevron {
   pointer-events: none;
   color: var(--slds-g-color-neutral-base-30, #444444);
 }
 
 .newton-picklist__menu {
-  position: absolute;
   z-index: var(--newton-z-index-dropdown);
-  margin-top: var(--slds-g-spacing-1, 0.25rem);
-  width: var(--newton-static-v-100-percent, 100%);
-  max-height: var(--newton-static-v-20rem, 20rem);
-  padding: var(--slds-g-spacing-1, 0.25rem);
-  overflow: auto;
 }
 
 .newton-picklist__search {
   margin: 0;
-  padding: 0 0 var(--slds-g-spacing-1, 0.25rem);
+  padding: var(--slds-g-spacing-1, 0.25rem);
 }
 
 .newton-picklist__listbox {
   display: flex;
   flex-direction: column;
-  gap: var(--newton-group-gap-y);
-}
-
-.newton-picklist__item + .newton-picklist__item {
-  margin-top: var(--slds-g-spacing-1, 0.25rem);
+  gap: var(--newton-group-gap-y, var(--slds-g-spacing-1, 0.25rem));
+  padding: 0 var(--slds-g-spacing-1, 0.25rem) var(--slds-g-spacing-1, 0.25rem);
 }
 
 .newton-picklist__option {
   display: block;
   padding: 0;
-  border-radius: var(--slds-g-radius-border-2, 0.25rem);
-  cursor: pointer;
-}
-
-.newton-transfer__search {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  align-items: center;
-  column-gap: var(--slds-g-spacing-2, 0.5rem);
-  padding: var(--slds-g-spacing-2, 0.5rem) var(--slds-g-spacing-3, 0.75rem);
   border: var(--slds-g-sizing-border-1, 1px) solid
     var(--slds-g-color-border-base-1, #c9c9c9);
   border-radius: var(--slds-g-radius-border-2, 0.25rem);
   background: var(--slds-g-color-neutral-base-100, #ffffff);
+  cursor: pointer;
 }
 
-.newton-transfer__search {
-  margin: var(--slds-g-spacing-3, 0.75rem) var(--slds-g-spacing-3, 0.75rem) 0;
+.newton-picklist__option:hover {
+  background: var(--slds-g-color-neutral-base-95, #f3f3f3);
+}
+
+.newton-picklist__item_selected .newton-picklist__option {
+  background: var(--slds-g-color-brand-base-95, #eef4ff);
+  box-shadow:
+    inset var(--slds-g-sizing-border-2, 2px) 0 0
+      var(--slds-g-color-brand-base-50, #0176d3),
+    inset 0 0 0 var(--slds-g-sizing-border-1, 1px)
+      var(--slds-g-color-brand-base-50, #0176d3);
 }
 
 .newton-picklist__item c-newton-selector-choice-tile {
@@ -303,6 +306,19 @@
   --newton-tile-pad-r: var(--slds-g-spacing-2, 0.5rem);
   --newton-tile-pad-t: var(--slds-g-spacing-2, 0.5rem);
   --newton-tile-pad-b: var(--slds-g-spacing-2, 0.5rem);
+}
+
+.newton-transfer__search {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  column-gap: var(--slds-g-spacing-2, 0.5rem);
+  padding: var(--slds-g-spacing-2, 0.5rem) var(--slds-g-spacing-3, 0.75rem);
+  margin: var(--slds-g-spacing-3, 0.75rem) var(--slds-g-spacing-3, 0.75rem) 0;
+  border: var(--slds-g-sizing-border-1, 1px) solid
+    var(--slds-g-color-border-base-1, #c9c9c9);
+  border-radius: var(--slds-g-radius-border-2, 0.25rem);
+  background: var(--slds-g-color-neutral-base-100, #ffffff);
 }
 
 .newton-picklist__empty {

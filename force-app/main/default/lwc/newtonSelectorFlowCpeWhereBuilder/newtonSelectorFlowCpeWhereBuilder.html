@@ -162,7 +162,8 @@
                     >{row.number}</span
                   >
                   <div class="cc-where-condition__fields">
-                    <c-newton-selector-flow-cpe-custom-lookup
+                    <c-newton-selector-combobox
+                      mode="lookup"
                       label="Field"
                       placeholder="Select field..."
                       variant="label-hidden"
@@ -173,7 +174,7 @@
                       data-id={row.id}
                       onsearch={handleFieldSearch}
                       onselectionchange={handleFieldSelectionChange}
-                    ></c-newton-selector-flow-cpe-custom-lookup>
+                    ></c-newton-selector-combobox>
                     <c-newton-selector-flow-cpe-choice-control
                       label="Operator"
                       value={row.operator}

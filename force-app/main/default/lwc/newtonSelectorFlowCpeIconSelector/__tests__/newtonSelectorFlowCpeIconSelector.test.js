@@ -29,7 +29,9 @@ describe("c-newton-selector-flow-cpe-icon-selector", () => {
     const el = mount({ mode: "combobox" });
     await Promise.resolve();
 
-    expect(el.shadowRoot.querySelector(".newton-combobox__panel")).toBeNull();
+    expect(
+      el.shadowRoot.querySelector(".newton-combobox__panel-content")
+    ).toBeNull();
     expect(
       el.shadowRoot.querySelectorAll(".newton-selector-icon-cell")
     ).toHaveLength(0);
@@ -38,7 +40,7 @@ describe("c-newton-selector-flow-cpe-icon-selector", () => {
     await Promise.resolve();
 
     expect(
-      el.shadowRoot.querySelector(".newton-combobox__panel")
+      el.shadowRoot.querySelector(".newton-combobox__panel-content")
     ).not.toBeNull();
     expect(
       el.shadowRoot.querySelectorAll(".newton-selector-icon-cell").length

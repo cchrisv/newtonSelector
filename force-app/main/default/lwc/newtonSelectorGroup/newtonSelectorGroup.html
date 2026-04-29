@@ -109,167 +109,117 @@
 
     <template lwc:if={isPicklist}>
       <div class={picklistClass} style={groupStyle}>
-        <div class="slds-combobox_container">
-          <div
-            class={picklistComboboxClass}
-            role="combobox"
-            aria-haspopup="listbox"
-            aria-owns={picklistListboxId}
-            aria-expanded={picklistExpanded}
-          >
-            <div
-              class={picklistInputContainerClass}
-              role="none"
-              onclick={handlePicklistToggle}
-            >
-              <template lwc:if={selectedPicklistIcon}>
-                <span
-                  class="slds-icon_container slds-combobox__input-entity-icon newton-picklist__selected-icon"
-                  aria-hidden="true"
-                >
-                  <c-newton-selector-icon
-                    name={selectedPicklistIcon}
-                    size="x-small"
-                    box="input"
-                  ></c-newton-selector-icon>
-                </span>
-              </template>
-
-              <input
-                id={picklistInputId}
-                class={picklistInputClass}
-                type="text"
-                role="textbox"
-                readonly
-                autocomplete="off"
-                aria-autocomplete="none"
-                aria-controls={picklistListboxId}
-                aria-expanded={picklistExpanded}
-                value={picklistInputValue}
-                placeholder={picklistPlaceholder}
-                title={picklistInputTitle}
-                onkeydown={handlePicklistKeydown}
-              />
-
+        <c-newton-selector-combobox
+          class="newton-picklist__combobox"
+          open={_picklistOpen}
+          dropdown-id={picklistListboxId}
+          dropdown-label="Picklist options"
+          dropdown-class="newton-picklist__menu"
+          aria-multiselectable={picklistAriaMultiselectable}
+        >
+          <div slot="trigger" class={picklistInputContainerClass} role="none">
+            <template lwc:if={selectedPicklistIcon}>
               <span
-                class="slds-icon_container slds-input__icon slds-input__icon_right newton-picklist__chevron"
+                class="slds-icon_container slds-combobox__input-entity-icon newton-picklist__selected-icon"
                 aria-hidden="true"
               >
                 <c-newton-selector-icon
-                  name={picklistChevron}
+                  name={selectedPicklistIcon}
                   size="x-small"
                   box="input"
                 ></c-newton-selector-icon>
               </span>
-            </div>
+            </template>
 
-            <template lwc:if={_picklistOpen}>
-              <div
-                id={picklistListboxId}
-                class="slds-dropdown slds-dropdown_fluid newton-picklist__menu"
-                role="listbox"
-                aria-multiselectable={picklistAriaMultiselectable}
-                aria-label="Picklist options"
-                oncardselect={handlePicklistCardSelect}
-              >
-                <template lwc:if={enableSearch}>
-                  <div class="slds-form-element newton-picklist__search">
-                    <div
-                      class="slds-form-element__control slds-input-has-icon slds-input-has-icon_left"
-                    >
-                      <span
-                        class="slds-icon_container slds-input__icon slds-input__icon_left"
-                        aria-hidden="true"
-                      >
-                        <c-newton-selector-icon
-                          name="search"
-                          size="x-small"
-                          box="input"
-                        ></c-newton-selector-icon>
-                      </span>
-                      <input
-                        type="search"
-                        class="slds-input newton-picklist__search-input"
-                        placeholder="Search options"
-                        value={_searchTerm}
-                        oninput={handleSearch}
-                        aria-label="Filter picklist options"
-                      />
-                    </div>
-                  </div>
-                </template>
-                <template lwc:if={hasPicklistItems}>
-                  <ul
-                    class="slds-listbox slds-listbox_vertical newton-picklist__listbox"
-                    role="presentation"
+            <button
+              id={picklistInputId}
+              class={picklistInputClass}
+              type="button"
+              role="combobox"
+              aria-haspopup="listbox"
+              aria-controls={picklistListboxId}
+              aria-expanded={picklistExpanded}
+              aria-label={picklistAriaLabel}
+              title={picklistInputTitle}
+              onkeydown={handlePicklistKeydown}
+              onclick={handlePicklistToggle}
+            >
+              <span class="slds-truncate">{picklistButtonLabel}</span>
+            </button>
+
+            <span
+              class="slds-icon_container slds-input__icon slds-input__icon_right newton-picklist__chevron"
+              aria-hidden="true"
+            >
+              <c-newton-selector-icon
+                name={picklistChevron}
+                size="x-small"
+                box="input"
+              ></c-newton-selector-icon>
+            </span>
+          </div>
+
+          <div
+            slot="dropdown"
+            class="newton-picklist__menu"
+            oncardselect={handlePicklistCardSelect}
+          >
+            <template lwc:if={enableSearch}>
+              <div class="slds-form-element newton-picklist__search">
+                <div
+                  class="slds-form-element__control slds-input-has-icon slds-input-has-icon_left"
+                >
+                  <span
+                    class="slds-icon_container slds-input__icon slds-input__icon_left"
+                    aria-hidden="true"
                   >
-                    <template for:each={picklistItems} for:item="item">
-                      <li key={item.id} class={item._class} role="presentation">
-                        <div
-                          class="slds-listbox__option newton-picklist__option"
-                          role="option"
-                          aria-selected={item._ariaSelected}
-                          aria-disabled={item._ariaDisabled}
-                        >
-                          <c-newton-selector-choice-tile
-                            item={item}
-                            variant={choiceTileVariant}
-                            selected={item._selected}
-                            disabled={item._disabled}
-                            selection-mode={selectionMode}
-                            group-name={_groupName}
-                            size={size}
-                            aspect-ratio={aspectRatio}
-                            badge-position={badgePosition}
-                            badge-variant={badgeVariant}
-                            badge-shape={badgeShape}
-                            selection-indicator={selectionIndicator}
-                            elevation={elevation}
-                            pattern={pattern}
-                            pattern-tone={patternTone}
-                            pattern-hover-tone={patternHoverTone}
-                            pattern-selected-tone={patternSelectedTone}
-                            pattern-disabled-tone={patternDisabledTone}
-                            corner-style={cornerStyle}
-                            corner-tone={cornerTone}
-                            surface-style={surfaceStyle}
-                            surface-tone={surfaceTone}
-                            surface-hover-tone={surfaceHoverTone}
-                            surface-selected-tone={surfaceSelectedTone}
-                            surface-disabled-tone={surfaceDisabledTone}
-                            icon-decor={iconDecor}
-                            icon-style={iconStyle}
-                            icon-shading={iconShading}
-                            icon-tone={iconTone}
-                            icon-tone-hex={iconToneHex}
-                            icon-glyph-tone={iconGlyphTone}
-                            icon-glyph-tone-hex={iconGlyphToneHex}
-                            icon-size={iconSize}
-                            pattern-tone-hex={patternToneHex}
-                            pattern-hover-tone-hex={patternHoverToneHex}
-                            pattern-selected-tone-hex={patternSelectedToneHex}
-                            pattern-disabled-tone-hex={patternDisabledToneHex}
-                            corner-tone-hex={cornerToneHex}
-                            surface-tone-hex={surfaceToneHex}
-                            surface-hover-tone-hex={surfaceHoverToneHex}
-                            surface-selected-tone-hex={surfaceSelectedToneHex}
-                            surface-disabled-tone-hex={surfaceDisabledToneHex}
-                            badge-variant-hex={badgeVariantHex}
-                            show-icons={showIcons}
-                            show-badges={showBadges}
-                          ></c-newton-selector-choice-tile>
-                        </div>
-                      </li>
-                    </template>
-                  </ul>
-                </template>
-                <template lwc:else>
-                  <p class="newton-picklist__empty">No options to display.</p>
-                </template>
+                    <c-newton-selector-icon
+                      name="search"
+                      size="x-small"
+                      box="input"
+                    ></c-newton-selector-icon>
+                  </span>
+                  <input
+                    type="search"
+                    class="slds-input newton-picklist__search-input"
+                    placeholder="Search options"
+                    value={_searchTerm}
+                    oninput={handleSearch}
+                    aria-label="Filter picklist options"
+                  />
+                </div>
               </div>
             </template>
+            <template lwc:if={hasPicklistItems}>
+              <ul
+                class="slds-listbox slds-listbox_vertical newton-picklist__listbox"
+                role="presentation"
+              >
+                <template for:each={picklistItems} for:item="item">
+                  <li key={item.id} class={item._class} role="presentation">
+                    <div
+                      class="slds-listbox__option newton-picklist__option"
+                      role="option"
+                      aria-selected={item._ariaSelected}
+                      aria-disabled={item._ariaDisabled}
+                      data-value={item.value}
+                      onclick={handlePicklistOptionSelect}
+                    >
+                      <c-newton-selector-flow-cpe-lookup-choice-option
+                        row={item}
+                        search-term={_searchTerm}
+                        selected={item._selected}
+                      ></c-newton-selector-flow-cpe-lookup-choice-option>
+                    </div>
+                  </li>
+                </template>
+              </ul>
+            </template>
+            <template lwc:else>
+              <p class="newton-picklist__empty">No options to display.</p>
+            </template>
           </div>
-        </div>
+        </c-newton-selector-combobox>
       </div>
     </template>
 

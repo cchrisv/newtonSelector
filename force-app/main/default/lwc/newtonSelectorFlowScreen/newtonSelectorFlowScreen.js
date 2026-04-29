@@ -3,6 +3,7 @@ import {
   FlowAttributeChangeEvent,
   FlowNavigationNextEvent
 } from "lightning/flowSupport";
+import { mergeSelectorConfig } from "c/newtonSelectorFlowCpeUtilityConfigState";
 import { resolvedLayoutGridConfig } from "c/newtonSelectorUtilityConfigDefaults";
 
 const AUTO_ADVANCE_DELAY_MS = 150;
@@ -18,92 +19,11 @@ const VALID_LAYOUTS = new Set([
   "dualListbox"
 ]);
 
-const DEFAULT_CONFIG = {
-  dataSource: "custom",
-  layout: "grid",
-  selectionMode: "single",
-  autoAdvance: false,
-  enableSearch: false,
-  showSelectAll: false,
-  minSelections: 0,
-  maxSelections: null,
-  required: false,
-  customErrorMessage: "",
-  label: "",
-  helpText: "",
-  fieldLevelHelp: "",
-  emptyStateMessage: "No options available.",
-  errorStateMessage: "Could not load options.",
-  includeNoneOption: false,
-  noneOptionLabel: "--None--",
-  noneOptionPosition: "start",
-  manualInput: {
-    enabled: false,
-    label: "Other",
-    minLength: 0,
-    maxLength: null
-  },
-  picklist: {},
-  collection: {},
-  sobject: {},
-  custom: { items: [] },
-  overrides: {},
-  display: { sortBy: "none", sortDirection: "asc", limit: null },
-  gridConfig: {
-    minWidth: "7.5rem",
-    gapH: "",
-    gapV: "",
-    margin: {
-      top: "",
-      right: "",
-      bottom: "",
-      left: "",
-      linked: true
-    },
-    padding: { top: "", right: "", bottom: "", left: "", linked: true },
-    size: "small",
-    aspectRatio: "1:1",
-    badge: {
-      position: "bottom-inline",
-      variant: "neutral",
-      shape: "pill",
-      variantHex: ""
-    },
-    columns: null,
-    selectionIndicator: "frame",
-    elevation: "outlined",
-    pattern: "none",
-    patternTone: "neutral",
-    patternHoverTone: "neutral",
-    patternSelectedTone: "brand",
-    patternDisabledTone: "neutral",
-    cornerStyle: "none",
-    cornerTone: "neutral",
-    surfaceStyle: "solid",
-    surfaceTone: "neutral",
-    surfaceHoverTone: "neutral",
-    surfaceSelectedTone: "brand",
-    surfaceDisabledTone: "neutral",
-    iconDecor: "square",
-    iconStyle: "soft",
-    iconShading: "flat",
-    iconTone: "brand",
-    iconToneHex: "",
-    iconGlyphTone: "auto",
-    iconGlyphToneHex: "",
-    patternToneHex: "",
-    patternHoverToneHex: "",
-    patternSelectedToneHex: "",
-    patternDisabledToneHex: "",
-    cornerToneHex: "",
-    surfaceToneHex: "",
-    surfaceHoverToneHex: "",
-    surfaceSelectedToneHex: "",
-    surfaceDisabledToneHex: "",
-    showIcons: true,
-    showBadges: true
-  }
-};
+const DEFAULT_CONFIG = mergeRuntimeConfig();
+
+function mergeRuntimeConfig(config = {}) {
+  return mergeSelectorConfig({ dataSource: "custom", ...config });
+}
 
 export default class NewtonSelectorFlowScreen extends LightningElement {
   @api sourceRecords;
@@ -141,14 +61,7 @@ export default class NewtonSelectorFlowScreen extends LightningElement {
     if (v === this._lastParsedJson) return; // identical payload; skip re-parse
     try {
       const parsed = JSON.parse(v);
-      this._config = {
-        ...DEFAULT_CONFIG,
-        ...parsed,
-        manualInput: {
-          ...DEFAULT_CONFIG.manualInput,
-          ...(parsed.manualInput || {})
-        }
-      };
+      this._config = mergeRuntimeConfig(parsed);
       this._lastParsedJson = v;
     } catch {
       // Parse error — keep the last good _config rather than flashing to

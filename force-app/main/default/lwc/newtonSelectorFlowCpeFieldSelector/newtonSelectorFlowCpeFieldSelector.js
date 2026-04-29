@@ -116,9 +116,7 @@ export default class NewtonSelectorFlowCpeFieldSelector extends LightningElement
       this._allOptions = this._applyTypeFilter(allOpts);
       this._loadedObject = obj;
       if (this.isMultiEntry) this._syncSelectedFromValue();
-      const lu = this.template.querySelector(
-        "c-newton-selector-flow-cpe-custom-lookup"
-      );
+      const lu = this.template.querySelector("c-newton-selector-combobox");
       if (lu && typeof lu.setDefaultResults === "function") {
         const pool = this.isMultiEntry
           ? this.availableOptions

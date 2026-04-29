@@ -98,7 +98,7 @@ describe("c-newton-selector-flow-cpe-config-preview", () => {
     }
   });
 
-  it("passes every visual and behavior config option into the live preview", async () => {
+  it("passes every visual and behavior config option into the runtime preview", async () => {
     const element = mount();
     await Promise.resolve();
 
@@ -120,9 +120,13 @@ describe("c-newton-selector-flow-cpe-config-preview", () => {
     expect(selector.noneOptionPosition).toBe("end");
     expect(selector.emptyStateMessage).toBe("Nothing here.");
     expect(selector.errorStateMessage).toBe("Load failed.");
-    expect(selector.customConfig).toEqual(FULL_CONFIG.custom);
+    expect(selector.customConfig.items).toEqual([
+      expect.objectContaining({ label: "Beta", value: "b" }),
+      expect.objectContaining({ label: "Alpha", value: "a" })
+    ]);
     expect(selector.overrides).toEqual(FULL_CONFIG.overrides);
     expect(selector.displayConfig).toEqual(FULL_CONFIG.display);
+    expect(selector.refreshKey).toContain('"dataSource":"custom"');
 
     expect(selector.gridMinWidth).toBe("18rem");
     expect(selector.gapHorizontal).toBe("8");
@@ -165,21 +169,61 @@ describe("c-newton-selector-flow-cpe-config-preview", () => {
     expect(selector.showBadges).toBe(false);
   });
 
-  it("routes fallback preview through the data selector so config still applies", async () => {
+  it("uses deterministic mock data for non-custom sources without live configs", async () => {
     const element = mount({
       ...FULL_CONFIG,
       dataSource: "collection",
-      layout: "horizontal"
+      layout: "horizontal",
+      custom: { items: [] }
     });
     await Promise.resolve();
 
     const selector = getPreviewSelector(element);
     expect(selector.sourceType).toBe("custom");
     expect(selector.layout).toBe("horizontal");
-    expect(selector.customConfig.items).toHaveLength(4);
+    expect(selector.picklistConfig).toBeUndefined();
+    expect(selector.collectionConfig).toBeUndefined();
+    expect(selector.sobjectConfig).toBeUndefined();
+    expect(selector.customConfig.items).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          label: "Serena Williams",
+          sublabel: expect.stringContaining("Preview sample record")
+        })
+      ])
+    );
     expect(selector.includeNoneOption).toBe(true);
     expect(selector.displayConfig).toEqual(FULL_CONFIG.display);
     expect(selector.selectionIndicator).toBe("pulse");
+  });
+
+  it("keeps the preview synchronized when the CPE config changes", async () => {
+    const element = mount();
+    await Promise.resolve();
+
+    const initialSelector = getPreviewSelector(element);
+    const initialRefreshKey = initialSelector.refreshKey;
+
+    element.config = {
+      ...FULL_CONFIG,
+      label: "Updated preview label",
+      layout: "list",
+      selectionMode: "single",
+      gridConfig: {
+        ...FULL_CONFIG.gridConfig,
+        size: "small",
+        surfaceTone: "purple"
+      }
+    };
+    await Promise.resolve();
+
+    const selector = getPreviewSelector(element);
+    expect(selector.label).toBe("Updated preview label");
+    expect(selector.layout).toBe("list");
+    expect(selector.selectionMode).toBe("single");
+    expect(selector.size).toBe("small");
+    expect(selector.surfaceTone).toBe("purple");
+    expect(selector.refreshKey).not.toBe(initialRefreshKey);
   });
 
   it("emits preview state changes from the preview tabs", () => {

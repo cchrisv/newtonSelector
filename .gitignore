@@ -16,6 +16,7 @@ coverage/
 artifacts/
 output/playwright/
 .tmp/
+force-app/main/default/flows/Newton_Selector_E2E.flow-meta.xml
 
 # Logs
 logs

@@ -8,8 +8,16 @@
         {label}
       </label>
       <div class="slds-form-element__control">
-        <div class="newton-combobox" onblur={handleBlur}>
+        <c-newton-selector-combobox
+          class="newton-combobox"
+          open={_isOpen}
+          dropdown-role="dialog"
+          dropdown-label="Icon selector"
+          dropdown-class="newton-combobox__panel"
+          onfocusout={handleFocusOut}
+        >
           <button
+            slot="trigger"
             type="button"
             class="newton-combobox__trigger slds-button slds-button_neutral"
             id="combobox-trigger"
@@ -56,9 +64,9 @@
 
           <template lwc:if={shouldRenderComboboxPanel}>
             <div
-              class={comboboxPanelClass}
-              role="dialog"
-              aria-label="Icon selector"
+              slot="dropdown"
+              class="newton-combobox__panel-content"
+              onmousedown={handlePanelMouseDown}
             >
               <ul
                 class="slds-tabs_default__nav newton-tabs"
@@ -82,16 +90,23 @@
                 </template>
               </ul>
 
-              <div class="newton-search">
-                <c-newton-selector-icon
-                  name="search"
-                  size="x-small"
-                  box="input"
-                  alternative-text=""
-                ></c-newton-selector-icon>
+              <div
+                class="newton-search slds-form-element__control slds-input-has-icon slds-input-has-icon_left"
+              >
+                <span
+                  class="slds-icon_container slds-input__icon slds-input__icon_left"
+                  aria-hidden="true"
+                >
+                  <c-newton-selector-icon
+                    name="search"
+                    size="x-small"
+                    box="input"
+                    alternative-text=""
+                  ></c-newton-selector-icon>
+                </span>
                 <input
                   type="search"
-                  class="newton-search__input"
+                  class="slds-input newton-search__input"
                   placeholder="Search icons..."
                   value={_searchTerm}
                   oninput={handleSearchInput}
@@ -144,7 +159,7 @@
               </template>
             </div>
           </template>
-        </div>
+        </c-newton-selector-combobox>
       </div>
     </template>
 
@@ -178,16 +193,23 @@
           </template>
         </ul>
 
-        <div class="newton-search">
-          <c-newton-selector-icon
-            name="search"
-            size="x-small"
-            box="input"
-            alternative-text=""
-          ></c-newton-selector-icon>
+        <div
+          class="newton-search slds-form-element__control slds-input-has-icon slds-input-has-icon_left"
+        >
+          <span
+            class="slds-icon_container slds-input__icon slds-input__icon_left"
+            aria-hidden="true"
+          >
+            <c-newton-selector-icon
+              name="search"
+              size="x-small"
+              box="input"
+              alternative-text=""
+            ></c-newton-selector-icon>
+          </span>
           <input
             type="search"
-            class="newton-search__input"
+            class="slds-input newton-search__input"
             placeholder="Search icons..."
             value={_searchTerm}
             oninput={handleSearchInput}

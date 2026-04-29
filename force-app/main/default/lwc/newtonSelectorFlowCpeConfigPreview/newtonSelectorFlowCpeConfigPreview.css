@@ -156,7 +156,7 @@
   border: var(--slds-g-sizing-border-1, 1px) solid var(--newton-studio-hairline);
   border-radius: var(--newton-studio-radius-lg);
   padding: var(--slds-g-spacing-4, 1rem);
-  overflow-y: auto;
+  overflow: visible;
   min-height: var(--newton-static-v-14rem, 14rem);
   box-shadow: var(--newton-studio-shadow);
   transition: border-color 160ms var(--newton-studio-ease);

@@ -4,14 +4,76 @@
 }
 
 .newton-visual-lookup-option {
-  display: block;
+  display: flex;
+  align-items: center;
   inline-size: var(--newton-static-v-100-percent, 100%);
+  min-block-size: var(--slds-g-sizing-11, 2.75rem);
+  gap: var(--slds-g-spacing-2, 0.5rem);
+  padding: var(--newton-static-v-0-375rem, 0.375rem)
+    var(--slds-g-spacing-2, 0.5rem);
 }
 
-c-newton-selector-choice-tile {
-  --newton-tile-pad-base: var(--slds-g-spacing-2, 0.5rem);
-  --newton-tile-pad-l: var(--slds-g-spacing-2, 0.5rem);
-  --newton-tile-pad-r: var(--slds-g-spacing-2, 0.5rem);
-  --newton-tile-pad-t: var(--slds-g-spacing-2, 0.5rem);
-  --newton-tile-pad-b: var(--slds-g-spacing-2, 0.5rem);
+.newton-visual-lookup-option__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  inline-size: var(--slds-g-sizing-8, 1.75rem);
+  block-size: var(--slds-g-sizing-8, 1.75rem);
+  border-radius: var(--slds-g-radius-border-2, 0.25rem);
+  border: var(--slds-g-sizing-border-2, 2px) solid
+    var(--slds-g-color-brand-base-50, #0176d3);
+  color: var(--slds-g-color-brand-base-50, #0176d3);
+  background: var(--slds-g-color-neutral-base-100, #ffffff);
+}
+
+.newton-visual-lookup-option_selected .newton-visual-lookup-option__icon {
+  background: var(--slds-g-color-brand-base-95, #eef4ff);
+}
+
+.newton-visual-lookup-option__body {
+  display: flex;
+  min-inline-size: 0;
+  flex: 1 1 auto;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.newton-visual-lookup-option__title {
+  min-inline-size: 0;
+  overflow: hidden;
+  color: var(--slds-g-color-neutral-base-10, #181818);
+  font-size: var(--slds-g-font-scale-base, 0.8125rem);
+  font-weight: var(--slds-g-font-weight-7, 700);
+  line-height: var(--slds-g-font-line-height-2, 1.25);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.newton-visual-lookup-option__meta {
+  min-inline-size: 0;
+  overflow: hidden;
+  color: var(--slds-g-color-neutral-base-30, #444444);
+  font-size: var(--slds-g-font-scale-neg-1, 0.75rem);
+  line-height: var(--slds-g-font-line-height-2, 1.25);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.newton-visual-lookup-option__mark {
+  color: inherit;
+  background: color-mix(
+    in oklab,
+    var(--slds-g-color-brand-base-90, #d8e6fe) 70%,
+    transparent
+  );
+  border-radius: var(--slds-g-radius-border-1, 0.125rem);
+}
+
+.newton-visual-lookup-option__badge {
+  flex: 0 1 auto;
+  max-inline-size: var(--newton-static-v-8rem, 8rem);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

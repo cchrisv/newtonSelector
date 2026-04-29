@@ -1,121 +1,12 @@
 import { LightningElement, api, track } from "lwc";
 import NewtonSelectorFlowCpeConfigModal from "c/newtonSelectorFlowCpeConfigModal";
+import {
+  mergeSelectorConfig,
+  resolveRecordCollectionMetadataFromBuilderContext
+} from "c/newtonSelectorFlowCpeUtilityConfigState";
 
 const CONFIG_KEY = "selectorConfigJson";
 const SOURCE_RECORDS_KEY = "sourceRecords";
-
-const DEFAULT_CONFIG = {
-  dataSource: "",
-  layout: "grid",
-  selectionMode: "single",
-  autoAdvance: false,
-  enableSearch: false,
-  showSelectAll: false,
-  minSelections: 0,
-  maxSelections: null,
-  required: false,
-  customErrorMessage: "",
-  label: "",
-  helpText: "",
-  fieldLevelHelp: "",
-  emptyStateMessage: "No options available.",
-  errorStateMessage: "Could not load options.",
-  picklist: {
-    objectApiName: "",
-    fieldApiName: "",
-    recordTypeId: "",
-    valueSource: "apiName"
-  },
-  collection: {
-    fieldMap: {
-      label: "",
-      sublabel: "",
-      icon: "",
-      value: "",
-      badge: "",
-      helpText: ""
-    }
-  },
-  sobject: {
-    sObjectApiName: "",
-    whereClause: "",
-    orderByField: "",
-    orderByDirection: "ASC",
-    limit: 50,
-    labelField: "Name",
-    valueField: "Id",
-    sublabelField: "",
-    iconField: "",
-    badgeField: "",
-    helpField: ""
-  },
-  custom: { items: [] },
-  includeNoneOption: false,
-  noneOptionLabel: "--None--",
-  noneOptionPosition: "start",
-  manualInput: {
-    enabled: false,
-    label: "Other",
-    minLength: 0,
-    maxLength: null
-  },
-  overrides: {},
-  display: { sortBy: "none", sortDirection: "asc", limit: null },
-  gridConfig: {
-    minWidth: "7.5rem",
-    gapH: "",
-    gapV: "",
-    margin: {
-      top: "",
-      right: "",
-      bottom: "",
-      left: "",
-      linked: true
-    },
-    padding: { top: "", right: "", bottom: "", left: "", linked: true },
-    size: "small",
-    aspectRatio: "1:1",
-    badge: {
-      position: "bottom-inline",
-      variant: "neutral",
-      shape: "pill",
-      variantHex: ""
-    },
-    columns: null,
-    selectionIndicator: "frame",
-    elevation: "outlined",
-    pattern: "none",
-    patternTone: "neutral",
-    patternHoverTone: "neutral",
-    patternSelectedTone: "brand",
-    patternDisabledTone: "neutral",
-    cornerStyle: "none",
-    cornerTone: "neutral",
-    surfaceStyle: "solid",
-    surfaceTone: "neutral",
-    surfaceHoverTone: "neutral",
-    surfaceSelectedTone: "brand",
-    surfaceDisabledTone: "neutral",
-    iconDecor: "square",
-    iconStyle: "soft",
-    iconShading: "flat",
-    iconTone: "brand",
-    iconToneHex: "",
-    iconGlyphTone: "auto",
-    iconGlyphToneHex: "",
-    patternToneHex: "",
-    patternHoverToneHex: "",
-    patternSelectedToneHex: "",
-    patternDisabledToneHex: "",
-    cornerToneHex: "",
-    surfaceToneHex: "",
-    surfaceHoverToneHex: "",
-    surfaceSelectedToneHex: "",
-    surfaceDisabledToneHex: "",
-    showIcons: true,
-    showBadges: true
-  }
-};
 
 const SPACING_TOKEN_TO_PX = {
   none: "0",
@@ -145,7 +36,7 @@ export default class NewtonSelectorFlowCpe extends LightningElement {
   _sourceRecordsRef = "";
   _lastGenericSObject = "";
   _lastHydratedJson = null; // perf: short-circuits re-parse on duplicate setter calls
-  @track _config = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
+  @track _config = mergeSelectorConfig();
 
   @api
   get inputVariables() {
@@ -179,17 +70,10 @@ export default class NewtonSelectorFlowCpe extends LightningElement {
     if (json && json !== this._lastHydratedJson) {
       try {
         const parsed = JSON.parse(json);
-        this._config = {
-          ...DEFAULT_CONFIG,
-          ...parsed,
-          manualInput: {
-            ...DEFAULT_CONFIG.manualInput,
-            ...(parsed.manualInput || {})
-          }
-        };
+        this._config = mergeSelectorConfig(parsed);
         this._lastHydratedJson = json;
       } catch {
-        this._config = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
+        this._config = mergeSelectorConfig();
         this._lastHydratedJson = null;
       }
     }
@@ -647,14 +531,7 @@ export default class NewtonSelectorFlowCpe extends LightningElement {
 
     if (!result || result.action !== "save") return;
 
-    this._config = {
-      ...DEFAULT_CONFIG,
-      ...result.config,
-      manualInput: {
-        ...DEFAULT_CONFIG.manualInput,
-        ...(result.config.manualInput || {})
-      }
-    };
+    this._config = mergeSelectorConfig(result.config);
     if (result.sourceRecordsRef !== this._sourceRecordsRef) {
       this._sourceRecordsRef = result.sourceRecordsRef || "";
       this.dispatchCpeChange(
@@ -689,6 +566,16 @@ export default class NewtonSelectorFlowCpe extends LightningElement {
   resolveGenericSObject() {
     if (this.isPicklistMode) return this._config.picklist.objectApiName || "";
     if (this.isSObjectMode) return this._config.sobject.sObjectApiName || "";
+    if (this.isCollectionMode) {
+      return (
+        this._config.collection?.objectApiName ||
+        resolveRecordCollectionMetadataFromBuilderContext(
+          this.builderContext,
+          this._sourceRecordsRef
+        ).objectApiName ||
+        ""
+      );
+    }
     if (this.hasDataSource) return "Account";
     return "";
   }

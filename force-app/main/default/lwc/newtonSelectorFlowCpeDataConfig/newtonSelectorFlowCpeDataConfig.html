@@ -94,7 +94,8 @@
           class="slds-card__body slds-card__body_inner newton-studio__field-block"
         >
           <template lwc:if={isPicklistMode}>
-            <c-newton-selector-flow-cpe-custom-lookup
+            <c-newton-selector-combobox
+              mode="lookup"
               label="Object"
               placeholder="Search objects..."
               required
@@ -102,7 +103,7 @@
               selection={picklistObjectSelection}
               onsearch={handlePicklistObjectSearch}
               onselectionchange={handlePicklistObjectSelect}
-            ></c-newton-selector-flow-cpe-custom-lookup>
+            ></c-newton-selector-combobox>
             <c-newton-selector-flow-cpe-field-selector
               label="Picklist field"
               required
@@ -209,7 +210,8 @@
           </template>
 
           <template lwc:if={isSObjectMode}>
-            <c-newton-selector-flow-cpe-custom-lookup
+            <c-newton-selector-combobox
+              mode="lookup"
               label="SObject"
               placeholder="Search objects..."
               required
@@ -217,7 +219,7 @@
               selection={sobjectSelection}
               onsearch={handleSObjectSearch}
               onselectionchange={handleSObjectSelect}
-            ></c-newton-selector-flow-cpe-custom-lookup>
+            ></c-newton-selector-combobox>
             <section
               class="newton-query-preview"
               aria-labelledby="newton-query-preview-title"
@@ -269,7 +271,8 @@
               automatic-output-variables={automaticOutputVariables}
               onchange={handleWhereChange}
             ></c-newton-selector-flow-cpe-where-builder>
-            <c-newton-selector-flow-cpe-custom-lookup
+            <c-newton-selector-combobox
+              mode="lookup"
               label="Order By"
               placeholder="Default: Last Modified"
               variant="label-stacked"
@@ -279,7 +282,7 @@
               onsearch={handleOrderFieldSearch}
               onselectionchange={handleOrderFieldSelectionChange}
               class="slds-m-bottom_x-small"
-            ></c-newton-selector-flow-cpe-custom-lookup>
+            ></c-newton-selector-combobox>
             <c-newton-selector-flow-cpe-choice-control
               label="Direction"
               value={_config.sobject.orderByDirection}
@@ -409,37 +412,68 @@
                   role="group"
                   aria-label="Reorder option"
                 >
-                  <lightning-button-icon
-                    icon-name="chevron-up"
-                    size="x-small"
-                    alternative-text="Move up"
+                  <button
+                    type="button"
+                    class="slds-button slds-button_icon newton-studio__icon-button"
+                    title="Move up"
+                    aria-label="Move up"
                     data-index={row.index}
                     disabled={row.canMoveUp}
                     onclick={handleCustomMoveUp}
-                  ></lightning-button-icon>
-                  <lightning-button-icon
-                    icon-name="chevron-down"
-                    size="x-small"
-                    alternative-text="Move down"
+                  >
+                    <c-newton-selector-icon
+                      name="chevron-up"
+                      size="x-small"
+                      box="button"
+                      alternative-text=""
+                    ></c-newton-selector-icon>
+                  </button>
+                  <button
+                    type="button"
+                    class="slds-button slds-button_icon newton-studio__icon-button"
+                    title="Move down"
+                    aria-label="Move down"
                     data-index={row.index}
                     disabled={row.canMoveDown}
                     onclick={handleCustomMoveDown}
-                  ></lightning-button-icon>
-                  <lightning-button-icon
-                    icon-name="copy"
-                    size="x-small"
-                    alternative-text="Duplicate"
+                  >
+                    <c-newton-selector-icon
+                      name="chevron-down"
+                      size="x-small"
+                      box="button"
+                      alternative-text=""
+                    ></c-newton-selector-icon>
+                  </button>
+                  <button
+                    type="button"
+                    class="slds-button slds-button_icon newton-studio__icon-button"
+                    title="Duplicate"
+                    aria-label="Duplicate"
                     data-index={row.index}
                     onclick={handleCustomDuplicateRow}
-                  ></lightning-button-icon>
-                  <lightning-button-icon
-                    icon-name="trash-2"
-                    size="x-small"
-                    variant="bare"
-                    alternative-text="Delete"
+                  >
+                    <c-newton-selector-icon
+                      name="copy"
+                      size="x-small"
+                      box="button"
+                      alternative-text=""
+                    ></c-newton-selector-icon>
+                  </button>
+                  <button
+                    type="button"
+                    class="slds-button slds-button_icon newton-studio__icon-button newton-studio__icon-button_destructive"
+                    title="Delete"
+                    aria-label="Delete"
                     data-index={row.index}
                     onclick={handleCustomRemoveRow}
-                  ></lightning-button-icon>
+                  >
+                    <c-newton-selector-icon
+                      name="trash-2"
+                      size="x-small"
+                      box="button"
+                      alternative-text=""
+                    ></c-newton-selector-icon>
+                  </button>
                 </div>
               </header>
               <div class="newton-studio__custom-grid">
@@ -524,13 +558,19 @@
               </div>
             </article>
           </template>
-          <lightning-button
-            variant="neutral"
-            label="Add option"
-            icon-name="plus"
-            icon-position="left"
+          <button
+            type="button"
+            class="slds-button slds-button_neutral newton-studio__button-with-icon"
             onclick={handleCustomAddRow}
-          ></lightning-button>
+          >
+            <c-newton-selector-icon
+              name="plus"
+              size="x-small"
+              box="button"
+              alternative-text=""
+            ></c-newton-selector-icon>
+            <span>Add option</span>
+          </button>
         </div>
       </article>
     </template>
@@ -769,14 +809,21 @@
                         </button>
                         <div class="newton-studio__overrides-actions">
                           <template lwc:if={row.hasCustom}>
-                            <lightning-button-icon
-                              icon-name="rotate-cw"
-                              size="x-small"
-                              variant="bare"
-                              alternative-text="Reset"
+                            <button
+                              type="button"
+                              class="slds-button slds-button_icon newton-studio__icon-button"
+                              title="Reset"
+                              aria-label="Reset"
                               data-value={row.value}
                               onclick={handleClearOverride}
-                            ></lightning-button-icon>
+                            >
+                              <c-newton-selector-icon
+                                name="rotate-cw"
+                                size="x-small"
+                                box="button"
+                                alternative-text=""
+                              ></c-newton-selector-icon>
+                            </button>
                           </template>
                           <button
                             type="button"
@@ -954,14 +1001,21 @@
                         </button>
                         <div class="newton-studio__overrides-actions">
                           <template lwc:if={row.hasCustom}>
-                            <lightning-button-icon
-                              icon-name="rotate-cw"
-                              size="x-small"
-                              variant="bare"
-                              alternative-text="Reset"
+                            <button
+                              type="button"
+                              class="slds-button slds-button_icon newton-studio__icon-button"
+                              title="Reset"
+                              aria-label="Reset"
                               data-value={row.value}
                               onclick={handleClearOverride}
-                            ></lightning-button-icon>
+                            >
+                              <c-newton-selector-icon
+                                name="rotate-cw"
+                                size="x-small"
+                                box="button"
+                                alternative-text=""
+                              ></c-newton-selector-icon>
+                            </button>
                           </template>
                           <button
                             type="button"

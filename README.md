@@ -42,21 +42,21 @@ Drop the `Professor Flow | Newton Selector` component onto any Flow Screen and t
 
 ## Features at a Glance
 
-| Capability              | Detail                                                                                                                                         |
-| ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| **4 data sources**      | Picklist field, Record collection, SOQL query, Custom static list                                                                              |
-| **7 layouts**           | Grid, List, Horizontal ribbon, Picklist/dropdown, Radio cards, Columns, Dual-listbox-style transfer                                            |
-| **Selection modes**     | Single and Multi (with configurable min/max)                                                                                                   |
-| **Auto-advance**        | Automatically navigates to the next screen after a single selection                                                                            |
-| **Search/filter**       | Inline search bar filters tiles as the user types                                                                                              |
-| **Select all**          | One-click select-all button for multi-select mode                                                                                              |
-| **None option**         | Configurable --None-- tile that clears the selection (position: start or end)                                                                  |
-| **Manual input**        | Optional "Other" choice with configurable label and min/max character rules                                                                    |
-| **9 output variables**  | value, values, selectedRecord, selectedRecords, selectedLabel, selectedLabels, allValues, allLabels, selectionCount                            |
-| **Item overrides**      | Per-item label, icon, badge, and help text overrides for picklist and SOQL-backed options                                                      |
-| **Sort and limit**      | Sort by label, value, or source order; optional result cap                                                                                     |
-| **Required validation** | Block flow navigation with a configurable error message                                                                                        |
-| **SLDS 2-oriented UI**  | Uses SLDS utilities, design tokens, accessibility patterns, and the SLDS linter. Warning-level SLDS cleanup remains tracked as hardening debt. |
+| Capability              | Detail                                                                                                                                |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| **4 data sources**      | Picklist field, Record collection, SOQL query, Custom static list                                                                     |
+| **7 layouts**           | Grid, List, Horizontal ribbon, Picklist/dropdown, Radio cards, Columns, Dual-listbox-style transfer                                   |
+| **Selection modes**     | Single and Multi (with configurable min/max)                                                                                          |
+| **Auto-advance**        | Automatically navigates to the next screen after a single selection                                                                   |
+| **Search/filter**       | Inline search bar filters tiles as the user types                                                                                     |
+| **Select all**          | One-click select-all button for multi-select mode                                                                                     |
+| **None option**         | Configurable --None-- tile that clears the selection (position: start or end)                                                         |
+| **Manual input**        | Optional "Other" choice with configurable label and min/max character rules                                                           |
+| **9 output variables**  | value, values, selectedRecord, selectedRecords, selectedLabel, selectedLabels, allValues, allLabels, selectionCount                   |
+| **Item overrides**      | Per-item label, icon, badge, and help text overrides for picklist and SOQL-backed options                                             |
+| **Sort and limit**      | Sort by label, value, or source order; optional result cap                                                                            |
+| **Required validation** | Block flow navigation with a configurable error message                                                                               |
+| **SLDS 2-oriented UI**  | Uses SLDS utilities, design tokens, accessibility patterns, and the SLDS linter. The repo-level SLDS linter currently passes cleanly. |
 
 ---
 
@@ -213,6 +213,7 @@ Input and selector controls
   newtonSelectorFlowCpeLookupChoiceOption        <- Lookup option renderer
 
 Reusable primitives
+  newtonSelectorCombobox                        <- Shared SLDS combobox shell for picker-style controls
   newtonSelectorFlowCpeToggle                    <- Reusable toggle switch (boolean or CB_TRUE/CB_FALSE wire format)
   newtonSelectorIcon                             <- Icon renderer with Lucide-style SVG catalog
   newtonSelectorChoiceTile                       <- Choice tile (label / sublabel / badge / icon)
@@ -223,6 +224,7 @@ newtonSelectorUtilityDataSources               <- Normalizers for all 4 data sou
   newtonSelectorFlowCpeUtilityHelpers            <- Flow Builder context helpers (merge fields, types)
   newtonSelectorFlowCpeUtilityConfigOptions      <- Shared option metadata for CPE and modal controls
   newtonSelectorFlowCpeUtilityConfigState        <- Immutable config merge/patch helpers and preview/query mapping
+  newtonSelectorFlowCpeUtilityDropdown           <- Viewport-aware dropdown positioning helper
   newtonSelectorFlowCpeUtilityConfigStyles       <- Style token helpers for CPE and preview rendering
   newtonSelectorFlowCpeUtilityConfigValidation   <- Configuration issue generation and save-blocking rules
   newtonSelectorFlowCpeUtilitySearchHighlight    <- Search result highlighting helper
@@ -339,6 +341,8 @@ npm run smoke:flow-builder
 # Run the deeper Flow Builder persistence E2E
 npm run test:e2e:flow-builder
 ```
+
+The E2E script generates a temporary `Newton_Selector_E2E` Flow source file only for deployment, removes it after the run, and writes screenshots plus retrieved metadata under `output/playwright/`.
 
 ### Apex Tests
 

@@ -24,6 +24,7 @@ export default class NewtonSelectorFlowCpeIconSelector extends LightningElement 
   @track _isOpen = false;
   @track _visibleLimit = ICON_PAGE_SIZE;
   _closeTimer;
+  _isPanelPointerDown = false;
 
   disconnectedCallback() {
     if (this._closeTimer) {
@@ -152,12 +153,6 @@ export default class NewtonSelectorFlowCpeIconSelector extends LightningElement 
       ? "newton-selector-icon-selector newton-selector-icon-selector_open"
       : "newton-selector-icon-selector";
   }
-  get comboboxPanelClass() {
-    return this._isOpen
-      ? "newton-combobox__panel newton-combobox__panel_open"
-      : "newton-combobox__panel";
-  }
-
   handleTabClick(event) {
     const key = event.currentTarget.dataset.set;
     if (key) {
@@ -221,11 +216,28 @@ export default class NewtonSelectorFlowCpeIconSelector extends LightningElement 
     this._visibleLimit += ICON_PAGE_SIZE;
   }
 
-  handleBlur() {
+  handleFocusOut(event) {
+    if (this._isPanelPointerDown) {
+      return;
+    }
+    if (event.relatedTarget && this.template.contains(event.relatedTarget)) {
+      return;
+    }
     this._closeTimer = setTimeout(() => {
       this._isOpen = false;
       this._closeTimer = undefined;
     }, 150);
+  }
+
+  handlePanelMouseDown() {
+    if (this._closeTimer) {
+      clearTimeout(this._closeTimer);
+      this._closeTimer = undefined;
+    }
+    this._isPanelPointerDown = true;
+    setTimeout(() => {
+      this._isPanelPointerDown = false;
+    }, 0);
   }
 
   handleClear(event) {

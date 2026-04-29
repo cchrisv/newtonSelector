@@ -15,8 +15,12 @@ async function flush() {
   await Promise.resolve();
 }
 
-function getRenderedItem(el) {
-  return el.shadowRoot.querySelector("c-newton-selector-choice-tile")?.item;
+function getIcon(el) {
+  return el.shadowRoot.querySelector("c-newton-selector-icon");
+}
+
+function getIconFrame(el) {
+  return el.shadowRoot.querySelector(".newton-visual-lookup-option__icon");
 }
 
 describe("c-newton-selector-flow-cpe-lookup-choice-option", () => {
@@ -30,13 +34,8 @@ describe("c-newton-selector-flow-cpe-lookup-choice-option", () => {
     const el = mount({ type: "String", label: "Account Name", value: "Name" });
     await flush();
 
-    expect(getRenderedItem(el)).toEqual(
-      expect.objectContaining({
-        icon: "text-cursor-input",
-        iconTone: "brand",
-        badgeVariant: "brand"
-      })
-    );
+    expect(getIcon(el).name).toBe("text-cursor-input");
+    expect(getIconFrame(el)).not.toBeNull();
   });
 
   it("uses record-oriented styling for sObject resources", async () => {
@@ -49,13 +48,31 @@ describe("c-newton-selector-flow-cpe-lookup-choice-option", () => {
     });
     await flush();
 
-    expect(getRenderedItem(el)).toEqual(
-      expect.objectContaining({
-        icon: "database",
-        iconTone: "brand",
-        badgeVariant: "brand"
-      })
+    expect(getIcon(el).name).toBe("database");
+  });
+
+  it("uses record-oriented styling when an option is tagged with sObjectType", async () => {
+    const el = mount({
+      sObjectType: "Account",
+      label: "Data Action Job Summary",
+      value: "DataActionJobSummary"
+    });
+    await flush();
+
+    expect(getIcon(el).name).toBe("database");
+    expect(el.shadowRoot.querySelector(".slds-badge").textContent).toContain(
+      "Account"
     );
+  });
+
+  it("uses a neutral data icon for unknown option types", async () => {
+    const el = mount({
+      label: "Unknown row",
+      value: "UnknownRow"
+    });
+    await flush();
+
+    expect(getIcon(el).name).toBe("box");
   });
 
   it("uses collection styling before scalar type styling", async () => {
@@ -67,13 +84,7 @@ describe("c-newton-selector-flow-cpe-lookup-choice-option", () => {
     });
     await flush();
 
-    expect(getRenderedItem(el)).toEqual(
-      expect.objectContaining({
-        icon: "square-library",
-        iconTone: "teal",
-        badgeVariant: "teal"
-      })
-    );
+    expect(getIcon(el).name).toBe("square-library");
   });
 
   it("uses global variable styling for well-known globals", async () => {
@@ -85,12 +96,6 @@ describe("c-newton-selector-flow-cpe-lookup-choice-option", () => {
     });
     await flush();
 
-    expect(getRenderedItem(el)).toEqual(
-      expect.objectContaining({
-        icon: "user-round",
-        iconTone: "teal",
-        badgeVariant: "teal"
-      })
-    );
+    expect(getIcon(el).name).toBe("user-round");
   });
 });

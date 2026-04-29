@@ -1221,6 +1221,67 @@
   text-transform: uppercase;
 }
 
+.newton-studio__icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--slds-g-sizing-7, 1.5rem);
+  block-size: var(--slds-g-sizing-7, 1.5rem);
+  padding: 0;
+  border: var(--slds-g-sizing-border-1, 1px) solid transparent;
+  border-radius: var(--newton-studio-radius);
+  color: var(--newton-studio-ink-weak);
+  background: transparent;
+  transition:
+    background-color 160ms var(--newton-studio-ease),
+    border-color 160ms var(--newton-studio-ease),
+    color 160ms var(--newton-studio-ease);
+}
+
+.newton-studio__icon-button:hover,
+.newton-studio__icon-button:focus-visible {
+  color: var(--newton-studio-brand);
+  background: var(--newton-studio-brand-weak);
+  border-color: color-mix(
+    in oklab,
+    var(--newton-studio-brand) 20%,
+    transparent
+  );
+}
+
+.newton-studio__icon-button:focus-visible {
+  outline: var(--slds-g-sizing-border-2, 2px) solid var(--newton-studio-brand);
+  outline-offset: var(--slds-g-sizing-border-2, 2px);
+}
+
+.newton-studio__icon-button:disabled {
+  cursor: not-allowed;
+  color: var(--slds-g-color-neutral-base-70, #aeaeae);
+  background: transparent;
+  border-color: transparent;
+}
+
+.newton-studio__icon-button_destructive:hover,
+.newton-studio__icon-button_destructive:focus-visible {
+  color: var(--slds-g-color-error-base-40, #ba0517);
+  background: color-mix(
+    in oklab,
+    var(--slds-g-color-error-base-90, #feded8) 70%,
+    transparent
+  );
+  border-color: color-mix(
+    in oklab,
+    var(--slds-g-color-error-base-40, #ba0517) 22%,
+    transparent
+  );
+}
+
+.newton-studio__button-with-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--slds-g-spacing-1, 0.25rem);
+}
+
 /* Custom item body — icon featured full-width at top, 2×2 text grid middle,
    help text full-width bottom. Same rhythm as the override row expand panel. */
 .newton-studio__custom-grid {
@@ -1304,7 +1365,7 @@
     var(--newton-studio-brand-weak) 20%,
     var(--newton-studio-surface)
   );
-  overflow: hidden;
+  overflow: visible;
 }
 
 .newton-studio__spec-sheet::before {
@@ -1355,7 +1416,13 @@
 
 /* Stagger reveal for spec-sheet field selectors too. */
 .newton-studio__spec-grid > * {
+  position: relative;
+  z-index: var(--newton-static-v-1, 1);
   animation: newton-overrides-field 280ms var(--newton-studio-ease) both;
+}
+
+.newton-studio__spec-grid > *:focus-within {
+  z-index: var(--newton-static-v-9000, 9000);
 }
 .newton-studio__spec-grid > *:nth-of-type(1) {
   animation-delay: 40ms;

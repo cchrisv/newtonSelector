@@ -1,8 +1,10 @@
 <template>
-  <div class="newton-studio__preview" aria-label="Live preview">
+  <div class="newton-studio__preview" aria-label="Component preview">
     <header class="newton-studio__preview-head">
       <div class="newton-studio__preview-head-text">
-        <p class="slds-text-title_caps newton-studio__eyebrow">Live preview</p>
+        <p class="slds-text-title_caps newton-studio__eyebrow">
+          Component preview
+        </p>
         <h3 class="slds-text-heading_small newton-studio__preview-title">
           {previewLayoutLabel} · {previewSelectionLabel}
         </h3>
@@ -49,90 +51,7 @@
           </p>
         </div>
       </template>
-      <template lwc:elseif={showLivePreview}>
-        <c-newton-selector-data-selector
-          label={c.label}
-          help-text={c.helpText}
-          field-level-help={c.fieldLevelHelp}
-          forced-state={forcedState}
-          source-type={c.dataSource}
-          layout={c.layout}
-          selection-mode={c.selectionMode}
-          required={c.required}
-          min-selections={c.minSelections}
-          max-selections={c.maxSelections}
-          picklist-config={dataSelectorPicklistConfig}
-          collection-config={dataSelectorCollectionConfig}
-          sobject-config={dataSelectorSobjectConfig}
-          custom-config={dataSelectorCustomConfig}
-          overrides={dataSelectorOverrides}
-          display-config={dataSelectorDisplayConfig}
-          enable-search={c.enableSearch}
-          show-select-all={c.showSelectAll}
-          include-none-option={noneOptionValue}
-          none-option-label={noneOptionLabelValue}
-          none-option-position={noneOptionPositionValue}
-          allow-manual-input={manualInputValue}
-          manual-input-label={manualInputLabelValue}
-          manual-input-min-length={manualInputMinLengthValue}
-          manual-input-max-length={manualInputMaxLengthValue}
-          grid-min-width={dataSelectorGridMinWidth}
-          gap-horizontal={dataSelectorGapHorizontal}
-          gap-vertical={dataSelectorGapVertical}
-          margin-top={dataSelectorMarginTop}
-          margin-right={dataSelectorMarginRight}
-          margin-bottom={dataSelectorMarginBottom}
-          margin-left={dataSelectorMarginLeft}
-          padding-top={dataSelectorPaddingTop}
-          padding-right={dataSelectorPaddingRight}
-          padding-bottom={dataSelectorPaddingBottom}
-          padding-left={dataSelectorPaddingLeft}
-          size={dataSelectorSize}
-          aspect-ratio={dataSelectorAspectRatio}
-          badge-position={dataSelectorBadgePosition}
-          badge-variant={dataSelectorBadgeVariant}
-          badge-shape={dataSelectorBadgeShape}
-          columns={dataSelectorColumns}
-          selection-indicator={dataSelectorSelectionIndicator}
-          elevation={dataSelectorElevation}
-          pattern={dataSelectorPattern}
-          pattern-tone={dataSelectorPatternTone}
-          pattern-hover-tone={dataSelectorPatternHoverTone}
-          pattern-selected-tone={dataSelectorPatternSelectedTone}
-          pattern-disabled-tone={dataSelectorPatternDisabledTone}
-          corner-style={dataSelectorCornerStyle}
-          corner-tone={dataSelectorCornerTone}
-          surface-style={dataSelectorSurfaceStyle}
-          surface-tone={dataSelectorSurfaceTone}
-          surface-hover-tone={dataSelectorSurfaceHoverTone}
-          surface-selected-tone={dataSelectorSurfaceSelectedTone}
-          surface-disabled-tone={dataSelectorSurfaceDisabledTone}
-          icon-decor={dataSelectorIconDecor}
-          icon-style={dataSelectorIconStyle}
-          icon-shading={dataSelectorIconShading}
-          icon-tone={dataSelectorIconTone}
-          icon-tone-hex={dataSelectorIconToneHex}
-          pattern-tone-hex={dataSelectorPatternToneHex}
-          pattern-hover-tone-hex={dataSelectorPatternHoverToneHex}
-          pattern-selected-tone-hex={dataSelectorPatternSelectedToneHex}
-          pattern-disabled-tone-hex={dataSelectorPatternDisabledToneHex}
-          corner-tone-hex={dataSelectorCornerToneHex}
-          surface-tone-hex={dataSelectorSurfaceToneHex}
-          surface-hover-tone-hex={dataSelectorSurfaceHoverToneHex}
-          surface-selected-tone-hex={dataSelectorSurfaceSelectedToneHex}
-          surface-disabled-tone-hex={dataSelectorSurfaceDisabledToneHex}
-          badge-variant-hex={dataSelectorBadgeVariantHex}
-          icon-glyph-tone={dataSelectorIconGlyphTone}
-          icon-glyph-tone-hex={dataSelectorIconGlyphToneHex}
-          icon-size={dataSelectorIconSize}
-          show-icons={dataSelectorShowIcons}
-          show-badges={dataSelectorShowBadges}
-          preview-mode="true"
-          empty-state-message={c.emptyStateMessage}
-          error-state-message={c.errorStateMessage}
-        ></c-newton-selector-data-selector>
-      </template>
-      <template lwc:elseif={showFallbackPreview}>
+      <template lwc:elseif={showMockPreview}>
         <c-newton-selector-data-selector
           label={c.label}
           help-text={c.helpText}
@@ -144,11 +63,12 @@
           required={c.required}
           min-selections={c.minSelections}
           max-selections={c.maxSelections}
-          custom-config={fallbackCustomConfig}
+          custom-config={dataSelectorCustomConfig}
           overrides={dataSelectorOverrides}
           display-config={dataSelectorDisplayConfig}
-          show-select-all={c.showSelectAll}
+          refresh-key={previewRefreshKey}
           enable-search={c.enableSearch}
+          show-select-all={c.showSelectAll}
           include-none-option={noneOptionValue}
           none-option-label={noneOptionLabelValue}
           none-option-position={noneOptionPositionValue}

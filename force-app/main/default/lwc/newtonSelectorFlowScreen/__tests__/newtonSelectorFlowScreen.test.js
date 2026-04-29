@@ -49,6 +49,38 @@ describe("c-newton-selector-flow-screen", () => {
     expect(dataSelector.sourceType).toBe("custom");
   });
 
+  it("deep-merges partial saved config with shared runtime defaults", async () => {
+    const el = mount({
+      dataSource: "collection",
+      sourceRecords: undefined,
+      collection: {
+        fieldMap: { label: "Name" }
+      },
+      gridConfig: {
+        badge: { variant: "brand" }
+      }
+    });
+    el.sourceRecords = [{ Id: "001xx000003DGbY", Name: "Acme" }];
+    await Promise.resolve();
+
+    const dataSelector = el.shadowRoot.querySelector(
+      "c-newton-selector-data-selector"
+    );
+    expect(dataSelector.collectionConfig.fieldMap).toEqual(
+      expect.objectContaining({
+        label: "Name",
+        value: "",
+        sublabel: "",
+        icon: "",
+        badge: "",
+        helpText: ""
+      })
+    );
+    expect(dataSelector.badgeVariant).toBe("brand");
+    expect(dataSelector.badgePosition).toBe("bottom-inline");
+    expect(dataSelector.manualInputLabel).toBe("Other");
+  });
+
   it("validate() delegates to the data selector", async () => {
     const el = mount();
     await Promise.resolve();

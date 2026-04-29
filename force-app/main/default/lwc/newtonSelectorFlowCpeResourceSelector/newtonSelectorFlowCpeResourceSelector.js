@@ -86,8 +86,6 @@ export default class NewtonSelectorFlowCpeResourceSelector extends LightningElem
   @track allOptions;
   @track _options = [];
   @track _mergeFields = [];
-  @track dropdownClass =
-    "slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click";
   @track isDataSelected = false;
   @track _selectedObjectType;
   @track _selectedFieldPath;
@@ -99,6 +97,8 @@ export default class NewtonSelectorFlowCpeResourceSelector extends LightningElem
   key = 0;
   _selectedOptionObjectType = "";
   _selectedOptionIsCollection = false;
+  _selectedOptionLabel = "";
+  _selectedOptionIcon = "";
   _boundWindowClick;
   _boundInputBlur;
   _builderContext;
@@ -321,6 +321,53 @@ export default class NewtonSelectorFlowCpeResourceSelector extends LightningElem
     );
   }
 
+  get selectedDisplayLabel() {
+    const selectedOption = this.selectedOption;
+    return (
+      this._selectedOptionLabel ||
+      selectedOption?.label ||
+      this.formatSelectedDisplayValue(this._value)
+    );
+  }
+
+  get selectedResourceIconName() {
+    if (this._selectedOptionIsCollection) {
+      return "layers";
+    }
+    return (
+      this._selectedOptionIcon || this.selectedOption?.optionIcon || "layers"
+    );
+  }
+
+  get selectedOption() {
+    const value = this.formatSelectedDisplayValue(this._value);
+    const parts = value.split(".").filter(Boolean);
+    const candidates = new Set(
+      [value, parts[0], parts[parts.length - 1]].filter(Boolean)
+    );
+    return this.flattenedOptions.find((option) => candidates.has(option.value));
+  }
+
+  get flattenedOptions() {
+    const optionGroups = Array.isArray(this.allOptions) ? this.allOptions : [];
+    return optionGroups.flatMap((group) => {
+      return Array.isArray(group.options) ? group.options : [];
+    });
+  }
+
+  formatSelectedDisplayValue(value) {
+    const cleanValue = removeFormatting(value || "");
+    const parts = cleanValue.split(".").filter(Boolean);
+    if (parts.length === 2 && parts[0] === parts[1]) {
+      return parts[0];
+    }
+    return cleanValue;
+  }
+
+  get dropdownExpanded() {
+    return this.isMenuOpen ? "true" : "false";
+  }
+
   setOptions(value) {
     this._options = value || [];
     this.allOptions = this._options;
@@ -477,10 +524,14 @@ export default class NewtonSelectorFlowCpeResourceSelector extends LightningElem
             if (Array.isArray(objectToExamine)) {
               let allObjectToExamine = [];
               objectToExamine.forEach((curObjToExam) => {
-                if (!curObjToExam.storeOutputAutomatically) {
+                const nestedItems = curObjToExam[curTypePart];
+                if (
+                  !curObjToExam.storeOutputAutomatically &&
+                  Array.isArray(nestedItems)
+                ) {
                   allObjectToExamine = [
                     ...allObjectToExamine,
-                    ...curObjToExam[curTypePart].map((curItem) => {
+                    ...nestedItems.map((curItem) => {
                       return {
                         ...curItem,
                         varApiName: curObjToExam.name + "." + curItem.name,
@@ -526,8 +577,6 @@ export default class NewtonSelectorFlowCpeResourceSelector extends LightningElem
             optionsByType[localType.label] = typeOptions;
           }
         }
-      } else {
-        console.log(curType + " is undefined");
       }
     });
 
@@ -843,6 +892,8 @@ export default class NewtonSelectorFlowCpeResourceSelector extends LightningElem
           event.currentTarget.dataset.objectType || "";
         this._selectedOptionIsCollection =
           event.currentTarget.dataset.isCollection === "true";
+        this._selectedOptionLabel = event.currentTarget.dataset.label || "";
+        this._selectedOptionIcon = event.currentTarget.dataset.icon || "";
         this.applyInternalValue(
           this.getFullPath(
             this._selectedFieldPath,
@@ -1237,6 +1288,8 @@ export default class NewtonSelectorFlowCpeResourceSelector extends LightningElem
     this._selectedObjectType = null;
     this._selectedOptionObjectType = "";
     this._selectedOptionIsCollection = false;
+    this._selectedOptionLabel = "";
+    this._selectedOptionIcon = "";
     this._dataType = flowComboboxDefaults.stringDataType;
     this.setOptions(this._mergeFields);
   }
@@ -1244,8 +1297,6 @@ export default class NewtonSelectorFlowCpeResourceSelector extends LightningElem
   openOptionDialog() {
     // this.isDataSelected = false;
     this.isMenuOpen = true;
-    this.dropdownClass =
-      "slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open";
   }
 
   closeOptionDialog(setValueInput) {
@@ -1253,8 +1304,6 @@ export default class NewtonSelectorFlowCpeResourceSelector extends LightningElem
       this.isDataSelected = true;
     }
     this.isMenuOpen = false;
-    this.dropdownClass =
-      "slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click";
 
     if (setValueInput) {
       this.setValueInput();
@@ -1547,9 +1596,6 @@ export default class NewtonSelectorFlowCpeResourceSelector extends LightningElem
     if (this._value) {
       this.isDataSelected = true;
     }
-    //this.isMenuOpen = false;
-    //this.dropdownClass = 'slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click';
-
     this.setValueInput();
 
     if (this.isDataModified) {

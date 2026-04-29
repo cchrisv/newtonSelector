@@ -191,64 +191,67 @@ describe("c-newton-selector-flow-cpe-resource-selector", () => {
   // ── displayPill (internal state influence) ──────────────
 
   describe("displayPill behavior", () => {
-    it("switches to pill mode when value is a reference", async () => {
+    it("switches to selected trigger mode when value is a reference", async () => {
       const el = mount({});
       el.value = "{!myVar}";
       await flush();
-      const pill = el.shadowRoot.querySelector("lightning-pill");
-      expect(pill).not.toBeNull();
+      const trigger = el.shadowRoot.querySelector(
+        ".newton-selector-flow-cpe-resource-selector__selected-trigger"
+      );
+      expect(trigger).not.toBeNull();
+      expect(trigger.textContent).toContain("myVar");
     });
 
     it("stays in input mode for plain literal values", async () => {
       const el = mount({});
       el.value = "plain literal";
       await flush();
-      const pill = el.shadowRoot.querySelector("lightning-pill");
-      expect(pill).toBeNull();
-    });
-
-    it("returns to input mode after reset via resetData", async () => {
-      const el = mount({});
-      el.value = "{!myVar}";
-      await flush();
-      expect(el.shadowRoot.querySelector("lightning-pill")).not.toBeNull();
-      // pill remove dispatches 'remove' → calls resetData
-      const pill = el.shadowRoot.querySelector("lightning-pill");
-      pill.dispatchEvent(new CustomEvent("remove"));
-      await flush();
-      expect(el.shadowRoot.querySelector("lightning-pill")).toBeNull();
+      const trigger = el.shadowRoot.querySelector(
+        ".newton-selector-flow-cpe-resource-selector__selected-trigger"
+      );
+      expect(trigger).toBeNull();
     });
   });
 
   // ── valuechanged event ──────────────────────────────────
 
   describe("valuechanged event", () => {
-    it("fires valuechanged when pill is removed (reset flow)", async () => {
-      const el = mount({ name: "myField" });
-      el.value = "{!someVar}";
+    it("selects a resource when the option row surface is clicked", async () => {
+      const el = mount({
+        name: "selectorLabel",
+        builderContextFilterType: "String",
+        builderContext: {
+          variables: [
+            {
+              name: "selectorLabelText",
+              label: "Selector Label Text",
+              dataType: "String"
+            }
+          ]
+        },
+        automaticOutputVariables: {}
+      });
       await flush();
+
       const handler = jest.fn();
       el.addEventListener("valuechanged", handler);
-      const pill = el.shadowRoot.querySelector("lightning-pill");
-      pill.dispatchEvent(new CustomEvent("remove"));
+      el.shadowRoot.querySelector("lightning-input").click();
+      await flush();
+      const option = el.shadowRoot.querySelector(
+        '.newton-selector-flow-cpe-resource-selector__option[data-value="selectorLabelText"]'
+      );
+      expect(option).not.toBeNull();
+
+      option.click();
+
       expect(handler).toHaveBeenCalledTimes(1);
       expect(handler.mock.calls[0][0].detail).toEqual(
-        expect.objectContaining({ id: "myField", newValue: "" })
+        expect.objectContaining({
+          id: "selectorLabel",
+          newValue: "selectorLabelText",
+          newValueDataType: "reference"
+        })
       );
-    });
-
-    it("detail carries id=name, newValue=current value, newValueDataType", async () => {
-      const el = mount({ name: "f1" });
-      el.value = "{!ref}";
-      await flush();
-      const handler = jest.fn();
-      el.addEventListener("valuechanged", handler);
-      const pill = el.shadowRoot.querySelector("lightning-pill");
-      pill.dispatchEvent(new CustomEvent("remove"));
-      const d = handler.mock.calls[0][0].detail;
-      expect(d.id).toBe("f1");
-      expect(d).toHaveProperty("newValue");
-      expect(d).toHaveProperty("newValueDataType");
     });
   });
 
@@ -360,16 +363,28 @@ describe("c-newton-selector-flow-cpe-resource-selector", () => {
     });
   });
 
-  // ── Pill label echoes stripped reference path ───────────
+  // ── Selected label echoes stripped reference path ───────────
 
-  describe("pill label", () => {
-    it("shows the reference path as the pill's label", async () => {
+  describe("selected label", () => {
+    it("shows the reference path as the selected trigger label", async () => {
       const el = mount({});
       el.value = "{!Account.Name}";
       await flush();
-      const pill = el.shadowRoot.querySelector("lightning-pill");
-      expect(pill).not.toBeNull();
-      expect(pill.label).toBe("Account.Name");
+      const label = el.shadowRoot.querySelector(
+        ".newton-selector-flow-cpe-resource-selector__selected-label"
+      );
+      expect(label).not.toBeNull();
+      expect(label.textContent).toBe("Account.Name");
+    });
+
+    it("deduplicates repeated selected reference segments", async () => {
+      const el = mount({});
+      el.value = "{!Get_E2E_Leads.Get_E2E_Leads}";
+      await flush();
+      const label = el.shadowRoot.querySelector(
+        ".newton-selector-flow-cpe-resource-selector__selected-label"
+      );
+      expect(label.textContent).toBe("Get_E2E_Leads");
     });
   });
 
@@ -473,13 +488,31 @@ describe("c-newton-selector-flow-cpe-resource-selector", () => {
       });
 
       await flush();
+      el.shadowRoot.querySelector("lightning-input").click();
+      await flush();
 
-      const text = el.shadowRoot.textContent;
-      expect(text).toContain("Get Leads");
-      expect(text).toContain("Lead");
-      expect(text).not.toContain("Get First Account");
-      expect(text).not.toContain("Lead Component");
-      expect(text).not.toContain("Screen Components");
+      const options = [
+        ...el.shadowRoot.querySelectorAll(
+          "c-newton-selector-flow-cpe-lookup-choice-option"
+        )
+      ].map((option) => option.row);
+      const optionLabels = options.map((option) => option.label);
+      const optionValues = options.map((option) => option.value);
+
+      expect(optionLabels).toContain("Get Leads");
+      expect(optionValues).toContain("Get_Leads");
+      expect(options).toEqual([
+        expect.objectContaining({
+          label: "Get Leads",
+          objectType: "Lead",
+          isCollection: true,
+          isObject: true,
+          displayType: "Lead"
+        })
+      ]);
+      expect(optionLabels).not.toContain("Get First Account");
+      expect(optionLabels).not.toContain("Lead Component");
+      expect(el.shadowRoot.textContent).not.toContain("Screen Components");
     });
   });
 });

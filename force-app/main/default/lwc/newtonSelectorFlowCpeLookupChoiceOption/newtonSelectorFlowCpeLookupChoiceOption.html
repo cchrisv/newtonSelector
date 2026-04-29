@@ -1,38 +1,37 @@
 <template>
   <span class={optionClass}>
-    <c-newton-selector-choice-tile
-      item={visualItem}
-      variant="list"
-      selected={selected}
-      selection-mode="single"
-      group-name={groupName}
-      size="small"
-      aspect-ratio="1:1"
-      icon-size="small"
-      elevation="subtle"
-      selection-indicator="bar"
-      surface-style="solid"
-      surface-tone="neutral"
-      icon-decor="badge"
-      icon-style="filled"
-      icon-shading="gradient"
-      icon-tone="neutral"
-      icon-glyph-tone="contrast"
-      badge-position="bottom-inline"
-      badge-variant="neutral"
-    ></c-newton-selector-choice-tile>
+    <span class="newton-visual-lookup-option__icon" aria-hidden="true">
+      <c-newton-selector-icon
+        name={iconName}
+        size="small"
+        box="tile"
+        alternative-text=""
+      ></c-newton-selector-icon>
+    </span>
 
-    <span class="slds-assistive-text">
-      <template for:each={titleTokens} for:item="token">
-        <span key={token.key}>
-          <mark
-            lwc:if={token.isHighlight}
-            class="newton-visual-lookup-option__mark"
-            >{token.text}</mark
-          >
-          <template lwc:else>{token.text}</template>
-        </span>
-      </template>
+    <span class="newton-visual-lookup-option__body">
+      <span class="newton-visual-lookup-option__title">
+        <template for:each={titleTokens} for:item="token">
+          <span key={token.key}>
+            <mark
+              lwc:if={token.isHighlight}
+              class="newton-visual-lookup-option__mark"
+              >{token.text}</mark
+            >
+            <template lwc:else>{token.text}</template>
+          </span>
+        </template>
+      </span>
+      <span lwc:if={subtitleLine} class="newton-visual-lookup-option__meta">
+        {subtitleLine}
+      </span>
+    </span>
+
+    <span
+      lwc:if={showBadge}
+      class="slds-badge newton-visual-lookup-option__badge"
+    >
+      {badge}
     </span>
   </span>
 </template>

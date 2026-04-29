@@ -17,7 +17,8 @@ const SCREEN_LABEL = "Newton Selector E2E Screen";
 const RUN_ID =
   process.env.NEWTON_E2E_RUN_ID ||
   new Date().toISOString().replace(/\D/g, "").slice(0, 14);
-const COMPANY = `NewtonE2ECompany${RUN_ID}`;
+const COMPANY = "NewtonE2ECompany";
+const SETUP_ONLY = process.env.NEWTON_E2E_SETUP_ONLY === "true";
 const HEADLESS = process.env.PLAYWRIGHT_HEADLESS !== "false";
 const SF_COMMAND = process.platform === "win32" ? "sf.cmd" : "sf";
 const FLOW_SOURCE_DIR = resolve("force-app", "main", "default", "flows");
@@ -50,8 +51,6 @@ const diagnostics = {
   pageErrors: [],
   requestFailures: []
 };
-let originalFlowSource = "";
-let originalFlowSourceExisted = false;
 
 function runSf(args) {
   const output = execFileSync(SF_COMMAND, args, {
@@ -602,18 +601,13 @@ function buildFlowXml() {
 
 function writeFlowFixture() {
   mkdirSync(FLOW_SOURCE_DIR, { recursive: true });
-  originalFlowSourceExisted = existsSync(FLOW_SOURCE_FILE);
-  originalFlowSource = originalFlowSourceExisted
-    ? readFileSync(FLOW_SOURCE_FILE, "utf8")
-    : "";
   writeFileSync(FLOW_SOURCE_FILE, buildFlowXml(), "utf8");
 }
 
-function restoreFlowFixture() {
-  if (originalFlowSourceExisted) {
-    writeFileSync(FLOW_SOURCE_FILE, originalFlowSource, "utf8");
-  } else {
-    rmSync(FLOW_SOURCE_FILE, { force: true });
+function removeFlowFixture() {
+  rmSync(FLOW_SOURCE_FILE, { force: true });
+  if (existsSync(FLOW_SOURCE_DIR) && readdirSync(FLOW_SOURCE_DIR).length === 0) {
+    rmSync(FLOW_SOURCE_DIR, { recursive: true, force: true });
   }
 }
 
@@ -654,45 +648,6 @@ function deleteTemporaryLeads() {
     } catch (error) {
       console.warn(`Could not delete temporary Lead ${id}: ${error.message}`);
     }
-  }
-}
-
-function deleteFlowFixture() {
-  try {
-    const query = `SELECT Id,MasterLabel,VersionNumber,Status FROM Flow WHERE MasterLabel = '${FLOW_LABEL}'`;
-    const result = runSf([
-      "data",
-      "query",
-      "--target-org",
-      TARGET_ORG,
-      "--use-tooling-api",
-      "--query",
-      process.platform === "win32" ? `"${query}"` : query,
-      "--json"
-    ]);
-    if (result.status !== 0) {
-      console.warn(`Could not query temporary Flow: ${JSON.stringify(result)}`);
-      return;
-    }
-    for (const record of result.result.records || []) {
-      runSf([
-        "data",
-        "delete",
-        "record",
-        "--target-org",
-        TARGET_ORG,
-        "--use-tooling-api",
-        "--sobject",
-        "Flow",
-        "--record-id",
-        record.Id,
-        "--json"
-      ]);
-    }
-  } catch (error) {
-    console.warn(
-      `Could not delete temporary Flow ${FLOW_API_NAME}: ${error.message}`
-    );
   }
 }
 
@@ -1409,44 +1364,61 @@ try {
     })
   );
   writeFlowFixture();
-  createLead(`NewtonE2EAlpha${RUN_ID}`, "Hot");
-  createLead(`NewtonE2EBeta${RUN_ID}`, "Warm");
-  deployFlowFixture();
-  const builderUrl = openFlowBuilderUrl();
+  if (SETUP_ONLY) {
+    deployFlowFixture();
+    console.log(
+      JSON.stringify(
+        {
+          ok: true,
+          setupOnly: true,
+          targetOrg: TARGET_ORG,
+          flowApiName: FLOW_API_NAME,
+          flowSourceFile: FLOW_SOURCE_FILE
+        },
+        null,
+        2
+      )
+    );
+  } else {
+    createLead(`NewtonE2EAlpha${RUN_ID}`, "Hot");
+    createLead(`NewtonE2EBeta${RUN_ID}`, "Warm");
+    deployFlowFixture();
+    const builderUrl = openFlowBuilderUrl();
 
-  browser = await chromium.launch({ headless: HEADLESS });
-  const context = await browser.newContext({
-    viewport: { width: 1500, height: 1050 },
-    recordVideo:
-      process.env.PLAYWRIGHT_RECORD_VIDEO === "true"
-        ? { dir: ARTIFACT_DIR }
-        : undefined
-  });
-  attachDiagnosticsToContext(context);
-  const page = await context.newPage();
-  attachDiagnosticsToPage(page);
-  page.setDefaultTimeout(60000);
-  page.setDefaultNavigationTimeout(120000);
+    browser = await chromium.launch({ headless: HEADLESS });
+    const context = await browser.newContext({
+      viewport: { width: 1500, height: 1050 },
+      recordVideo:
+        process.env.PLAYWRIGHT_RECORD_VIDEO === "true"
+          ? { dir: ARTIFACT_DIR }
+          : undefined
+    });
+    attachDiagnosticsToContext(context);
+    const page = await context.newPage();
+    attachDiagnosticsToPage(page);
+    page.setDefaultTimeout(60000);
+    page.setDefaultNavigationTimeout(120000);
 
-  await openBuilderAndConfigure(page, builderUrl);
-  await runDebugFlow(page, context);
-  assertNoActionableBrowserDiagnostics();
-  writeDiagnostics();
+    await openBuilderAndConfigure(page, builderUrl);
+    await runDebugFlow(page, context);
+    assertNoActionableBrowserDiagnostics();
+    writeDiagnostics();
 
-  await context.close();
-  console.log(
-    JSON.stringify(
-      {
-        ok: true,
-        targetOrg: TARGET_ORG,
-        flowApiName: FLOW_API_NAME,
-        runId: RUN_ID,
-        screenshots
-      },
-      null,
-      2
-    )
-  );
+    await context.close();
+    console.log(
+      JSON.stringify(
+        {
+          ok: true,
+          targetOrg: TARGET_ORG,
+          flowApiName: FLOW_API_NAME,
+          runId: RUN_ID,
+          screenshots
+        },
+        null,
+        2
+      )
+    );
+  }
 } catch (error) {
   console.error(error.stack || error.message || error);
   process.exitCode = 1;
@@ -1456,6 +1428,5 @@ try {
     await browser.close().catch(() => {});
   }
   deleteTemporaryLeads();
-  deleteFlowFixture();
-  restoreFlowFixture();
+  removeFlowFixture();
 }

@@ -28,7 +28,8 @@
       </div>
     </template>
   </template>
-  <c-newton-selector-flow-cpe-custom-lookup
+  <c-newton-selector-combobox
+    mode="lookup"
     label={label}
     field-level-help={fieldLevelHelp}
     placeholder={placeholder}
@@ -40,5 +41,5 @@
     scroll-after-n-items="7"
     onsearch={handleSearch}
     onselectionchange={handleSelectionChange}
-  ></c-newton-selector-flow-cpe-custom-lookup>
+  ></c-newton-selector-combobox>
 </template>

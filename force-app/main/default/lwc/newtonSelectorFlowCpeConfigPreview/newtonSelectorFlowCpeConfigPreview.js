@@ -1,12 +1,82 @@
 import { api, LightningElement } from "lwc";
-import { SAMPLE_ITEMS } from "c/newtonSelectorUtilityDataSources";
 import { resolvedLayoutGridConfig } from "c/newtonSelectorUtilityConfigDefaults";
-import { buildSobjectConfigForQuery } from "c/newtonSelectorFlowCpeUtilityConfigState";
+
+const PREVIEW_SAMPLE_ITEMS = Object.freeze([
+  {
+    id: "preview-serena-williams",
+    label: "Serena Williams",
+    sublabel: "Preview sample record - tennis icon",
+    icon: "trophy",
+    badge: "Sample",
+    helpText: "Mock data used only inside the builder preview.",
+    value: "preview-serena-williams",
+    disabled: false
+  },
+  {
+    id: "preview-pedro-pascal",
+    label: "Pedro Pascal",
+    sublabel: "Preview sample record - actor",
+    icon: "clapperboard",
+    badge: "Mock",
+    helpText: "Mock data used only inside the builder preview.",
+    value: "preview-pedro-pascal",
+    disabled: false
+  },
+  {
+    id: "preview-zendaya",
+    label: "Zendaya",
+    sublabel: "Preview sample record - performer",
+    icon: "sparkles",
+    badge: "Demo",
+    helpText: "Mock data used only inside the builder preview.",
+    value: "preview-zendaya",
+    disabled: false
+  },
+  {
+    id: "preview-simone-biles",
+    label: "Simone Biles",
+    sublabel: "Preview sample record - gymnast",
+    icon: "badge-check",
+    badge: "Sample",
+    helpText: "Mock data used only inside the builder preview.",
+    value: "preview-simone-biles",
+    disabled: false
+  },
+  {
+    id: "preview-ava-duvernay",
+    label: "Ava DuVernay",
+    sublabel: "Preview sample record - filmmaker",
+    icon: "video",
+    badge: "Mock",
+    helpText: "Mock data used only inside the builder preview.",
+    value: "preview-ava-duvernay",
+    disabled: false
+  },
+  {
+    id: "preview-dwayne-johnson",
+    label: "Dwayne Johnson",
+    sublabel: "Preview sample record - entertainer",
+    icon: "star",
+    badge: "Demo",
+    helpText: "Mock data used only inside the builder preview.",
+    value: "preview-dwayne-johnson",
+    disabled: false
+  }
+]);
+
+function sampleAt(index) {
+  return PREVIEW_SAMPLE_ITEMS[index % PREVIEW_SAMPLE_ITEMS.length];
+}
+
+function normalizePreviewValue(value, fallback) {
+  return value === undefined || value === null || value === ""
+    ? fallback
+    : String(value);
+}
 
 export default class NewtonSelectorFlowCpeConfigPreview extends LightningElement {
   @api config;
   @api forcedState = "";
-  @api recordCollectionSampleRecords = [];
 
   handlePreviewStateChange(event) {
     this.dispatchEvent(
@@ -62,43 +132,66 @@ export default class NewtonSelectorFlowCpeConfigPreview extends LightningElement
   }
 
   get hasPreviewableSource() {
-    if (this.isPicklistMode || this.isSObjectMode || this.isCustomMode)
-      return true;
-    if (this.isCollectionMode && this.recordCollectionSampleRecords.length > 0)
-      return true;
-    return false;
+    return this.hasDataSource;
   }
-  get showLivePreview() {
+  get showMockPreview() {
     return this.hasPreviewableSource;
-  }
-  get showFallbackPreview() {
-    return !this.hasPreviewableSource && this.hasDataSource;
   }
   get previewEmpty() {
     return !this.hasDataSource;
   }
-  get fallbackPreviewItems() {
-    return SAMPLE_ITEMS.slice(0, 4);
+  get previewRefreshKey() {
+    return JSON.stringify(this.c);
   }
-  get fallbackCustomConfig() {
-    return { items: this.fallbackPreviewItems };
+  get previewItems() {
+    if (this.isCustomMode && (this.c.custom?.items?.length || 0) > 0) {
+      return this.c.custom.items
+        .filter((item) => item?.hidden !== true)
+        .map((item, index) => {
+          const sample = sampleAt(index);
+          return {
+            ...sample,
+            ...item,
+            id: item.id || `preview-custom-${index}`,
+            label: item.label || sample.label,
+            sublabel: item.sublabel || sample.sublabel,
+            icon: item.icon || sample.icon,
+            badge: item.badge || sample.badge,
+            helpText: item.helpText || sample.helpText,
+            value: normalizePreviewValue(item.value, sample.value),
+            disabled: Boolean(item.disabled)
+          };
+        });
+    }
+
+    const overrideValues = Object.keys(this.c.overrides || {}).filter(Boolean);
+    const values = [
+      ...overrideValues,
+      ...PREVIEW_SAMPLE_ITEMS.map((item) => item.value)
+    ];
+    const uniqueValues = [...new Set(values)].slice(0, 6);
+    const length = Math.max(4, uniqueValues.length);
+    return Array.from({ length }, (_, index) => {
+      const sample = sampleAt(index);
+      const value = uniqueValues[index] || sample.value;
+      return {
+        ...sample,
+        id: `preview-mock-${index}`,
+        value
+      };
+    });
+  }
+  get previewCustomConfig() {
+    return { items: this.previewItems };
   }
 
   get previewCaption() {
     if (!this.hasDataSource)
       return "Pick a data source to see your selector come to life.";
-    if (this.c.dataSource === "collection")
-      return "Collection data resolves at runtime — showing sample rows.";
-    if (this.isPicklistMode && !this.c.picklist?.fieldApiName) {
-      return "Choose a picklist field to load real values.";
-    }
-    if (this.isSObjectMode && !this.c.sobject?.sObjectApiName) {
-      return "Choose an SObject to preview real rows.";
-    }
     if (this.isCustomMode && (this.c.custom?.items?.length || 0) === 0) {
-      return "Add custom items in the Items section to see them here.";
+      return "Showing sample options until custom items are added.";
     }
-    return "";
+    return "Showing deterministic sample data. Runtime data is not queried in the preview.";
   }
 
   get previewLayoutLabel() {
@@ -117,20 +210,8 @@ export default class NewtonSelectorFlowCpeConfigPreview extends LightningElement
   get previewSelectionLabel() {
     return this.c.selectionMode === "multi" ? "Multi" : "Single";
   }
-  get dataSelectorPicklistConfig() {
-    return this.c.picklist || {};
-  }
   get dataSelectorCustomConfig() {
-    return this.c.custom || { items: [] };
-  }
-  get dataSelectorCollectionConfig() {
-    return {
-      records: this.recordCollectionSampleRecords,
-      fieldMap: this.c.collection?.fieldMap || {}
-    };
-  }
-  get dataSelectorSobjectConfig() {
-    return buildSobjectConfigForQuery(this.c);
+    return this.previewCustomConfig;
   }
   get dataSelectorOverrides() {
     return this.c.overrides || {};

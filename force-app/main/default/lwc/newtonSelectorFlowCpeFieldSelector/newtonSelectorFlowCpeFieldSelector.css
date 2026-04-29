@@ -1,0 +1,9 @@
+:host {
+  display: block;
+  position: relative;
+  z-index: var(--newton-static-v-1, 1);
+}
+
+:host(:focus-within) {
+  z-index: var(--newton-static-v-9000, 9000);
+}

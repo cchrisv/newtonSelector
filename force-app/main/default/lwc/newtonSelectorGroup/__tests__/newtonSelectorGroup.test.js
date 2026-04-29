@@ -68,6 +68,7 @@ function mount(overrides = {}) {
   }
   if ("iconDecor" in overrides) el.iconDecor = overrides.iconDecor;
   if ("iconStyle" in overrides) el.iconStyle = overrides.iconStyle;
+  if ("gapVertical" in overrides) el.gapVertical = overrides.gapVertical;
   if ("selectionIndicator" in overrides) {
     el.selectionIndicator = overrides.selectionIndicator;
   }
@@ -218,10 +219,11 @@ describe("c-newton-selector-group", () => {
     expect(handler).not.toHaveBeenCalled();
   });
 
-  it("renders picklist options as customizable cards", async () => {
+  it("renders picklist options with the shared compact dropdown row", async () => {
     const el = mount({
       variant: "picklist",
       selectedValues: ["b"],
+      gapVertical: "1",
       pattern: "dots",
       patternSelectedTone: "pink",
       surfaceHoverTone: "teal",
@@ -235,25 +237,25 @@ describe("c-newton-selector-group", () => {
     );
     expect(trigger).not.toBeNull();
     expect(trigger.querySelector("c-newton-selector-choice-tile")).toBeNull();
-    expect(el.shadowRoot.querySelector(".slds-combobox__input").value).toBe(
-      "Beta"
-    );
-    trigger.dispatchEvent(
+    const input = el.shadowRoot.querySelector(".slds-combobox__input");
+    expect(input.tagName).toBe("BUTTON");
+    expect(input.textContent).toContain("Beta");
+    expect(
+      el.shadowRoot.querySelector(".newton-picklist").style.cssText
+    ).toContain("--newton-group-gap-y: var(--slds-g-spacing-1, 0)");
+    input.dispatchEvent(
       new MouseEvent("click", { bubbles: true, composed: true })
     );
     await Promise.resolve();
 
-    const cards = el.shadowRoot.querySelectorAll(
-      ".newton-picklist__menu c-newton-selector-choice-tile"
+    const rows = el.shadowRoot.querySelectorAll(
+      ".newton-picklist__menu c-newton-selector-flow-cpe-lookup-choice-option"
     );
-    expect(cards).toHaveLength(3);
-    expect(cards[0].variant).toBe("list");
-    expect(cards[0].pattern).toBe("dots");
-    expect(cards[0].patternSelectedTone).toBe("pink");
-    expect(cards[0].surfaceHoverTone).toBe("teal");
-    expect(cards[0].surfaceSelectedToneHex).toBe("#123456");
-    expect(cards[0].iconDecor).toBe("ring");
-    expect(cards[0].selectionMode).toBe("single");
+    expect(rows).toHaveLength(3);
+    expect(rows[1].selected).toBe(true);
+    expect(rows[0].row).toEqual(
+      expect.objectContaining({ title: "Alpha", value: "a" })
+    );
   });
 
   it("uses native SLDS combobox input classes for the closed picklist trigger", async () => {
@@ -271,11 +273,11 @@ describe("c-newton-selector-group", () => {
     expect(trigger.classList.contains("slds-input-has-icon_left-right")).toBe(
       false
     );
-    expect(input.classList.contains("slds-input")).toBe(true);
+    expect(input.tagName).toBe("BUTTON");
+    expect(input.classList.contains("slds-input_faux")).toBe(true);
     expect(input.classList.contains("slds-combobox__input")).toBe(true);
-    expect(input.classList.contains("newton-picklist__input-value")).toBe(
-      false
-    );
+    expect(input.getAttribute("role")).toBe("combobox");
+    expect(input.getAttribute("aria-haspopup")).toBe("listbox");
   });
 
   it("uses native SLDS entity input classes when the selected picklist option has an icon", async () => {
@@ -297,9 +299,7 @@ describe("c-newton-selector-group", () => {
       true
     );
     expect(input.classList.contains("slds-combobox__input-value")).toBe(true);
-    expect(input.classList.contains("newton-picklist__input-value")).toBe(
-      false
-    );
+    expect(input.classList.contains("newton-picklist__button")).toBe(true);
   });
 
   it("keeps multiselect picklist open and toggles card options", async () => {
@@ -314,7 +314,7 @@ describe("c-newton-selector-group", () => {
     await Promise.resolve();
 
     el.shadowRoot
-      .querySelector(".newton-picklist__combobox .slds-combobox__form-element")
+      .querySelector(".newton-picklist__combobox .slds-combobox__input")
       .dispatchEvent(new MouseEvent("click", { bubbles: true }));
     await Promise.resolve();
 
@@ -322,11 +322,10 @@ describe("c-newton-selector-group", () => {
     expect(
       el.shadowRoot.querySelector(".newton-picklist__search")
     ).not.toBeNull();
-    const cards = el.shadowRoot.querySelectorAll(
-      ".newton-picklist__menu c-newton-selector-choice-tile"
+    const rows = el.shadowRoot.querySelectorAll(
+      ".newton-picklist__menu .newton-picklist__option"
     );
-    expect(cards[0].selectionMode).toBe("multi");
-    dispatchCardSelectFrom(cards[1], "b");
+    rows[1].click();
     await Promise.resolve();
 
     expect(handler.mock.calls[0][0].detail.values).toEqual(["a", "b"]);
