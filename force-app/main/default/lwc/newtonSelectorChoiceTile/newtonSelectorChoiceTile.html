@@ -39,10 +39,14 @@
         </template>
         <template lwc:if={hasShape}>
           <span
-            class="newton-selector-choice-tile__shape"
-            style={shapeStyle}
+            class="newton-selector-choice-tile__shape-wrap"
             aria-hidden="true"
-          ></span>
+          >
+            <span
+              class="newton-selector-choice-tile__shape"
+              style={shapeStyle}
+            ></span>
+          </span>
         </template>
         <template lwc:if={hasIcon}>
           <span class={iconWrapClass}>

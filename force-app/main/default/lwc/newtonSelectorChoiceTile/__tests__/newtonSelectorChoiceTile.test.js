@@ -483,6 +483,45 @@ describe("c-newton-selector-choice-tile", () => {
     ).toBe(true);
   });
 
+  it("renders geometric shapes inside the shared visual frame", () => {
+    const el = mount({
+      item: {
+        icon: "expand",
+        shape: { width: "2rem", height: "1rem" }
+      }
+    });
+    const shapeWrap = el.shadowRoot.querySelector(
+      ".newton-selector-choice-tile__shape-wrap"
+    );
+    const shape = el.shadowRoot.querySelector(
+      ".newton-selector-choice-tile__shape"
+    );
+
+    expect(shapeWrap).not.toBeNull();
+    expect(shape).not.toBeNull();
+    expect(
+      el.shadowRoot.querySelector(".newton-selector-choice-tile__icon-wrap")
+    ).toBeNull();
+  });
+
+  it("defaults icon tiles to outlined square cells instead of soft placeholders", () => {
+    const el = mount();
+    const iconWrap = el.shadowRoot.querySelector(
+      ".newton-selector-choice-tile__icon-wrap"
+    );
+
+    expect(
+      iconWrap.classList.contains(
+        "newton-selector-choice-tile__icon-wrap_style-outlined"
+      )
+    ).toBe(true);
+    expect(
+      iconWrap.classList.contains(
+        "newton-selector-choice-tile__icon-wrap_shape-square"
+      )
+    ).toBe(true);
+  });
+
   it("hides icons and badges for explicit false boolean or string values", () => {
     const boolOff = mount({ showIcons: false, showBadges: false });
     expect(

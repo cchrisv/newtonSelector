@@ -124,7 +124,7 @@ const DEFAULT_ICON_DECOR = "square";
 //   soft       — low-opacity dashed outline, dimmed icon — "empty space" feel
 //   glow       — soft radial gradient (halo), icon in tone color
 const VALID_ICON_STYLES = new Set(["filled", "outlined", "soft", "glow"]);
-const DEFAULT_ICON_STYLE = "soft";
+const DEFAULT_ICON_STYLE = "outlined";
 
 // Icon shading — surface treatment applied to filled shapes. Ignored for
 // outlined/soft/glow styles.
