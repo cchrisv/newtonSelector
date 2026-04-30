@@ -149,3 +149,25 @@
 .custom-width-full {
   width: var(--newton-static-v-100-percent, 100%);
 }
+
+/* Keep resource references visually aligned with the shared combobox trigger. */
+.newton-selector-flow-cpe-resource-selector__selected-trigger {
+  border-color: var(--slds-g-color-border-base-1, #c9c9c9);
+  background: var(--slds-g-color-surface-1, #ffffff);
+  box-shadow: inset 0 0 0 var(--slds-g-sizing-border-1, 1px)
+    color-mix(
+      in oklab,
+      var(--slds-g-color-neutral-base-10, #181818) 3%,
+      transparent
+    );
+}
+
+.newton-selector-flow-cpe-resource-selector__selected-trigger:hover,
+.newton-selector-flow-cpe-resource-selector__selected-trigger:focus-visible {
+  border-color: var(--slds-g-color-brand-base-50, #0176d3);
+}
+
+.newton-selector-flow-cpe-resource-selector__selected-icon {
+  border-width: var(--slds-g-sizing-border-1, 1px);
+  background: var(--slds-g-color-brand-base-95, #eef4ff);
+}

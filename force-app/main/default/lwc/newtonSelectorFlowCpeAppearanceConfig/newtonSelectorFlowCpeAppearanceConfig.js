@@ -338,10 +338,9 @@ export default class NewtonSelectorFlowCpeAppearanceConfig extends LightningElem
   get badgePositionChips() {
     return BADGE_POSITIONS.map((chip) => ({
       ...chip,
-      className: `newton-badge-pos-chip newton-badge-pos-chip_${chip.value}${
-        chip.value === this.badgePosition ? " newton-badge-pos-chip_active" : ""
-      }`,
-      dotClass: `newton-badge-pos-chip__dot newton-badge-pos-chip__dot_${chip.value}`
+      id: chip.value,
+      _selected: chip.value === this.badgePosition,
+      _disabled: false
     }));
   }
   get badgeVariantChips() {
@@ -364,10 +363,9 @@ export default class NewtonSelectorFlowCpeAppearanceConfig extends LightningElem
   get badgeShapeChips() {
     return BADGE_SHAPES.map((shape) => ({
       ...shape,
-      className: `newton-badge-shape-chip${
-        shape.value === this.badgeShape ? " newton-badge-shape-chip_active" : ""
-      }`,
-      badgeClass: `newton-selector-choice-tile__badge newton-selector-choice-tile__badge_variant-${this.badgeVariant} newton-selector-choice-tile__badge_shape-${shape.value}`
+      id: shape.value,
+      _selected: shape.value === this.badgeShape,
+      _disabled: false
     }));
   }
 
@@ -569,11 +567,17 @@ export default class NewtonSelectorFlowCpeAppearanceConfig extends LightningElem
   handleBadgePositionChange(event) {
     this.patchDatasetBadge(event, "position");
   }
+  handleBadgePositionTileChange(event) {
+    this.patchBadgeFromTileEvent(event, "position");
+  }
   handleBadgeVariantChange(event) {
     this.patchDatasetBadge(event, "variant");
   }
   handleBadgeShapeChange(event) {
     this.patchDatasetBadge(event, "shape");
+  }
+  handleBadgeShapeTileChange(event) {
+    this.patchBadgeFromTileEvent(event, "shape");
   }
   handleBadgeVariantHexChange(event) {
     this.patchBadge({ variantHex: event.target?.value || "" });
@@ -702,6 +706,10 @@ export default class NewtonSelectorFlowCpeAppearanceConfig extends LightningElem
   }
   patchDatasetBadge(event, key) {
     const value = event.currentTarget?.dataset?.value;
+    if (value) this.patchBadge({ [key]: value });
+  }
+  patchBadgeFromTileEvent(event, key) {
+    const value = event.detail?.value;
     if (value) this.patchBadge({ [key]: value });
   }
   patchGrid(values) {

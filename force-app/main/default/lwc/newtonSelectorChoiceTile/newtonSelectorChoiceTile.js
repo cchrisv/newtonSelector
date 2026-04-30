@@ -632,7 +632,7 @@ export default class NewtonSelectorChoiceTile extends LightningElement {
     const s = this.item?.shape;
     return Boolean(s && (s.width || s.height));
   }
-  // Shape is an optional geometric visual (a solid rectangle) that takes
+  // Shape is an optional geometric visual that takes
   // priority over the icon when present. Useful for conveying aspect
   // ratios or size tiers directly with proportional geometry.
   // Shape beats icon, and both respect the global showIcons switch.
@@ -656,6 +656,7 @@ export default class NewtonSelectorChoiceTile extends LightningElement {
     const parts = [];
     if (s.width) parts.push(`width:${s.width}`);
     if (s.height) parts.push(`height:${s.height}`);
+    if (s.radius) parts.push(`border-radius:${s.radius}`);
     return parts.join(";");
   }
 

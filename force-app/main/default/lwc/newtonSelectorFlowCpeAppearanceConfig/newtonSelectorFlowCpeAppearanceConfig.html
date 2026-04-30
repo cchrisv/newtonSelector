@@ -1,12 +1,11 @@
 <template>
-  <!-- ═══════════════ CHAPTER 04 · APPEARANCE ═══════════════ -->
   <section class="newton-chapter newton-chapter_04" data-chapter="appearance">
     <aside class="newton-chapter__mark" aria-hidden="true">
       <span class="newton-chapter__numeral">04</span>
       <span class="newton-chapter__rule"></span>
     </aside>
     <header class="newton-chapter__head">
-      <p class="newton-chapter__eyebrow">Chapter · Appearance</p>
+      <p class="newton-chapter__eyebrow">Appearance</p>
       <h2 class="newton-chapter__title">How it looks</h2>
     </header>
   </section>
@@ -843,11 +842,11 @@
                   group-name="newton-selector-icon-decor"
                   size="small"
                   aspect-ratio="1:1"
-                  icon-decor={tile.value}
-                  icon-style={gridConfig.iconStyle}
-                  icon-shading={gridConfig.iconShading}
-                  icon-tone={gridConfig.iconTone}
-                  icon-glyph-tone={gridConfig.iconGlyphTone}
+                  icon-decor="square"
+                  icon-style="outlined"
+                  icon-shading="flat"
+                  icon-tone="brand"
+                  icon-glyph-tone="brand"
                 ></c-newton-selector-choice-tile>
               </template>
             </div>
@@ -1112,28 +1111,27 @@
             <div class="newton-badge-card__control">
               <span class="newton-badge-card__eyebrow">Position</span>
               <div
-                class="newton-badge-card__pos-row"
+                class="newton-studio__selectorgroup"
                 role="radiogroup"
                 aria-label="Badge position"
+                oncardselect={handleBadgePositionTileChange}
               >
                 <template for:each={badgePositionChips} for:item="chip">
-                  <button
+                  <c-newton-selector-choice-tile
                     key={chip.value}
-                    type="button"
-                    class={chip.className}
-                    data-value={chip.value}
-                    onclick={handleBadgePositionChange}
-                    role="radio"
-                    aria-checked={chip._selected}
-                    title={chip.label}
-                  >
-                    <span class="newton-badge-pos-chip__canvas">
-                      <span class={chip.dotClass}></span>
-                    </span>
-                    <span class="newton-badge-pos-chip__label"
-                      >{chip.label}</span
-                    >
-                  </button>
+                    item={chip}
+                    selected={chip._selected}
+                    disabled={chip._disabled}
+                    selection-mode="single"
+                    group-name="newton-selector-badge-position"
+                    size="small"
+                    aspect-ratio="1:1"
+                    icon-decor="square"
+                    icon-style="outlined"
+                    icon-shading="flat"
+                    icon-tone="brand"
+                    icon-glyph-tone="brand"
+                  ></c-newton-selector-choice-tile>
                 </template>
               </div>
             </div>
@@ -1192,25 +1190,22 @@
             <div class="newton-badge-card__control">
               <span class="newton-badge-card__eyebrow">Shape</span>
               <div
-                class="newton-badge-card__shape-row"
+                class="newton-studio__selectorgroup"
                 role="radiogroup"
                 aria-label="Badge shape"
+                oncardselect={handleBadgeShapeTileChange}
               >
                 <template for:each={badgeShapeChips} for:item="chip">
-                  <button
+                  <c-newton-selector-choice-tile
                     key={chip.value}
-                    type="button"
-                    class={chip.className}
-                    data-value={chip.value}
-                    onclick={handleBadgeShapeChange}
-                    role="radio"
-                    title={chip.label}
-                  >
-                    <span class={chip.badgeClass}>Sample</span>
-                    <span class="newton-badge-shape-chip__label"
-                      >{chip.label}</span
-                    >
-                  </button>
+                    item={chip}
+                    selected={chip._selected}
+                    disabled={chip._disabled}
+                    selection-mode="single"
+                    group-name="newton-selector-badge-shape"
+                    size="small"
+                    aspect-ratio="1:1"
+                  ></c-newton-selector-choice-tile>
                 </template>
               </div>
             </div>

@@ -217,6 +217,7 @@
 }
 
 .newton-selector-choice-tile__shape {
+  box-sizing: border-box;
   display: block;
   max-inline-size: calc(
     var(--_shape-cell-size) - var(--slds-g-spacing-3, 0.75rem)
@@ -224,11 +225,14 @@
   max-block-size: calc(
     var(--_shape-cell-size) - var(--slds-g-spacing-3, 0.75rem)
   );
-  background: var(--_shape-cell-ink);
+  min-inline-size: var(--slds-g-sizing-border-2, 2px);
+  min-block-size: var(--slds-g-sizing-border-2, 2px);
+  background: transparent;
+  border: var(--slds-g-sizing-border-2, 2px) solid var(--_shape-cell-ink);
   border-radius: var(--newton-static-v-2px, 2px);
   flex: 0 0 auto;
   transition:
-    background-color 160ms ease,
+    border-color 160ms ease,
     opacity 160ms ease;
 }
 
@@ -261,7 +265,7 @@
 }
 
 .newton-selector-choice-tile_selected .newton-selector-choice-tile__shape {
-  background: var(--_shape-cell-ink);
+  border-color: var(--_shape-cell-ink);
   opacity: 0.9;
 }
 

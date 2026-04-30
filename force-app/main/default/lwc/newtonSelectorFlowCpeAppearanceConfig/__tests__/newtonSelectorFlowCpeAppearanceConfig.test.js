@@ -280,11 +280,7 @@ describe("c-newton-selector-flow-cpe-appearance-config events", () => {
       ),
       false
     );
-    click(
-      group(element.shadowRoot, "Badge position").querySelector(
-        "[data-value='top-right']"
-      )
-    );
+    cardSelect(group(element.shadowRoot, "Badge position"), "top-right");
     inputChange(
       element.shadowRoot.querySelector('input[aria-label="Hex color value"]'),
       "#123456"
@@ -380,6 +376,39 @@ describe("c-newton-selector-flow-cpe-appearance-config events", () => {
     expect(patches.at(-3).value.gridConfig.iconTone).toBe("brand");
     expect(patches.at(-2).value.gridConfig.iconGlyphTone).toBe("contrast");
     expect(patches.at(-1).value.gridConfig.iconToneHex).toBe("#654321");
+  });
+
+  it("renders badge position and shape through shared choice tiles", () => {
+    const element = mount();
+
+    const positionTiles = group(
+      element.shadowRoot,
+      "Badge position"
+    ).querySelectorAll("c-newton-selector-choice-tile");
+    const shapeTiles = group(
+      element.shadowRoot,
+      "Badge shape"
+    ).querySelectorAll("c-newton-selector-choice-tile");
+
+    expect(positionTiles).toHaveLength(5);
+    expect(shapeTiles).toHaveLength(2);
+    expect(
+      element.shadowRoot.querySelector(".newton-badge-pos-chip")
+    ).toBeNull();
+    expect(
+      element.shadowRoot.querySelector(".newton-badge-shape-chip")
+    ).toBeNull();
+  });
+
+  it("emits badge position and shape patches from shared choice tiles", () => {
+    const element = mount();
+    const patches = collect(element);
+
+    cardSelect(group(element.shadowRoot, "Badge position"), "bottom-right");
+    cardSelect(group(element.shadowRoot, "Badge shape"), "square");
+
+    expect(patches.at(-2).value.gridConfig.badge.position).toBe("bottom-right");
+    expect(patches.at(-1).value.gridConfig.badge.shape).toBe("square");
   });
 
   it("uses toggle event detail so icon and badge off switches hide dependent CPE controls", async () => {

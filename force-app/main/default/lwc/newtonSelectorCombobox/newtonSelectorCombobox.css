@@ -117,3 +117,42 @@
 .newton-selector-combobox__clear-button {
   color: var(--slds-g-color-neutral-base-40, #5c5c5c);
 }
+
+/* V1 CPE control normalization: same trigger height, edge, and menu rhythm
+   for lookup and static-select modes. */
+.newton-selector-combobox__select-button,
+.newton-selector-combobox__lookup input.slds-input {
+  min-block-size: var(--slds-g-sizing-9, 2rem);
+  border-color: var(--slds-g-color-border-base-1, #c9c9c9);
+  background: var(--slds-g-color-surface-1, #ffffff);
+  box-shadow: inset 0 0 0 var(--slds-g-sizing-border-1, 1px)
+    color-mix(
+      in oklab,
+      var(--slds-g-color-neutral-base-10, #181818) 3%,
+      transparent
+    );
+}
+
+.newton-selector-combobox__select-button:hover,
+.newton-selector-combobox__lookup input.slds-input:hover {
+  border-color: var(--slds-g-color-border-base-2, #747474);
+}
+
+.newton-selector-combobox__select.slds-is-open
+  .newton-selector-combobox__select-button,
+.newton-selector-combobox__lookup.slds-is-open input.slds-input,
+.newton-selector-combobox__lookup input.slds-input:focus {
+  border-color: var(--slds-g-color-brand-base-50, #0176d3);
+  box-shadow: 0 0 0 var(--slds-g-sizing-border-1, 1px)
+    var(--slds-g-color-brand-base-50, #0176d3);
+}
+
+.newton-selector-combobox__dropdown {
+  border-color: var(--slds-g-color-border-base-1, #c9c9c9);
+  border-radius: var(--slds-g-radius-border-3, 0.5rem);
+  box-shadow: var(--slds-g-shadow-2, 0 2px 8px rgba(0, 0, 0, 0.12));
+}
+
+.newton-selector-combobox__listbox {
+  background: var(--slds-g-color-surface-container-1, #f3f3f3);
+}

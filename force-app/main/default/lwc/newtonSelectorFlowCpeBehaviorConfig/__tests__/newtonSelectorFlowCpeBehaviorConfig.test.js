@@ -219,7 +219,7 @@ describe("c-newton-selector-flow-cpe-behavior-config events", () => {
 
     expect(element.shadowRoot.textContent).toContain("Mode");
     expect(element.shadowRoot.textContent).toContain("Required");
-    expect(element.shadowRoot.textContent).toContain("Auto Nav");
+    expect(element.shadowRoot.textContent).toContain("Auto navigation");
     expect(element.shadowRoot.textContent).toContain("Search");
     expect(modeCard).not.toBeUndefined();
     expect(

@@ -253,16 +253,40 @@ export const SIDE_META = [
 ];
 
 export const BADGE_POSITIONS = [
-  { value: "top-left", label: "Top left" },
-  { value: "top-right", label: "Top right" },
-  { value: "bottom-left", label: "Bottom left" },
-  { value: "bottom-right", label: "Bottom right" },
-  { value: "bottom-inline", label: "Inline" }
+  { value: "top-left", label: "Top left", icon: "square-arrow-up-left" },
+  { value: "top-right", label: "Top right", icon: "square-arrow-up-right" },
+  {
+    value: "bottom-left",
+    label: "Bottom left",
+    icon: "square-arrow-down-left"
+  },
+  {
+    value: "bottom-right",
+    label: "Bottom right",
+    icon: "square-arrow-down-right"
+  },
+  { value: "bottom-inline", label: "Inline", icon: "align-center-horizontal" }
 ];
 
 export const BADGE_SHAPES = [
-  { value: "pill", label: "Pill" },
-  { value: "square", label: "Square" }
+  {
+    value: "pill",
+    label: "Pill",
+    shape: {
+      width: "2.25rem",
+      height: "0.75rem",
+      radius: "var(--newton-static-v-999px, 999px)"
+    }
+  },
+  {
+    value: "square",
+    label: "Square",
+    shape: {
+      width: "1.5rem",
+      height: "1.5rem",
+      radius: "var(--slds-g-radius-border-2, 0.25rem)"
+    }
+  }
 ];
 
 export const COLUMN_CHIPS = [
@@ -530,19 +554,19 @@ export const ICON_DECOR_TILES = [
   {
     value: "halo",
     label: "Halo",
-    sublabel: "Soft aura",
+    sublabel: "Aura glyph",
     icon: "lightbulb"
   },
   {
     value: "badge",
     label: "Badge",
-    sublabel: "Filled circle",
+    sublabel: "Medal glyph",
     icon: "award"
   },
   {
     value: "square",
     label: "Square",
-    sublabel: "Filled square",
+    sublabel: "Square glyph",
     icon: "square"
   }
 ];
