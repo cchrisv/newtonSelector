@@ -2687,7 +2687,7 @@
     --slds-g-color-surface-container-2,
     #f9f9f9
   );
-  --newton-studio-border-strong: var(--slds-g-color-border-base-2, #747474);
+  --newton-studio-border-strong: var(--slds-g-color-border-base-1, #747474);
   --newton-studio-focus-ring: var(--slds-g-color-brand-base-60, #0b5cab);
   --newton-studio-shadow-lift: var(
     --slds-g-shadow-2,
@@ -2697,10 +2697,6 @@
 
 .newton-modal {
   --slds-c-modal-content-color-background: var(--newton-studio-canvas);
-  --slds-c-modal-content-spacing-block-start: 0;
-  --slds-c-modal-content-spacing-block-end: 0;
-  --slds-c-modal-content-spacing-inline-start: 0;
-  --slds-c-modal-content-spacing-inline-end: 0;
 }
 
 .newton-studio {
@@ -3072,7 +3068,8 @@
 }
 
 .newton-studio__section-card {
-  border-left-color: var(--newton-studio-hairline);
+  border-left: var(--slds-g-sizing-border-1, 1px) solid
+    var(--newton-studio-hairline);
   background: var(--newton-studio-panel);
 }
 
@@ -3119,4 +3116,446 @@
   .newton-studio__controls {
     padding: var(--slds-g-spacing-4, 1rem);
   }
+}
+
+/* Keep the studio language unified: no side-rail accents competing with card
+   headers, and the preview side uses the same canvas/surface model as controls. */
+.newton-studio__left,
+.newton-studio__preview,
+.newton-studio__nav {
+  background: var(--newton-studio-canvas);
+}
+
+.newton-studio__preview {
+  background-image: none;
+}
+
+.newton-studio__nav {
+  border-bottom-color: var(--newton-studio-hairline);
+}
+
+.newton-studio__nav-btn {
+  grid-template-columns:
+    var(--slds-g-sizing-6, 1.25rem)
+    var(--slds-g-sizing-7, 1.5rem) minmax(0, 1fr) auto;
+}
+
+.newton-studio__nav-stripe {
+  display: none;
+}
+
+.newton-studio__nav-btn_active {
+  background: var(--newton-studio-panel);
+  box-shadow: var(--newton-studio-shadow);
+}
+
+.newton-studio__section-card {
+  border-left: var(--slds-g-sizing-border-1, 1px) solid
+    var(--newton-studio-hairline);
+}
+
+.newton-studio__section-card::before,
+.newton-studio__spec-sheet::before,
+.newton-studio__custom-row::before,
+.newton-overrides__row::before,
+.newton-string-preview::before {
+  display: none;
+}
+
+.newton-studio__subchapter-off-note,
+.newton-query-preview__status {
+  border-left: var(--slds-g-sizing-border-1, 1px) solid
+    var(--newton-studio-hairline);
+  border-inline-start: var(--slds-g-sizing-border-1, 1px) solid
+    var(--newton-studio-hairline);
+}
+
+.newton-studio__spec-sheet,
+.newton-studio__custom-row,
+.newton-overrides__row {
+  padding-inline-start: var(--slds-g-spacing-4, 1rem);
+}
+
+.newton-studio__custom-row-head,
+.newton-studio__overrides-head {
+  padding-inline-start: var(--slds-g-spacing-3, 0.75rem);
+}
+
+.newton-studio__left {
+  border-right-color: var(--newton-studio-hairline);
+}
+
+.newton-studio__nav {
+  padding: var(--slds-g-spacing-3, 0.75rem);
+}
+
+.newton-studio__preview-frame,
+.newton-studio__card,
+.newton-studio__nav-btn_active {
+  background: var(--newton-studio-panel);
+}
+
+.newton-studio__card > header,
+.newton-studio__custom-row-head,
+.newton-studio__overrides-head,
+.newton-studio__mode-row {
+  background: var(--newton-studio-panel);
+}
+
+.newton-studio__card > div,
+.newton-studio__card > footer,
+.newton-studio__custom-grid,
+.newton-studio__overrides-grid,
+.newton-studio__spec-sheet,
+.newton-string-preview,
+.newton-query-preview {
+  background: var(--newton-studio-panel-sunken);
+}
+
+.newton-studio__field-block > lightning-input,
+.newton-studio__field-grid > lightning-input,
+.newton-studio__field-block > c-newton-selector-combobox,
+.newton-studio__field-block > c-newton-selector-flow-cpe-resource-selector,
+.newton-studio__field-block > c-newton-selector-flow-cpe-field-selector,
+.newton-studio__field-block > c-newton-selector-flow-cpe-choice-control,
+.newton-studio__field-grid > c-newton-selector-combobox,
+.newton-studio__field-grid > c-newton-selector-flow-cpe-resource-selector,
+.newton-studio__field-grid > c-newton-selector-flow-cpe-field-selector,
+.newton-studio__field-grid > c-newton-selector-flow-cpe-choice-control {
+  --slds-c-input-color-background: var(--newton-studio-panel);
+  --slds-c-textarea-color-background: var(--newton-studio-panel);
+  --slds-c-select-color-background: var(--newton-studio-panel);
+}
+
+.newton-studio__preview-states,
+.newton-studio__state-group,
+.newton-studio__col-row,
+.newton-studio__selectorgroup_compact,
+.newton-tone-row,
+.newton-hex-row {
+  background: color-mix(
+    in oklab,
+    var(--newton-studio-panel-sunken) 80%,
+    var(--newton-studio-panel)
+  );
+}
+
+.newton-studio__selectorgroup_compact,
+.newton-tone-row,
+.newton-hex-row {
+  border-radius: var(--newton-studio-radius);
+  padding: var(--slds-g-spacing-2, 0.5rem);
+}
+
+/* =============================================================================
+   LIGHTNING STUDIO VISUAL SYSTEM
+   Final V1 design layer. This intentionally supersedes the older editorial
+   treatment with a Salesforce-native builder workspace: shaded canvas, raised
+   panels, quiet mastheads, and consistent card depth on both sides.
+   ============================================================================= */
+
+:host {
+  --newton-studio-canvas: var(--slds-g-color-surface-container-1, #f3f3f3);
+  --newton-studio-panel: var(--slds-g-color-surface-1, #ffffff);
+  --newton-studio-panel-soft: var(--slds-g-color-surface-container-2, #f9f9f9);
+  --newton-studio-panel-tint: color-mix(
+    in oklab,
+    var(--newton-studio-brand-weak) 38%,
+    var(--newton-studio-panel)
+  );
+  --newton-studio-depth-border: color-mix(
+    in oklab,
+    var(--newton-studio-brand) 16%,
+    var(--newton-studio-hairline)
+  );
+  --newton-studio-depth-shadow: var(
+    --slds-g-shadow-2,
+    0 2px 8px rgba(0, 0, 0, 0.12)
+  );
+}
+
+.newton-studio {
+  background: var(--newton-studio-canvas);
+}
+
+.newton-studio__left,
+.newton-studio__controls {
+  background: var(--newton-studio-canvas);
+}
+
+.newton-studio__left {
+  padding: var(--slds-g-spacing-4, 1rem);
+  gap: var(--slds-g-spacing-4, 1rem);
+  border-right: var(--slds-g-sizing-border-1, 1px) solid
+    var(--newton-studio-hairline);
+}
+
+.newton-studio__nav {
+  gap: var(--slds-g-spacing-2, 0.5rem);
+  padding: 0;
+  background: transparent;
+  border-bottom: 0;
+}
+
+.newton-studio__nav-btn {
+  grid-template-columns:
+    var(--slds-g-sizing-6, 1.25rem)
+    var(--slds-g-sizing-8, 1.75rem) minmax(0, 1fr) auto;
+  min-block-size: var(--slds-g-sizing-12, 3rem);
+  padding: var(--slds-g-spacing-2, 0.5rem) var(--slds-g-spacing-3, 0.75rem);
+  background: var(--newton-studio-panel-soft);
+  border: var(--slds-g-sizing-border-1, 1px) solid var(--newton-studio-hairline);
+  border-radius: var(--newton-studio-radius-lg);
+  box-shadow: none;
+}
+
+.newton-studio__nav-btn:hover {
+  background: var(--newton-studio-panel);
+  border-color: var(--newton-studio-depth-border);
+}
+
+.newton-studio__nav-btn_active {
+  background: var(--newton-studio-panel);
+  border-color: var(--newton-studio-depth-border);
+  box-shadow: var(--newton-studio-depth-shadow);
+}
+
+.newton-studio__nav-stripe {
+  display: none;
+}
+
+.newton-studio__nav-glyph {
+  width: var(--slds-g-sizing-8, 1.75rem);
+  height: var(--slds-g-sizing-8, 1.75rem);
+  background: var(--newton-studio-panel);
+  color: var(--newton-studio-brand);
+  box-shadow: inset 0 0 0 var(--slds-g-sizing-border-1, 1px)
+    var(--newton-studio-depth-border);
+}
+
+.newton-studio__nav-btn_active .newton-studio__nav-glyph {
+  background: var(--newton-studio-brand);
+  color: var(--slds-g-color-on-accent-1, #ffffff);
+  box-shadow: none;
+}
+
+.newton-studio__nav-numeral {
+  color: var(--newton-studio-ink-weak);
+}
+
+.newton-studio__nav-label {
+  color: var(--newton-studio-ink);
+  font-weight: var(--slds-g-font-weight-6, 600);
+}
+
+.newton-studio__preview {
+  padding: 0;
+  background: transparent;
+}
+
+.newton-studio__preview-head {
+  padding: var(--slds-g-spacing-3, 0.75rem);
+  border: var(--slds-g-sizing-border-1, 1px) solid var(--newton-studio-hairline);
+  border-radius: var(--newton-studio-radius-lg);
+  background: var(--newton-studio-panel);
+  box-shadow: var(--newton-studio-shadow);
+}
+
+.newton-studio__preview-frame {
+  margin-top: var(--slds-g-spacing-3, 0.75rem);
+  background: var(--newton-studio-panel);
+  border: var(--slds-g-sizing-border-1, 1px) solid var(--newton-studio-hairline);
+  border-radius: var(--newton-studio-radius-lg);
+  box-shadow: var(--newton-studio-depth-shadow);
+}
+
+.newton-studio__preview-states,
+.newton-studio__state-group,
+.newton-studio__col-row {
+  background: var(--newton-studio-panel-soft);
+  border-color: var(--newton-studio-hairline);
+}
+
+.newton-studio__controls {
+  padding: var(--slds-g-spacing-5, 1.25rem);
+  gap: var(--slds-g-spacing-4, 1rem);
+}
+
+.newton-chapter {
+  grid-template-columns: var(--slds-g-sizing-10, 2.5rem) minmax(0, 1fr);
+  align-items: center;
+  margin: 0 0 var(--slds-g-spacing-2, 0.5rem);
+  padding: var(--slds-g-spacing-4, 1rem);
+  border: var(--slds-g-sizing-border-1, 1px) solid var(--newton-studio-hairline);
+  border-radius: var(--newton-studio-radius-lg);
+  background: var(--newton-studio-panel);
+  box-shadow: var(--newton-studio-shadow);
+}
+
+.newton-chapter__numeral {
+  width: var(--slds-g-sizing-10, 2.5rem);
+  height: var(--slds-g-sizing-10, 2.5rem);
+  border-radius: var(--newton-studio-radius-lg);
+  background: var(--newton-studio-panel-tint);
+  color: var(--newton-studio-brand);
+  border-color: var(--newton-studio-depth-border);
+  font-size: var(--slds-g-font-scale-base, 0.8125rem);
+}
+
+.newton-chapter__eyebrow {
+  font-size: var(--slds-g-font-scale-neg-1, 0.75rem);
+  color: var(--newton-studio-brand);
+}
+
+.newton-chapter__title {
+  font-size: var(--slds-g-font-scale-3, 1.25rem);
+  color: var(--newton-studio-ink);
+}
+
+.newton-chapter__rule,
+.newton-chapter__head::before,
+.newton-studio__section-card::before,
+.newton-studio__spec-sheet::before,
+.newton-studio__custom-row::before,
+.newton-overrides__row::before,
+.newton-string-preview::before {
+  display: none;
+}
+
+.newton-studio__card,
+.newton-studio__section-card,
+.newton-studio__custom-row,
+.newton-overrides__row,
+.newton-studio__spec-sheet,
+.newton-string-preview,
+.newton-query-preview {
+  border: var(--slds-g-sizing-border-1, 1px) solid var(--newton-studio-hairline);
+  border-radius: var(--newton-studio-radius-lg);
+  background: var(--newton-studio-panel);
+  box-shadow: var(--newton-studio-shadow);
+}
+
+.newton-studio__card > header,
+.newton-studio__custom-row-head,
+.newton-studio__overrides-head {
+  background: var(--newton-studio-panel-soft);
+  border-bottom: var(--slds-g-sizing-border-1, 1px) solid
+    var(--newton-studio-hairline);
+  border-radius: var(--newton-studio-radius-lg) var(--newton-studio-radius-lg) 0
+    0;
+}
+
+.newton-studio__card > div,
+.newton-studio__card > footer,
+.newton-studio__custom-grid,
+.newton-studio__overrides-grid {
+  background: var(--newton-studio-panel);
+}
+
+.newton-card__glyph {
+  background: var(--newton-studio-panel);
+  border: var(--slds-g-sizing-border-1, 1px) solid
+    var(--newton-studio-depth-border);
+  color: var(--newton-studio-brand);
+  box-shadow: none;
+}
+
+.newton-card__headings > h3 {
+  font-size: var(--slds-g-font-scale-1, 0.875rem);
+  font-weight: var(--slds-g-font-weight-7, 700);
+}
+
+.newton-card__headings > p {
+  color: var(--newton-studio-ink-weak);
+}
+
+.newton-studio__subchapter {
+  margin: var(--slds-g-spacing-5, 1.25rem) 0 var(--slds-g-spacing-3, 0.75rem);
+  padding: var(--slds-g-spacing-3, 0.75rem);
+  border: var(--slds-g-sizing-border-1, 1px) solid var(--newton-studio-hairline);
+  border-radius: var(--newton-studio-radius-lg);
+  background: var(--newton-studio-panel-soft);
+}
+
+.newton-studio__subchapter-rule {
+  background: var(--newton-studio-hairline);
+}
+
+.newton-studio__subchapter-numeral {
+  background: var(--newton-studio-panel);
+  color: var(--newton-studio-brand);
+  border-color: var(--newton-studio-depth-border);
+}
+
+.newton-studio__selectorgroup_compact,
+.newton-tone-row,
+.newton-hex-row,
+.newton-studio__state-row {
+  background: var(--newton-studio-panel-soft);
+  border: var(--slds-g-sizing-border-1, 1px) solid var(--newton-studio-hairline);
+  border-radius: var(--newton-studio-radius);
+}
+
+.newton-studio__subchapter-off-note,
+.newton-query-preview__status {
+  border-left: var(--slds-g-sizing-border-1, 1px) solid
+    var(--newton-studio-hairline);
+  border-inline-start: var(--slds-g-sizing-border-1, 1px) solid
+    var(--newton-studio-hairline);
+}
+
+@media (max-width: 56rem) {
+  .newton-studio__left,
+  .newton-studio__controls {
+    padding: var(--slds-g-spacing-4, 1rem);
+  }
+}
+
+/* Main header alignment: match the preview panel header proportions. */
+.newton-chapter {
+  grid-template-columns: var(--slds-g-sizing-11, 2.75rem) minmax(0, 1fr);
+  min-block-size: var(--newton-static-v-4-5rem, 4.5rem);
+  align-items: center;
+  padding: var(--slds-g-spacing-3, 0.75rem) var(--slds-g-spacing-4, 1rem);
+  scroll-margin-top: var(--slds-g-spacing-4, 1rem);
+}
+
+.newton-chapter__mark {
+  width: var(--slds-g-sizing-11, 2.75rem);
+  height: var(--slds-g-sizing-11, 2.75rem);
+}
+
+.newton-chapter__numeral {
+  width: var(--slds-g-sizing-11, 2.75rem);
+  height: var(--slds-g-sizing-11, 2.75rem);
+  background: color-mix(
+    in oklab,
+    var(--newton-studio-brand-weak) 76%,
+    var(--newton-studio-panel)
+  );
+  border-color: var(--newton-studio-depth-border);
+  box-shadow: inset 0 0 0 var(--slds-g-sizing-border-1, 1px)
+    color-mix(
+      in oklab,
+      var(--newton-studio-brand) 10%,
+      var(--newton-studio-panel)
+    );
+}
+
+.newton-chapter__head {
+  gap: var(--newton-static-v-0-125rem, 0.125rem);
+}
+
+.newton-chapter__eyebrow {
+  line-height: var(--slds-g-font-line-height-1, 1);
+}
+
+.newton-chapter__title {
+  line-height: var(--newton-static-v-1-2, 1.2);
+}
+
+.newton-card__glyph {
+  background: var(--newton-studio-panel-soft);
+  border-color: var(--newton-studio-hairline);
+  color: var(--newton-studio-ink-weak);
 }

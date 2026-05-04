@@ -289,10 +289,10 @@
 }
 
 .newton-cpe {
-  gap: var(--slds-g-spacing-3, 0.75rem);
-  padding: var(--slds-g-spacing-3, 0.75rem);
+  gap: var(--slds-g-spacing-2, 0.5rem);
+  padding: var(--slds-g-spacing-2, 0.5rem);
   background: var(--newton-cpe-canvas);
-  border-radius: var(--newton-cpe-radius-lg);
+  border-radius: var(--newton-cpe-radius);
 }
 
 .newton-cpe__card {
@@ -300,19 +300,19 @@
   overflow: hidden;
   background: var(--newton-cpe-panel);
   border-color: var(--newton-cpe-hairline);
+  border-radius: var(--newton-cpe-radius);
+  padding: var(--slds-g-spacing-2, 0.5rem) var(--slds-g-spacing-3, 0.75rem);
+  gap: 0;
+  box-shadow: none;
 }
 
 .newton-cpe__card::before {
-  content: "";
-  position: absolute;
-  inset-block: 0;
-  inset-inline-start: 0;
-  inline-size: var(--slds-g-sizing-border-3, 3px);
-  background: var(--newton-cpe-brand);
+  display: none;
 }
 
 .newton-cpe__card-head {
-  padding-inline-start: var(--slds-g-spacing-2, 0.5rem);
+  padding: 0 0 var(--slds-g-spacing-2, 0.5rem);
+  border-bottom-color: var(--newton-cpe-hairline);
 }
 
 .newton-cpe__card-eyebrow,
@@ -322,25 +322,64 @@
 }
 
 .newton-cpe__card-eyebrow {
-  font-size: var(--slds-g-font-scale-neg-1, 0.75rem);
+  font-size: var(--slds-g-font-scale-neg-2, 0.625rem);
   text-transform: none;
 }
 
 .newton-cpe__card-title {
-  font-size: var(--slds-g-font-scale-2, 1rem);
+  font-size: var(--slds-g-font-scale-base, 0.8125rem);
 }
 
 .newton-cpe__section {
-  padding: var(--slds-g-spacing-3, 0.75rem);
-  border: var(--slds-g-sizing-border-1, 1px) solid var(--newton-cpe-hairline);
-  border-radius: var(--newton-cpe-radius);
-  background: var(--newton-cpe-panel-alt);
+  display: grid;
+  grid-template-columns: var(--newton-static-v-4-5rem, 4.5rem) minmax(0, 1fr);
+  column-gap: var(--slds-g-spacing-2, 0.5rem);
+  row-gap: var(--slds-g-spacing-1, 0.25rem);
+  padding: var(--slds-g-spacing-2, 0.5rem) 0;
+  border-bottom: var(--slds-g-sizing-border-1, 1px) solid
+    var(--newton-cpe-hairline);
+  border-radius: 0;
+  background: transparent;
+}
+
+.newton-cpe__section:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
 }
 
 .newton-cpe__section-title {
+  grid-column: 1;
+  grid-row: 1;
+  align-self: start;
   font-size: var(--slds-g-font-scale-neg-1, 0.75rem);
   text-transform: none;
   color: var(--newton-cpe-brand);
+  margin: 0;
+  line-height: var(--slds-g-font-line-height-2, 1.25);
+}
+
+.newton-cpe__section-kind,
+.newton-cpe__section > .newton-cpe__line {
+  grid-column: 2;
+  min-width: 0;
+}
+
+.newton-cpe__section-kind,
+.newton-cpe__line,
+.newton-cpe__section > .newton-cpe__line:first-of-type {
+  font-size: var(--slds-g-font-scale-neg-1, 0.75rem);
+  line-height: var(--newton-static-v-1-3, 1.3);
+}
+
+.newton-cpe__line[data-muted="true"],
+.newton-cpe__line[data-mono="true"] {
+  font-size: var(--slds-g-font-scale-neg-2, 0.625rem);
+}
+
+.newton-cpe__cta {
+  min-height: var(--slds-g-sizing-8, 1.75rem);
+  padding: var(--slds-g-spacing-1, 0.25rem) var(--slds-g-spacing-2, 0.5rem);
+  font-size: var(--slds-g-font-scale-neg-1, 0.75rem);
 }
 
 .newton-cpe__empty {

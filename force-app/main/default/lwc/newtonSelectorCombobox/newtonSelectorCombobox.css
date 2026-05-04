@@ -121,7 +121,7 @@
 /* V1 CPE control normalization: same trigger height, edge, and menu rhythm
    for lookup and static-select modes. */
 .newton-selector-combobox__select-button,
-.newton-selector-combobox__lookup input.slds-input {
+.newton-selector-combobox__lookup-input {
   min-block-size: var(--slds-g-sizing-9, 2rem);
   border-color: var(--slds-g-color-border-base-1, #c9c9c9);
   background: var(--slds-g-color-surface-1, #ffffff);
@@ -134,14 +134,15 @@
 }
 
 .newton-selector-combobox__select-button:hover,
-.newton-selector-combobox__lookup input.slds-input:hover {
-  border-color: var(--slds-g-color-border-base-2, #747474);
+.newton-selector-combobox__lookup-input:hover {
+  border-color: var(--slds-g-color-border-base-1, #747474);
 }
 
 .newton-selector-combobox__select.slds-is-open
   .newton-selector-combobox__select-button,
-.newton-selector-combobox__lookup.slds-is-open input.slds-input,
-.newton-selector-combobox__lookup input.slds-input:focus {
+.newton-selector-combobox__lookup.slds-is-open
+  .newton-selector-combobox__lookup-input,
+.newton-selector-combobox__lookup-input:focus {
   border-color: var(--slds-g-color-brand-base-50, #0176d3);
   box-shadow: 0 0 0 var(--slds-g-sizing-border-1, 1px)
     var(--slds-g-color-brand-base-50, #0176d3);

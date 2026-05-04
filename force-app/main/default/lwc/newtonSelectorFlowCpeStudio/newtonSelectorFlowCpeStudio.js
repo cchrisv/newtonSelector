@@ -1,11 +1,12 @@
 import { api, LightningElement, track } from "lwc";
 
-const MIN_LEFT_WIDTH = 240;
-const MAX_LEFT_WIDTH = 520;
+const MIN_LEFT_PERCENT = 0;
+const MAX_LEFT_PERCENT = 100;
+const DEFAULT_LEFT_PERCENT = 50;
 
 export default class NewtonSelectorFlowCpeStudio extends LightningElement {
   @api sections = [];
-  @track _leftWidth = 320;
+  @track _leftWidth = DEFAULT_LEFT_PERCENT;
   _dragState = null;
   _chapterObserver;
 
@@ -19,18 +20,22 @@ export default class NewtonSelectorFlowCpeStudio extends LightningElement {
   }
 
   get gridStyle() {
-    return `--newton-studio-left-w: ${this._leftWidth}px`;
+    return [
+      `--newton-studio-left-fr: ${this._leftWidth}fr`,
+      `--newton-studio-right-fr: ${MAX_LEFT_PERCENT - this._leftWidth}fr`
+    ].join("; ");
   }
 
   get leftAriaValueNow() {
     return this._leftWidth;
   }
 
-  handleSectionClick(event) {
-    const key = event.currentTarget?.dataset?.key;
-    if (!key) return;
-    this.dispatchEvent(new CustomEvent("sectionclick", { detail: key }));
-    this.scrollChapterIntoView(key);
+  get leftAriaValueMin() {
+    return MIN_LEFT_PERCENT;
+  }
+
+  get leftAriaValueMax() {
+    return MAX_LEFT_PERCENT;
   }
 
   handleControlsSlotChange() {
@@ -46,19 +51,13 @@ export default class NewtonSelectorFlowCpeStudio extends LightningElement {
     this._chapterObserver = null;
   }
 
-  scrollChapterIntoView(key) {
-    const chapter = this._findChapter(key);
-    if (chapter && typeof chapter.scrollIntoView === "function") {
-      chapter.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-  }
-
   handleSplitterPointerDown(event) {
     event.currentTarget.setPointerCapture?.(event.pointerId);
     this._dragState = {
       startX: event.clientX,
       startLeft: this._leftWidth,
-      pointerId: event.pointerId
+      pointerId: event.pointerId,
+      bodyWidth: this._bodyWidth()
     };
     event.preventDefault();
   }
@@ -66,7 +65,10 @@ export default class NewtonSelectorFlowCpeStudio extends LightningElement {
   handleSplitterPointerMove(event) {
     const state = this._dragState;
     if (!state) return;
-    this._setLeftWidth(state.startLeft + event.clientX - state.startX);
+    if (!state.bodyWidth) return;
+    const deltaPercent =
+      ((event.clientX - state.startX) / state.bodyWidth) * 100;
+    this._setLeftWidth(state.startLeft + deltaPercent);
   }
 
   handleSplitterPointerUp(event) {
@@ -76,12 +78,12 @@ export default class NewtonSelectorFlowCpeStudio extends LightningElement {
   }
 
   handleSplitterKeyDown(event) {
-    const step = event.shiftKey ? 32 : 8;
+    const step = event.shiftKey ? 10 : 5;
     let next;
     if (event.key === "ArrowLeft") next = this._leftWidth - step;
     else if (event.key === "ArrowRight") next = this._leftWidth + step;
-    else if (event.key === "Home") next = MIN_LEFT_WIDTH;
-    else if (event.key === "End") next = MAX_LEFT_WIDTH;
+    else if (event.key === "Home") next = MIN_LEFT_PERCENT;
+    else if (event.key === "End") next = MAX_LEFT_PERCENT;
     else return;
     this._setLeftWidth(next);
     event.preventDefault();
@@ -96,8 +98,14 @@ export default class NewtonSelectorFlowCpeStudio extends LightningElement {
 
   _clampLeft(value) {
     return Math.max(
-      MIN_LEFT_WIDTH,
-      Math.min(MAX_LEFT_WIDTH, Math.round(value))
+      MIN_LEFT_PERCENT,
+      Math.min(MAX_LEFT_PERCENT, Math.round(value))
+    );
+  }
+
+  _bodyWidth() {
+    return (
+      this.template.querySelector(".newton-studio__body")?.clientWidth || 0
     );
   }
 
@@ -126,12 +134,6 @@ export default class NewtonSelectorFlowCpeStudio extends LightningElement {
       { root: controls, rootMargin: "-20% 0px -60% 0px", threshold: 0 }
     );
     chapters.forEach((chapter) => this._chapterObserver.observe(chapter));
-  }
-
-  _findChapter(key) {
-    return this._allChapters().find(
-      (chapter) => chapter.getAttribute("data-chapter") === key
-    );
   }
 
   _allChapters() {

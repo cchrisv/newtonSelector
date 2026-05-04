@@ -199,11 +199,11 @@ describe("c-newton-selector-flow-cpe-config-modal", () => {
     studio.dispatchEvent(
       new CustomEvent("activechapterchange", { detail: "appearance" })
     );
-    studio.dispatchEvent(new CustomEvent("leftwidthchange", { detail: 448 }));
+    studio.dispatchEvent(new CustomEvent("leftwidthchange", { detail: 75 }));
     await flush();
 
     const nextStudio = child(element, "c-newton-selector-flow-cpe-studio");
-    expect(nextStudio.leftWidth).toBe(448);
+    expect(nextStudio.leftWidth).toBe(75);
     expect(
       nextStudio.sections.find((section) => section.key === "appearance").active
     ).toBe(true);

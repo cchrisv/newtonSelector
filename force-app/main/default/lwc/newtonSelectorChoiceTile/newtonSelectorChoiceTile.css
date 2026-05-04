@@ -726,6 +726,32 @@
   background: var(--slds-g-color-on-accent-1, #ffffff);
 }
 
+.newton-selector-choice-tile_sel-fill.newton-selector-choice-tile_selected:not(
+    .newton-selector-choice-tile_pattern-none
+  )
+  .newton-selector-choice-tile__figure {
+  background: var(--_srf-solid-bg-current, var(--_choice-tile-surface));
+  color: var(--_choice-tile-ink);
+}
+
+.newton-selector-choice-tile_sel-fill.newton-selector-choice-tile_selected:not(
+    .newton-selector-choice-tile_pattern-none
+  )
+  .newton-selector-choice-tile__title,
+.newton-selector-choice-tile_sel-fill.newton-selector-choice-tile_selected:not(
+    .newton-selector-choice-tile_pattern-none
+  )
+  .newton-selector-choice-tile__sub {
+  color: var(--_choice-tile-ink);
+}
+
+.newton-selector-choice-tile_sel-fill.newton-selector-choice-tile_selected:not(
+    .newton-selector-choice-tile_pattern-none
+  )
+  .newton-selector-choice-tile__shape {
+  background: var(--_srf-state-color, var(--_choice-tile-border-selected));
+}
+
 /* Bar variant — a leading-edge accent that never changes tile dimensions. */
 .newton-selector-choice-tile_sel-bar .newton-selector-choice-tile__figure {
   overflow: hidden;
@@ -1640,6 +1666,68 @@
   )
   .newton-selector-choice-tile__figure {
   filter: saturate(1.15) brightness(0.98);
+}
+
+.newton-selector-choice-tile_sel-fill.newton-selector-choice-tile_selected:not(
+    .newton-selector-choice-tile_surface-solid
+  )
+  .newton-selector-choice-tile__title,
+.newton-selector-choice-tile_sel-fill.newton-selector-choice-tile_selected:not(
+    .newton-selector-choice-tile_surface-solid
+  )
+  .newton-selector-choice-tile__sub {
+  color: var(--_choice-tile-ink);
+}
+
+.newton-selector-choice-tile_sel-fill.newton-selector-choice-tile_selected.newton-selector-choice-tile_surface-gradient-top
+  .newton-selector-choice-tile__figure {
+  background: linear-gradient(
+    180deg,
+    color-mix(
+        in oklab,
+        var(--_srf-state-color, #747474) 22%,
+        var(--slds-g-color-neutral-base-100, #ffffff)
+      )
+      0%,
+    var(--slds-g-color-neutral-base-100, #ffffff) 85%
+  );
+}
+
+.newton-selector-choice-tile_sel-fill.newton-selector-choice-tile_selected.newton-selector-choice-tile_surface-gradient-radial
+  .newton-selector-choice-tile__figure {
+  background: radial-gradient(
+    ellipse at 50% 0%,
+    color-mix(
+        in oklab,
+        var(--_srf-state-color, #747474) 28%,
+        var(--slds-g-color-neutral-base-100, #ffffff)
+      )
+      0%,
+    var(--slds-g-color-neutral-base-100, #ffffff) 70%
+  );
+}
+
+.newton-selector-choice-tile_sel-fill.newton-selector-choice-tile_selected.newton-selector-choice-tile_surface-gradient-diagonal
+  .newton-selector-choice-tile__figure {
+  background: linear-gradient(
+    135deg,
+    color-mix(
+        in oklab,
+        var(--_srf-state-color, #747474) 26%,
+        var(--slds-g-color-neutral-base-100, #ffffff)
+      )
+      0%,
+    var(--slds-g-color-neutral-base-100, #ffffff) 60%
+  );
+}
+
+.newton-selector-choice-tile_sel-fill.newton-selector-choice-tile_selected.newton-selector-choice-tile_surface-tint
+  .newton-selector-choice-tile__figure {
+  background: color-mix(
+    in oklab,
+    var(--_srf-state-color, #747474) 18%,
+    var(--slds-g-color-neutral-base-100, #ffffff)
+  );
 }
 
 /* =============================================================================

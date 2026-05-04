@@ -1119,6 +1119,7 @@
                 <template for:each={badgePositionChips} for:item="chip">
                   <c-newton-selector-choice-tile
                     key={chip.value}
+                    data-value={chip.value}
                     item={chip}
                     selected={chip._selected}
                     disabled={chip._disabled}
@@ -1198,6 +1199,7 @@
                 <template for:each={badgeShapeChips} for:item="chip">
                   <c-newton-selector-choice-tile
                     key={chip.value}
+                    data-value={chip.value}
                     item={chip}
                     selected={chip._selected}
                     disabled={chip._disabled}

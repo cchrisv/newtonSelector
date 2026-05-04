@@ -22,7 +22,7 @@ export default class NewtonSelectorFlowCpeConfigModal extends LightningModal {
   @track _sourceRecordsRef = "";
   @track _activeSection = "data";
   @track _forcedPreviewState = "";
-  @track _leftWidth = 320;
+  @track _leftWidth = 50;
 
   connectedCallback() {
     this._config = mergeSelectorConfig(this.initialConfig);

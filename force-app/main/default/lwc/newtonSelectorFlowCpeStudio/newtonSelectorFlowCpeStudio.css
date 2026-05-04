@@ -1,289 +1,68 @@
 /* =============================================================================
-   newtonSelectorFlowCpeConfigModal — SLDS 2 two-panel studio
-   Left panel (nav + live preview) | splitter | right panel (section controls)
+   newtonSelectorFlowCpeConfigModal — SLDS 2 studio shell
+   Preview panel | splitter | configuration controls
    ============================================================================= */
 
 :host {
-  --newton-studio-left-w: 20rem;
-
-  --newton-studio-surface: var(--slds-g-color-neutral-base-100, #ffffff);
-  --newton-studio-surface-alt: var(--slds-g-color-neutral-base-95, #f3f3f3);
-  --newton-studio-surface-sunk: var(--slds-g-color-neutral-base-90, #ececec);
-  --newton-studio-ink: var(--slds-g-color-neutral-base-10, #181818);
+  --newton-studio-left-fr: 50fr;
+  --newton-studio-right-fr: 50fr;
+  --newton-studio-splitter-w: var(--newton-static-v-0-375rem, 0.375rem);
+  --newton-studio-canvas: var(--slds-g-color-surface-container-1, #f3f3f3);
+  --newton-studio-panel: var(--slds-g-color-surface-1, #ffffff);
+  --newton-studio-panel-soft: var(--slds-g-color-surface-container-2, #f9f9f9);
   --newton-studio-ink-weak: var(--slds-g-color-neutral-base-40, #5c5c5c);
-  --newton-studio-border: var(--slds-g-color-border-base-1, #c9c9c9);
   --newton-studio-hairline: var(--slds-g-color-border-base-1, #e5e5e5);
   --newton-studio-brand: var(--slds-g-color-brand-base-50, #0176d3);
   --newton-studio-brand-weak: var(--slds-g-color-brand-base-95, #eaf3ff);
   --newton-studio-radius: var(--slds-g-radius-border-2, 0.25rem);
-  --newton-studio-radius-lg: var(--slds-g-radius-border-3, 0.5rem);
-  --newton-studio-shadow: var(--slds-g-shadow-1, 0 1px 2px rgba(0, 0, 0, 0.06));
-  --newton-studio-shadow-lift: 0 4px 12px rgba(0, 0, 0, 0.08);
-  --newton-studio-error: var(--slds-g-color-error-base-50, #ba0517);
-  --newton-studio-warn: var(--slds-g-color-warning-base-60, #9a5b02);
-  --newton-studio-success: var(--slds-g-color-success-base-50, #3baa6f);
   --newton-studio-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-/* 3-column grid: left (45%) | splitter | controls (55%).
-   Using fr units keeps the ratio stable across modal widths. The splitter
-   sits between them as a thin fixed-width column. */
 .newton-studio {
   display: grid;
-  grid-template-columns: minmax(0, 45fr) 0.375rem minmax(0, 55fr);
+  grid-template-rows: minmax(0, 1fr);
   height: 78vh;
   min-height: var(--newton-static-v-34rem, 34rem);
-  background: var(--newton-studio-surface);
+  background: var(--newton-studio-canvas);
+  border-block-start: var(--slds-g-sizing-border-1, 1px) solid
+    var(--newton-studio-hairline);
+  border-block-end: var(--slds-g-sizing-border-1, 1px) solid
+    var(--newton-studio-hairline);
   overflow: hidden;
 }
 
-/* =============================================================================
-   LEFT PANEL · tab nav (top) + live preview (fills below)
-   ============================================================================= */
+.newton-studio__body {
+  display: grid;
+  grid-template-columns:
+    minmax(0, var(--newton-studio-left-fr))
+    var(--newton-studio-splitter-w) minmax(0, var(--newton-studio-right-fr));
+  min-height: 0;
+  overflow: hidden;
+}
+
+.newton-studio__left,
+.newton-studio__controls {
+  min-height: 0;
+  min-width: 0;
+  background: var(--newton-studio-canvas);
+}
 
 .newton-studio__left {
   display: flex;
   flex-direction: column;
-  min-height: 0;
-  background: var(--newton-studio-surface-alt);
-  border-right: var(--newton-static-v-1px, 1px) solid
-    var(--newton-studio-hairline);
+  min-width: 0;
   overflow: hidden;
 }
 
-/* =============================================================================
-   CHAPTER NAV RAIL
-   Vertical table-of-contents down the left preview pane. Each row claims its
-   own chapter hue (same palette as the section cards & CPE summary):
-     01 DATA        blue    #0176d3
-     02 CONTENT     green   #3baa6f
-     03 BEHAVIOR    amber   #b25900
-     04 APPEARANCE  violet  #6d42c1
-   Idle rows are neutral; active row asserts the chapter hue via a full-height
-   left stripe, a tinted surface, strong label, and a filled glyph chip.
-   ============================================================================= */
-
-.newton-studio__nav {
-  flex: 0 0 auto;
+.newton-studio__controls {
+  overflow-y: auto;
+  padding: var(--slds-g-spacing-4, 1rem);
   display: flex;
   flex-direction: column;
-  gap: 0;
-  padding: var(--slds-g-spacing-3, 0.75rem) 0;
-  border-bottom: var(--newton-static-v-1px, 1px) solid
-    var(--newton-studio-hairline);
-  background: var(--newton-studio-surface-alt);
+  gap: var(--slds-g-spacing-4, 1rem);
+  container-type: inline-size;
+  container-name: newton-studio-controls;
 }
-
-/* Chapter hue — per-row CSS var consumed by stripe, numeral, chip. Defaults
-   per data-chapter so the hue is inherited even without an active state. */
-.newton-studio__nav-btn[data-chapter="data"] {
-  --_nav-hue: var(--slds-g-color-brand-base-50, #0176d3);
-}
-.newton-studio__nav-btn[data-chapter="content"] {
-  --_nav-hue: var(--slds-g-color-success-base-50, #3baa6f);
-}
-.newton-studio__nav-btn[data-chapter="behavior"] {
-  --_nav-hue: var(--slds-g-color-warning-base-50, #b25900);
-}
-.newton-studio__nav-btn[data-chapter="appearance"] {
-  --_nav-hue: #6d42c1;
-}
-
-/* Row grid: stripe | numeral | glyph | label | status? */
-.newton-studio__nav-btn {
-  position: relative;
-  display: grid;
-  grid-template-columns: 0.1875rem 1.375rem 1.5rem minmax(0, 1fr) auto;
-  column-gap: 0.5rem;
-  align-items: center;
-  padding: var(--slds-g-spacing-2, 0.5rem) var(--slds-g-spacing-4, 1rem)
-    var(--slds-g-spacing-2, 0.5rem) 0;
-  background: transparent;
-  border: 0;
-  border-top: var(--newton-static-v-1px, 1px) solid transparent;
-  border-bottom: var(--newton-static-v-1px, 1px) solid transparent;
-  text-align: left;
-  color: var(--newton-studio-ink-weak, #5c5c5c);
-  cursor: pointer;
-  width: var(--newton-static-v-100-percent, 100%);
-  font: inherit;
-  transition:
-    background-color 160ms var(--newton-studio-ease),
-    color 160ms var(--newton-studio-ease),
-    border-color 160ms var(--newton-studio-ease);
-}
-
-/* Left stripe — slim vertical bar at the row's left edge, tinted to the
-   chapter hue. Only becomes visible on hover + active. */
-.newton-studio__nav-stripe {
-  align-self: stretch;
-  background: transparent;
-  transition: background-color 160ms var(--newton-studio-ease);
-}
-
-/* Chapter numeral — monospace, subtle. Picks up hue on hover/active. */
-.newton-studio__nav-numeral {
-  font-family:
-    ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
-  font-size: var(--slds-g-font-scale-neg-2, 0.625rem);
-  font-weight: var(--slds-g-font-weight-7, 700);
-  letter-spacing: 0.04em;
-  color: var(--newton-studio-ink-soft, #9a9a9a);
-  font-variant-numeric: tabular-nums;
-  line-height: var(--slds-g-font-line-height-1, 1);
-  transition: color 160ms var(--newton-studio-ease);
-}
-
-/* Glyph chip — 1.5rem tinted square. Subtle hue tint on idle, full hue on
-   active. Echoes the chapter card glyphs in the right pane. */
-.newton-studio__nav-glyph {
-  width: var(--slds-g-sizing-7, 1.5rem);
-  height: var(--slds-g-sizing-7, 1.5rem);
-  border-radius: var(--newton-studio-radius, 0.25rem);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: color-mix(
-    in oklab,
-    var(--_nav-hue, currentColor) 10%,
-    transparent
-  );
-  color: var(--_nav-hue, currentColor);
-  transition:
-    background-color 160ms var(--newton-studio-ease),
-    color 160ms var(--newton-studio-ease),
-    box-shadow 160ms var(--newton-studio-ease);
-}
-
-.newton-studio__nav-glyph c-newton-selector-icon {
-  color: currentColor;
-}
-
-.newton-studio__nav-label {
-  font-size: var(--slds-g-font-scale-base, 0.8125rem);
-  font-weight: var(--slds-g-font-weight-5, 500);
-  color: var(--newton-studio-ink, #181818);
-  line-height: var(--newton-static-v-1-2, 1.2);
-  letter-spacing: -0.005em;
-  transition:
-    font-weight 160ms var(--newton-studio-ease),
-    color 160ms var(--newton-studio-ease);
-}
-
-/* Hover — gently warm up the row in the chapter hue. */
-.newton-studio__nav-btn:hover {
-  background: color-mix(in oklab, var(--_nav-hue) 5%, transparent);
-}
-
-.newton-studio__nav-btn:hover .newton-studio__nav-stripe {
-  background: color-mix(in oklab, var(--_nav-hue) 30%, transparent);
-}
-
-.newton-studio__nav-btn:hover .newton-studio__nav-numeral {
-  color: var(--_nav-hue);
-}
-
-.newton-studio__nav-btn:hover .newton-studio__nav-glyph {
-  background: color-mix(in oklab, var(--_nav-hue) 20%, transparent);
-}
-
-.newton-studio__nav-btn:focus-visible {
-  outline: var(--slds-g-sizing-border-2, 2px) solid var(--_nav-hue);
-  outline-offset: -2px;
-}
-
-/* Active — this chapter is open. Full stripe, tinted surface, filled chip,
-   strong label + numeral in hue. */
-.newton-studio__nav-btn_active {
-  background: color-mix(in oklab, var(--_nav-hue) 8%, transparent);
-  border-top-color: color-mix(in oklab, var(--_nav-hue) 18%, transparent);
-  border-bottom-color: color-mix(in oklab, var(--_nav-hue) 18%, transparent);
-}
-
-.newton-studio__nav-btn_active .newton-studio__nav-stripe {
-  background: var(--_nav-hue);
-  box-shadow: 0 0 0 1px var(--_nav-hue);
-}
-
-.newton-studio__nav-btn_active .newton-studio__nav-numeral {
-  color: var(--_nav-hue);
-}
-
-.newton-studio__nav-btn_active .newton-studio__nav-glyph {
-  background: var(--_nav-hue);
-  color: var(--slds-g-color-on-accent-1, #ffffff);
-  box-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.1),
-    0 0 0 3px color-mix(in oklab, var(--_nav-hue) 18%, transparent);
-}
-
-.newton-studio__nav-btn_active .newton-studio__nav-label {
-  font-weight: var(--slds-g-font-weight-7, 700);
-  color: var(--newton-studio-ink, #181818);
-}
-
-/* Status pip — only appears when there's an issue (warn/error). Sits at the
-   right edge of the row so it doesn't fight the chapter hue. */
-.newton-studio__nav-status {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: var(--slds-g-sizing-5, 1rem);
-  height: var(--slds-g-sizing-5, 1rem);
-  border-radius: var(--newton-static-v-999px, 999px);
-  flex: 0 0 auto;
-  position: relative;
-}
-
-.newton-studio__nav-status::before {
-  content: "";
-  width: var(--newton-static-v-0-4375rem, 0.4375rem);
-  height: var(--newton-static-v-0-4375rem, 0.4375rem);
-  border-radius: var(--newton-static-v-50-percent, 50%);
-  background: currentColor;
-  box-shadow: 0 0 0 3px color-mix(in oklab, currentColor 22%, transparent);
-}
-
-.newton-studio__nav-status_warn {
-  color: var(--newton-studio-warn, #b25900);
-}
-.newton-studio__nav-status_error {
-  color: var(--newton-studio-error, #ba0517);
-}
-
-/* When a chapter needs attention, pulse the pip gently to draw the eye. */
-@keyframes newton-nav-pulse {
-  0%,
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-  50% {
-    transform: scale(1.15);
-    opacity: 0.7;
-  }
-}
-
-.newton-studio__nav-status::before {
-  animation: newton-nav-pulse 1.8s ease-in-out infinite;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .newton-studio__nav-btn {
-    transition: none;
-  }
-  .newton-studio__nav-stripe,
-  .newton-studio__nav-numeral,
-  .newton-studio__nav-glyph,
-  .newton-studio__nav-label {
-    transition: none;
-  }
-  .newton-studio__nav-status::before {
-    animation: none;
-  }
-}
-
-/* Preview pane (below nav, fills remaining height) */
 
 .newton-studio__splitter {
   position: relative;
@@ -325,7 +104,6 @@
   box-shadow: 0 0 0 2px var(--newton-studio-brand-weak);
 }
 
-/* Two-dot grip affordance */
 .newton-studio__splitter::before,
 .newton-studio__splitter::after {
   content: "";
@@ -334,14 +112,16 @@
   width: var(--slds-g-sizing-border-3, 3px);
   height: var(--slds-g-sizing-border-3, 3px);
   border-radius: var(--newton-static-v-50-percent, 50%);
-  background: var(--newton-studio-brand);
+  background: var(--newton-studio-ink-weak);
   transform: translateX(-50%) scale(0);
   transition: transform 160ms var(--newton-studio-ease);
   pointer-events: none;
 }
+
 .newton-studio__splitter::before {
   top: calc(50% - 8px);
 }
+
 .newton-studio__splitter::after {
   top: calc(50% + 5px);
 }
@@ -355,18 +135,30 @@
   transform: translateX(-50%) scale(1);
 }
 
-/* =============================================================================
-   RIGHT PANEL · section controls (scrollable)
-   Container queries enable tile-group layouts that adapt to pane width.
-   ============================================================================= */
+@media (prefers-reduced-motion: reduce) {
+  .newton-studio__splitter-grip,
+  .newton-studio__splitter::before,
+  .newton-studio__splitter::after {
+    transition: none;
+  }
+}
 
-.newton-studio__controls {
-  overflow-y: auto;
-  padding: var(--slds-g-spacing-5, 1.25rem) var(--slds-g-spacing-6, 1.5rem);
-  display: flex;
-  flex-direction: column;
-  gap: var(--slds-g-spacing-4, 1rem);
-  min-height: 0;
-  container-type: inline-size;
-  container-name: newton-studio-controls;
+@media (max-width: 56rem) {
+  .newton-studio {
+    min-height: var(--newton-static-v-34rem, 34rem);
+  }
+
+  .newton-studio__body {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+
+  .newton-studio__splitter {
+    display: none;
+  }
+
+  .newton-studio__left,
+  .newton-studio__controls {
+    padding: var(--slds-g-spacing-4, 1rem);
+  }
 }

@@ -2,6 +2,14 @@
   display: block;
   --newton-studio-surface: var(--slds-g-color-neutral-base-100, #ffffff);
   --newton-studio-surface-alt: var(--slds-g-color-neutral-base-95, #f3f3f3);
+  --newton-studio-surface-raised: var(
+    --slds-g-color-surface-1,
+    var(--newton-studio-surface)
+  );
+  --newton-studio-surface-soft: var(
+    --slds-g-color-surface-container-2,
+    var(--newton-studio-surface-alt)
+  );
   --newton-studio-ink: var(--slds-g-color-neutral-base-10, #181818);
   --newton-studio-ink-weak: var(--slds-g-color-neutral-base-40, #5c5c5c);
   --newton-studio-hairline: var(--slds-g-color-border-base-1, #e5e5e5);
@@ -10,6 +18,10 @@
   --newton-studio-radius: var(--slds-g-radius-border-2, 0.25rem);
   --newton-studio-radius-lg: var(--slds-g-radius-border-3, 0.5rem);
   --newton-studio-shadow: var(--slds-g-shadow-1, 0 1px 2px rgba(0, 0, 0, 0.06));
+  --newton-studio-shadow-lift: var(
+    --slds-g-shadow-2,
+    0 2px 8px rgba(0, 0, 0, 0.12)
+  );
   --newton-studio-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
@@ -31,22 +43,70 @@
 /* Preview header — title block on the left, state toggle segmented control
    on the right. Stacks on narrow widths. */
 .newton-studio__preview-head {
-  display: flex;
-  align-items: flex-end;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
   justify-content: space-between;
   gap: var(--slds-g-spacing-3, 0.75rem);
-  flex-wrap: wrap;
+  min-block-size: var(--newton-static-v-4-5rem, 4.5rem);
+  padding: var(--slds-g-spacing-3, 0.75rem) var(--slds-g-spacing-4, 1rem);
+  border: var(--slds-g-sizing-border-1, 1px) solid var(--newton-studio-hairline);
+  border-radius: var(--newton-studio-radius-lg);
+  background: var(--newton-studio-surface-raised);
+  box-shadow: var(--newton-studio-shadow);
+}
+
+.newton-studio__preview-heading {
+  display: grid;
+  grid-template-columns: var(--slds-g-sizing-11, 2.75rem) minmax(0, 1fr);
+  align-items: center;
+  gap: var(--slds-g-spacing-3, 0.75rem);
+  min-width: 0;
+}
+
+.newton-studio__preview-glyph {
+  inline-size: var(--slds-g-sizing-11, 2.75rem);
+  block-size: var(--slds-g-sizing-11, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: var(--slds-g-sizing-border-1, 1px) solid
+    color-mix(
+      in oklab,
+      var(--newton-studio-brand) 20%,
+      var(--newton-studio-hairline)
+    );
+  border-radius: var(--newton-studio-radius);
+  background: color-mix(
+    in oklab,
+    var(--newton-studio-brand-weak) 76%,
+    var(--newton-studio-surface-raised)
+  );
+  color: var(--newton-studio-brand);
+  box-shadow: inset 0 0 0 var(--slds-g-sizing-border-1, 1px)
+    color-mix(
+      in oklab,
+      var(--newton-studio-brand) 8%,
+      var(--newton-studio-surface-raised)
+    );
+}
+
+.newton-studio__preview-glyph c-newton-selector-icon {
+  color: currentColor;
 }
 
 .newton-studio__preview-head-text {
   display: flex;
   flex-direction: column;
-  gap: var(--slds-g-spacing-1, 0.25rem);
+  gap: var(--newton-static-v-0-125rem, 0.125rem);
   min-width: 0;
 }
 
 .newton-studio__preview-title {
   color: var(--newton-studio-ink);
+  font-size: var(--slds-g-font-scale-3, 1.25rem);
+  font-weight: var(--slds-g-font-weight-7, 700);
+  line-height: var(--newton-static-v-1-2, 1.2);
   margin: 0;
 }
 
@@ -56,16 +116,12 @@
 .newton-studio__preview-states {
   display: inline-flex;
   align-items: stretch;
-  padding: var(--newton-static-v-0-1875rem, 0.1875rem);
-  border-radius: var(--newton-static-v-999px, 999px);
-  background: color-mix(
-    in oklab,
-    var(--newton-studio-ink, #181818) 5%,
-    var(--newton-studio-surface, #ffffff)
-  );
+  padding: var(--slds-g-spacing-1, 0.25rem);
+  border-radius: var(--newton-studio-radius);
+  background: var(--newton-studio-surface-soft);
   border: var(--slds-g-sizing-border-1, 1px) solid
     var(--newton-studio-hairline, #e5e5e5);
-  gap: 0.125rem;
+  gap: var(--slds-g-spacing-1, 0.25rem);
   flex: 0 0 auto;
 }
 
@@ -82,7 +138,7 @@
   font-weight: var(--slds-g-font-weight-6, 600);
   letter-spacing: 0.01em;
   line-height: var(--slds-g-font-line-height-1, 1);
-  border-radius: var(--newton-static-v-999px, 999px);
+  border-radius: var(--newton-studio-radius);
   cursor: pointer;
   white-space: nowrap;
   transition:
@@ -114,12 +170,9 @@
    shadow. Feels like a physical toggle. */
 .newton-studio__preview-state[aria-selected="true"],
 .newton-studio__preview-state[aria-pressed="true"] {
-  background: var(--newton-studio-surface, #ffffff);
+  background: var(--newton-studio-surface-raised, #ffffff);
   color: var(--newton-studio-brand, #0176d3);
-  box-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.08),
-    0 0 0 1px
-      color-mix(in oklab, var(--newton-studio-brand, #0176d3) 25%, transparent);
+  box-shadow: var(--newton-studio-shadow);
 }
 
 /* Specialized tones per state: error goes red when active, empty goes amber.
@@ -152,13 +205,13 @@
 
 .newton-studio__preview-frame {
   flex: 1 1 auto;
-  background: var(--newton-studio-surface);
+  background: var(--newton-studio-surface-raised);
   border: var(--slds-g-sizing-border-1, 1px) solid var(--newton-studio-hairline);
   border-radius: var(--newton-studio-radius-lg);
   padding: var(--slds-g-spacing-4, 1rem);
   overflow: visible;
   min-height: var(--newton-static-v-14rem, 14rem);
-  box-shadow: var(--newton-studio-shadow);
+  box-shadow: var(--newton-studio-shadow-lift);
   transition: border-color 160ms var(--newton-studio-ease);
 }
 

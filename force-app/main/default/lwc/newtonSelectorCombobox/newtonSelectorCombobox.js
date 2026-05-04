@@ -376,7 +376,8 @@ export default class NewtonSelectorCombobox extends LightningElement {
   }
 
   get inputClass() {
-    const base = "slds-input slds-combobox__input";
+    const base =
+      "slds-input slds-combobox__input newton-selector-combobox__lookup-input";
     if (this.isSingleEntry && this.hasSelection) {
       return `${base} slds-combobox__input-value`;
     }

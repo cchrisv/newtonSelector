@@ -1,13 +1,20 @@
 <template>
   <div class="newton-studio__preview" aria-label="Component preview">
     <header class="newton-studio__preview-head">
-      <div class="newton-studio__preview-head-text">
-        <p class="slds-text-title_caps newton-studio__eyebrow">
-          Component preview
-        </p>
-        <h3 class="slds-text-heading_small newton-studio__preview-title">
-          {previewLayoutLabel} · {previewSelectionLabel}
-        </h3>
+      <div class="newton-studio__preview-heading">
+        <span class="newton-studio__preview-glyph" aria-hidden="true">
+          <c-newton-selector-icon
+            name="eye"
+            size="x-small"
+            alternative-text=""
+          ></c-newton-selector-icon>
+        </span>
+        <div class="newton-studio__preview-head-text">
+          <p class="newton-studio__eyebrow">Component preview</p>
+          <h3 class="slds-text-heading_small newton-studio__preview-title">
+            {previewLayoutLabel} · {previewSelectionLabel}
+          </h3>
+        </div>
       </div>
       <div
         class="newton-studio__preview-states"
